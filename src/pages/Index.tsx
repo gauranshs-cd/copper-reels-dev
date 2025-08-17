@@ -1,12 +1,97 @@
-// Update this page (the content is just a fallback if you fail to update the page)
+import { useEffect } from 'react';
+import { useNavigate } from 'react-router-dom';
+import { motion } from 'framer-motion';
+import { Sparkles, Play, BarChart3 } from 'lucide-react';
+import { Button } from '@/components/ui/button';
 
 const Index = () => {
+  const navigate = useNavigate();
+
+  useEffect(() => {
+    // Auto-redirect to onboarding after a brief moment
+    const timer = setTimeout(() => {
+      navigate('/onboarding');
+    }, 2000);
+
+    return () => clearTimeout(timer);
+  }, [navigate]);
+
   return (
-    <div className="min-h-screen flex items-center justify-center bg-background">
-      <div className="text-center">
-        <h1 className="text-4xl font-bold mb-4">Welcome to Your Blank App</h1>
-        <p className="text-xl text-muted-foreground">Start building your amazing project here!</p>
-      </div>
+    <div className="min-h-screen bg-gradient-subtle flex items-center justify-center px-4">
+      <motion.div
+        initial={{ opacity: 0, y: 20 }}
+        animate={{ opacity: 1, y: 0 }}
+        transition={{ duration: 0.8 }}
+        className="text-center max-w-4xl"
+      >
+        <motion.div
+          initial={{ scale: 0.8, opacity: 0 }}
+          animate={{ scale: 1, opacity: 1 }}
+          transition={{ delay: 0.2, duration: 0.6 }}
+          className="mb-8"
+        >
+          <div className="inline-flex items-center space-x-2 bg-primary/10 px-6 py-3 rounded-full mb-6">
+            <Sparkles className="w-6 h-6 text-primary" />
+            <span className="text-primary font-bold text-lg">Copper Reels</span>
+          </div>
+          
+          <h1 className="text-6xl md:text-7xl font-bold text-foreground mb-6 leading-tight">
+            YouTube Content
+            <span className="text-transparent bg-gradient-primary bg-clip-text block">
+              Strategy Builder
+            </span>
+          </h1>
+          
+          <p className="text-xl text-muted-foreground max-w-2xl mx-auto leading-relaxed mb-8">
+            Transform your expertise into viral YouTube content with AI-powered strategy, 
+            ideation, and video planning tools.
+          </p>
+        </motion.div>
+
+        <motion.div
+          initial={{ opacity: 0, y: 20 }}
+          animate={{ opacity: 1, y: 0 }}
+          transition={{ delay: 0.5, duration: 0.6 }}
+          className="flex flex-col sm:flex-row items-center justify-center space-y-4 sm:space-y-0 sm:space-x-6 mb-12"
+        >
+          <div className="flex items-center space-x-2 text-muted-foreground">
+            <BarChart3 className="w-5 h-5" />
+            <span>AI-Powered Strategy</span>
+          </div>
+          <div className="flex items-center space-x-2 text-muted-foreground">
+            <Play className="w-5 h-5" />
+            <span>Video Planning</span>
+          </div>
+          <div className="flex items-center space-x-2 text-muted-foreground">
+            <Sparkles className="w-5 h-5" />
+            <span>Content Ideation</span>
+          </div>
+        </motion.div>
+
+        <motion.div
+          initial={{ opacity: 0, scale: 0.9 }}
+          animate={{ opacity: 1, scale: 1 }}
+          transition={{ delay: 0.8, duration: 0.4 }}
+        >
+          <Button
+            onClick={() => navigate('/onboarding')}
+            size="lg"
+            className="h-16 px-8 text-lg font-semibold rounded-xl bg-gradient-primary hover:shadow-glow transition-all duration-300"
+          >
+            Get Started
+            <Play className="w-5 h-5 ml-2" />
+          </Button>
+        </motion.div>
+
+        <motion.p
+          initial={{ opacity: 0 }}
+          animate={{ opacity: 1 }}
+          transition={{ delay: 1.2 }}
+          className="text-sm text-muted-foreground mt-6"
+        >
+          Redirecting to strategy builder in a moment...
+        </motion.p>
+      </motion.div>
     </div>
   );
 };
