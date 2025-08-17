@@ -1,20 +1,20 @@
 import { useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { motion } from 'framer-motion';
-import { Sparkles, Play, BarChart3 } from 'lucide-react';
+import { Sparkles, Play, BarChart3, LogIn } from 'lucide-react';
 import { Button } from '@/components/ui/button';
+import { useAuth } from '@/components/auth/AuthProvider';
 
 const Index = () => {
   const navigate = useNavigate();
+  const { user, loading } = useAuth();
 
   useEffect(() => {
-    // Auto-redirect to onboarding after a brief moment
-    const timer = setTimeout(() => {
+    // If user is authenticated, redirect to onboarding
+    if (!loading && user) {
       navigate('/onboarding');
-    }, 2000);
-
-    return () => clearTimeout(timer);
-  }, [navigate]);
+    }
+  }, [user, loading, navigate]);
 
   return (
     <div className="min-h-screen bg-gradient-subtle flex items-center justify-center px-4">
@@ -72,25 +72,38 @@ const Index = () => {
           initial={{ opacity: 0, scale: 0.9 }}
           animate={{ opacity: 1, scale: 1 }}
           transition={{ delay: 0.8, duration: 0.4 }}
+          className="flex flex-col sm:flex-row items-center justify-center gap-4"
         >
           <Button
-            onClick={() => navigate('/onboarding')}
+            onClick={() => navigate('/auth')}
             size="lg"
             className="h-16 px-8 text-lg font-semibold rounded-xl bg-gradient-primary hover:shadow-glow transition-all duration-300"
           >
             Get Started
             <Play className="w-5 h-5 ml-2" />
           </Button>
+          
+          <Button
+            onClick={() => navigate('/auth')}
+            variant="outline"
+            size="lg"
+            className="h-16 px-8 text-lg font-semibold rounded-xl"
+          >
+            <LogIn className="w-5 h-5 mr-2" />
+            Sign In
+          </Button>
         </motion.div>
 
-        <motion.p
-          initial={{ opacity: 0 }}
-          animate={{ opacity: 1 }}
-          transition={{ delay: 1.2 }}
-          className="text-sm text-muted-foreground mt-6"
-        >
-          Redirecting to strategy builder in a moment...
-        </motion.p>
+        {!loading && !user && (
+          <motion.p
+            initial={{ opacity: 0 }}
+            animate={{ opacity: 1 }}
+            transition={{ delay: 1.2 }}
+            className="text-sm text-muted-foreground mt-6"
+          >
+            Sign up to start building your content strategy
+          </motion.p>
+        )}
       </motion.div>
     </div>
   );
