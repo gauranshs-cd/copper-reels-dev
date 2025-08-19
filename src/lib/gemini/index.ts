@@ -2,6 +2,7 @@ import { GoogleGenerativeAI } from '@google/generative-ai';
 import { z } from 'zod';
 import * as prompts from '../openai/prompts';
 import { supabase } from '@/integrations/supabase/client';
+import { generateFallbackScript } from './fallback-scripts';
 
 // Initialize Gemini client
 const apiKey = import.meta.env.VITE_GEMINI_API_KEY || '';
@@ -174,8 +175,14 @@ export class CopperReelsGemini {
         console.error('Failed to parse JSON:', jsonObjMatch[0]);
         throw new Error(`Invalid JSON in response: ${parseError.message}`);
       }
-    } catch (error) {
+    } catch (error: any) {
       console.error('Gemini API error:', error);
+      
+      // Check if it's a quota error
+      if (error?.message?.includes('quota') || error?.message?.includes('429') || error?.message?.includes('RESOURCE_EXHAUSTED')) {
+        throw new Error('API quota exceeded. Using fallback generation.');
+      }
+      
       throw error;
     }
   }
@@ -340,7 +347,25 @@ Make it specific, actionable, and psychologically targeted to the avatar.`;
     const userPrompt = prompts.buildScriptStoryboardUserPrompt(params);
     
     try {
-      const result = await this.callGemini(systemPrompt, userPrompt, 'SCRIPT_STORYBOARD');
+      // Try API first
+      let result;
+      try {
+        result = await this.callGemini(systemPrompt, userPrompt, 'SCRIPT_STORYBOARD');
+      } catch (apiError: any) {
+        console.warn('API call failed, using fallback:', apiError.message);
+        
+        // Use fallback if quota exceeded or API fails
+        if (apiError.message.includes('quota') || apiError.message.includes('API')) {
+          console.log('Using fallback script generation');
+          return generateFallbackScript({
+            chosenTitle: params.chosenTitle,
+            viewerType: params.viewerType,
+            ideaConcept: params.ideaConcept,
+            targetMinutes: params.targetMinutes
+          });
+        }
+        throw apiError;
+      }
       
       // Try to parse the full response
       try {
