@@ -2,21 +2,10 @@
 // Enhanced with YTGS methodology and advanced psychological frameworks
 // All prompts output JSON only (no prose). Replace {{placeholders}} at runtime.
 
-import { 
-  ENHANCED_POSITIONING_SYSTEM,
-  ENHANCED_IDEA_GENERATOR,
-  ENHANCED_TITLE_GENERATOR,
-  ENHANCED_THUMBNAIL_GENERATOR,
-  MASTER_SCRIPT_GENERATOR,
-  buildEnhancedPrompt
-} from './ytgs-prompts';
-
 // ============================================================================
 // 1. POSITIONING BOT (Foundation)
 // ============================================================================
-export const POSITIONING_BOT_SYSTEM = `${ENHANCED_POSITIONING_SYSTEM}
-
-You are Copper Reels' Positioning Bot, a YouTube growth strategist using the advanced YTGS method.
+export const POSITIONING_BOT_SYSTEM = `You are Copper Reels' Positioning Bot, a YouTube growth strategist using the advanced YTGS method.
 Return ONLY a single JSON object that matches the schema below. Do not include markdown, commentary, or explanations.
 
 SCHEMA
@@ -114,9 +103,7 @@ Return the Pattern Bank JSON now.`;
 // ============================================================================
 // 4. IDEA GENERATOR
 // ============================================================================
-export const IDEA_GENERATOR_SYSTEM = `${ENHANCED_IDEA_GENERATOR}
-
-You are the Ideation Hub Bot. Generate original ideas aligned to the advanced YTGS foundation and Pattern Bank. Return ONLY JSON.
+export const IDEA_GENERATOR_SYSTEM = `You are the Ideation Hub Bot. Generate original ideas aligned to the YTGS foundation and Pattern Bank. Return ONLY JSON.
 
 SCHEMA
 { "type":"object","required":["ideas"],
@@ -146,9 +133,7 @@ Produce 15 ideas.`;
 // ============================================================================
 // 5. TITLE GENERATOR
 // ============================================================================
-export const TITLE_GENERATOR_SYSTEM = `${ENHANCED_TITLE_GENERATOR}
-
-You are the Title Generator. Create high-CTR, psychologically-optimized titles. Return ONLY JSON.
+export const TITLE_GENERATOR_SYSTEM = `You are the Title Generator. Create high-CTR, honest titles. Return ONLY JSON.
 
 SCHEMA
 { "type":"object","required":["titles"],
@@ -177,9 +162,7 @@ Generate 6 alternate titles with scores.`;
 // ============================================================================
 // 6. THUMBNAIL BRIEF GENERATOR
 // ============================================================================
-export const THUMBNAIL_BRIEF_SYSTEM = `${ENHANCED_THUMBNAIL_GENERATOR}
-
-You are the Thumbnail Brief Generator. Produce visually compelling, conversion-optimized briefs. Return ONLY JSON.
+export const THUMBNAIL_BRIEF_SYSTEM = `You are the Thumbnail Brief Generator. Produce concise creative briefs suitable for a designer or image model. Return ONLY JSON.
 
 SCHEMA
 { "type":"object","required":["briefs"],
@@ -205,9 +188,7 @@ Return 2–3 thumbnail briefs.`;
 // ============================================================================
 // 7. SCRIPT & STORYBOARD GENERATOR
 // ============================================================================
-export const SCRIPT_STORYBOARD_SYSTEM = `${MASTER_SCRIPT_GENERATOR}
-
-You are the Script & Storyboard Bot. Generate a psychologically-optimized YT script using advanced YTGS Bricks. Return ONLY JSON.
+export const SCRIPT_STORYBOARD_SYSTEM = `You are the Script & Storyboard Bot. Generate a YT script using YTGS Bricks and a visual storyboard. Return ONLY JSON.
 
 SCHEMA
 { "type":"object","required":["runtimeEstimateSec","bricks","storyboard","metadata"],

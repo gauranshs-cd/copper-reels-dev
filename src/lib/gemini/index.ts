@@ -1,7 +1,6 @@
 import { GoogleGenerativeAI } from '@google/generative-ai';
 import { z } from 'zod';
 import * as prompts from '../openai/prompts';
-import { buildEnhancedPrompt } from '../openai/ytgs-prompts';
 import { supabase } from '@/integrations/supabase/client';
 
 // Initialize Gemini client
@@ -181,7 +180,7 @@ export class CopperReelsGemini {
     }
   }
 
-  // 1. Positioning Bot (Foundation) - Enhanced with YTGS
+  // 1. Positioning Bot (Foundation)
   async generateFoundation(params: {
     umbrella: string;
     channelName?: string;
@@ -189,11 +188,10 @@ export class CopperReelsGemini {
     contentHints?: string;
     constraints?: string;
   }) {
-    const basePrompt = prompts.POSITIONING_BOT_SYSTEM;
-    const enhancedPrompt = buildEnhancedPrompt(basePrompt, params, true);
+    const systemPrompt = prompts.POSITIONING_BOT_SYSTEM;
     const userPrompt = prompts.buildPositioningUserPrompt(params);
     
-    const result = await this.callGemini(enhancedPrompt, userPrompt, 'POSITIONING');
+    const result = await this.callGemini(systemPrompt, userPrompt, 'POSITIONING');
     return FoundationSchema.parse(result);
   }
 
@@ -220,12 +218,11 @@ export class CopperReelsGemini {
       }
     };
     
-    // Use enhanced YTGS prompt for superior idea generation
-    const basePrompt = prompts.IDEA_GENERATOR_SYSTEM;
-    const enhancedSystemPrompt = buildEnhancedPrompt(basePrompt, enhancedParams, true) + '\n\nIMPORTANT: Generate exactly 3 high-quality, diverse video ideas using advanced psychological triggers and viral mechanics.';
+    // Modify system prompt to generate only 3 high-quality ideas
+    const modifiedSystemPrompt = prompts.IDEA_GENERATOR_SYSTEM + '\n\nIMPORTANT: Generate exactly 3 high-quality, diverse video ideas. Focus on quality over quantity.';
     const userPrompt = prompts.buildIdeaGeneratorUserPrompt(enhancedParams);
     
-    const result = await this.callGemini(enhancedSystemPrompt, userPrompt, 'IDEA_GENERATOR');
+    const result = await this.callGemini(modifiedSystemPrompt, userPrompt, 'IDEA_GENERATOR');
     const ideas = z.object({ ideas: z.array(IdeaSchema) }).parse(result).ideas;
     
     // Ensure we return exactly 3 ideas
@@ -294,7 +291,7 @@ Make it specific, actionable, and psychologically targeted to the avatar.`;
     }).parse(parsed).scriptRows;
   }
 
-  // 4. Title Generator - Enhanced with psychological triggers
+  // 4. Title Generator
   async generateTitles(params: {
     ideaConcept: string;
     pillarName: string;
@@ -303,18 +300,17 @@ Make it specific, actionable, and psychologically targeted to the avatar.`;
     tone?: string;
     styleGuide?: any;
   }) {
-    const basePrompt = prompts.TITLE_GENERATOR_SYSTEM;
-    const enhancedPrompt = buildEnhancedPrompt(basePrompt, params, true);
+    const systemPrompt = prompts.TITLE_GENERATOR_SYSTEM;
     const userPrompt = prompts.buildTitleGeneratorUserPrompt(params);
     
-    const result = await this.callGemini(enhancedPrompt, userPrompt, 'TITLE_GENERATOR');
+    const result = await this.callGemini(systemPrompt, userPrompt, 'TITLE_GENERATOR');
     return z.object({ 
       titles: z.array(TitleDraftSchema),
       guidance: z.string().optional().default('')
     }).parse(result);
   }
 
-  // 5. Thumbnail Brief Generator - Visual psychology optimized
+  // 5. Thumbnail Brief Generator
   async generateThumbnailBriefs(params: {
     titleText: string;
     ideaConcept: string;
@@ -322,15 +318,14 @@ Make it specific, actionable, and psychologically targeted to the avatar.`;
     brandKit?: any;
     styleGuide?: any;
   }) {
-    const basePrompt = prompts.THUMBNAIL_BRIEF_SYSTEM;
-    const enhancedPrompt = buildEnhancedPrompt(basePrompt, params, true);
+    const systemPrompt = prompts.THUMBNAIL_BRIEF_SYSTEM;
     const userPrompt = prompts.buildThumbnailBriefUserPrompt(params);
     
-    const result = await this.callGemini(enhancedPrompt, userPrompt, 'THUMBNAIL_BRIEF');
+    const result = await this.callGemini(systemPrompt, userPrompt, 'THUMBNAIL_BRIEF');
     return z.object({ briefs: z.array(ThumbnailBriefSchema) }).parse(result).briefs;
   }
 
-  // 6. Script & Storyboard Generator - Master YTGS methodology
+  // 6. Script & Storyboard Generator
   async generateScriptAndStoryboard(params: {
     chosenTitle: string;
     viewerType: string;
@@ -341,11 +336,10 @@ Make it specific, actionable, and psychologically targeted to the avatar.`;
     targetMinutes?: number;
     styleGuide?: any;
   }) {
-    const basePrompt = prompts.SCRIPT_STORYBOARD_SYSTEM;
-    const enhancedPrompt = buildEnhancedPrompt(basePrompt, params, true);
+    const systemPrompt = prompts.SCRIPT_STORYBOARD_SYSTEM;
     const userPrompt = prompts.buildScriptStoryboardUserPrompt(params);
     
-    const result = await this.callGemini(enhancedPrompt, userPrompt, 'SCRIPT_STORYBOARD');
+    const result = await this.callGemini(systemPrompt, userPrompt, 'SCRIPT_STORYBOARD');
     return z.object({
       runtimeEstimateSec: z.number(),
       bricks: z.array(BrickSchema),
