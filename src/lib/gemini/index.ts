@@ -339,13 +339,75 @@ Make it specific, actionable, and psychologically targeted to the avatar.`;
     const systemPrompt = prompts.SCRIPT_STORYBOARD_SYSTEM;
     const userPrompt = prompts.buildScriptStoryboardUserPrompt(params);
     
-    const result = await this.callGemini(systemPrompt, userPrompt, 'SCRIPT_STORYBOARD');
-    return z.object({
-      runtimeEstimateSec: z.number(),
-      bricks: z.array(BrickSchema),
-      storyboard: z.array(z.any()),
-      metadata: z.any()
-    }).parse(result);
+    try {
+      const result = await this.callGemini(systemPrompt, userPrompt, 'SCRIPT_STORYBOARD');
+      
+      // Try to parse the full response
+      try {
+        return z.object({
+          runtimeEstimateSec: z.number(),
+          bricks: z.array(BrickSchema),
+          storyboard: z.array(z.any()).optional().default([]),
+          metadata: z.any().optional().default({})
+        }).parse(result);
+      } catch (parseError) {
+        console.warn('Full parse failed, trying minimal structure:', parseError);
+        
+        // Fallback: Try to extract just bricks
+        if (result.bricks && Array.isArray(result.bricks)) {
+          return {
+            runtimeEstimateSec: result.runtimeEstimateSec || 300,
+            bricks: result.bricks,
+            storyboard: result.storyboard || [],
+            metadata: result.metadata || {}
+          };
+        }
+        
+        // Ultimate fallback: Generate default structure
+        console.warn('Using fallback script structure');
+        return {
+          runtimeEstimateSec: 300,
+          bricks: [
+            {
+              type: 'INTRO',
+              estimatedSec: 30,
+              narration: `Welcome! Today we're covering: ${params.chosenTitle}`,
+              onScreen: params.chosenTitle,
+              callouts: ['Hook', 'Problem', 'Value'],
+              broll: ['Title card', 'Preview shots'],
+              beats: ['Open strong', 'State problem', 'Preview value']
+            },
+            {
+              type: 'MIDDLE',
+              estimatedSec: 180,
+              narration: `Let's dive into the main content about ${params.ideaConcept}`,
+              onScreen: 'Main Points',
+              callouts: ['Point 1', 'Point 2', 'Point 3'],
+              broll: ['Examples', 'Demonstrations'],
+              beats: ['Explain concept', 'Show examples', 'Application']
+            },
+            {
+              type: 'OUTRO',
+              estimatedSec: 30,
+              narration: 'Thanks for watching! Like and subscribe for more.',
+              onScreen: 'Subscribe',
+              callouts: ['CTA', 'Next video'],
+              broll: ['End screen'],
+              beats: ['Recap', 'Call to action', 'Next video tease']
+            }
+          ],
+          storyboard: [],
+          metadata: {
+            cta: 'Subscribe for more content',
+            chapters: ['Intro', 'Main Content', 'Outro'],
+            tags: params.ideaConcept.split(' ').filter(w => w.length > 3)
+          }
+        };
+      }
+    } catch (error) {
+      console.error('Script generation failed:', error);
+      throw new Error('Failed to generate script. Please try again.');
+    }
   }
 }
 

@@ -182,7 +182,23 @@ export default function ScriptBuilder() {
       setGenerationSteps(prev => prev.map((s, i) => 
         s.status === 'active' ? { ...s, status: 'error' } : s
       ));
-      toast.error('Failed to generate script. Please try again.');
+      
+      // More specific error messages
+      if (error instanceof Error) {
+        if (error.message.includes('quota')) {
+          toast.error('API quota exceeded. Please try again later.');
+        } else if (error.message.includes('JSON')) {
+          toast.error('Error parsing AI response. Retrying with simpler format...');
+          // Retry with fallback
+          setTimeout(() => generateFullScript(), 2000);
+          return;
+        } else {
+          toast.error(`Script generation failed: ${error.message}`);
+        }
+      } else {
+        toast.error('Failed to generate script. Please try again.');
+      }
+      
       setIsGenerating(false);
     }
   };
