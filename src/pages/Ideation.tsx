@@ -1,72 +1,25 @@
 import { useState, useEffect } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
 import { useNavigate } from 'react-router-dom';
-import { ArrowLeft, ArrowRight, Plus, Search, TrendingUp } from 'lucide-react';
+import { ArrowLeft, ArrowRight, Plus, Search, TrendingUp, Sparkles, Info } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { Card } from '@/components/ui/card';
 import { Input } from '@/components/ui/input';
 import { Badge } from '@/components/ui/badge';
+import {
+  Tooltip,
+  TooltipContent,
+  TooltipProvider,
+  TooltipTrigger,
+} from '@/components/ui/tooltip';
 import { ProgressIndicator } from '@/components/ui/progress-indicator';
 import { LoadingSpinner } from '@/components/ui/loading-spinner';
 import { useAppStore } from '@/store/useAppStore';
 import type { IdeaCard } from '@/store/useAppStore';
-
-const mockIdeas: IdeaCard[] = [
-  {
-    id: '1',
-    title: '5 Essential Tools Every Developer Needs in 2024',
-    thumbnail: '/api/placeholder/300/200',
-    pillar: 'Tools & Resources',
-    pillarColor: 'bg-orange-500',
-    ctrScore: 8.4,
-    description: 'Complete guide to must-have development tools'
-  },
-  {
-    id: '2', 
-    title: 'From Zero to First Sale: My SaaS Journey',
-    thumbnail: '/api/placeholder/300/200',
-    pillar: 'Case Studies',
-    pillarColor: 'bg-purple-500',
-    ctrScore: 9.2,
-    description: 'Behind-the-scenes look at building profitable SaaS'
-  },
-  {
-    id: '3',
-    title: 'React vs Vue: Which Should You Choose in 2024?',
-    thumbnail: '/api/placeholder/300/200',
-    pillar: 'Fundamentals',
-    pillarColor: 'bg-blue-500',
-    ctrScore: 7.8,
-    description: 'Comprehensive comparison for beginners'
-  },
-  {
-    id: '4',
-    title: 'Building Your First API in 15 Minutes',
-    thumbnail: '/api/placeholder/300/200',
-    pillar: 'Practical Tutorials',
-    pillarColor: 'bg-green-500',
-    ctrScore: 8.9,
-    description: 'Step-by-step API development tutorial'
-  },
-  {
-    id: '5',
-    title: 'Overcoming Imposter Syndrome as a Developer',
-    thumbnail: '/api/placeholder/300/200',
-    pillar: 'Mindset & Motivation',
-    pillarColor: 'bg-pink-500',
-    ctrScore: 7.6,
-    description: 'Mental strategies for developer confidence'
-  },
-  {
-    id: '6',
-    title: 'Database Design Patterns That Scale',
-    thumbnail: '/api/placeholder/300/200',
-    pillar: 'Fundamentals',
-    pillarColor: 'bg-blue-500',
-    ctrScore: 8.1,
-    description: 'Advanced database architecture concepts'
-  }
-];
+import { copperReelsGemini } from '@/lib/gemini';
+import { toast } from 'sonner';
+import { MagicTitleGenerator } from '@/components/MagicTitleGenerator';
+import { historyService } from '@/lib/history';
 
 const columns = [
   { id: 'ideas', title: 'Ideas', count: 12 },
@@ -85,37 +38,92 @@ export default function Ideation() {
     setLoading 
   } = useAppStore();
   
-  const [ideas, setIdeas] = useState<IdeaCard[]>(mockIdeas);
+  const [ideas, setIdeas] = useState<IdeaCard[]>([]);
   const [searchTerm, setSearchTerm] = useState('');
   const [isGenerating, setIsGenerating] = useState(false);
+  const [hasGenerated, setHasGenerated] = useState(false);
+  const [thumbnailBriefs, setThumbnailBriefs] = useState<Map<string, any>>(new Map());
 
   useEffect(() => {
     setCurrentStep('ideation');
-  }, [setCurrentStep]);
+    // Auto-generate ideas on first visit
+    if (!hasGenerated && foundationData && ideas.length === 0) {
+      generateNewIdeas();
+      setHasGenerated(true);
+    }
+  }, [setCurrentStep, foundationData]);
 
   const generateNewIdeas = async () => {
+    if (!foundationData) {
+      toast.error('Please complete foundation setup first');
+      navigate('/foundation');
+      return;
+    }
+
     setIsGenerating(true);
-    setLoading(true, "Generating fresh video ideas...");
+    setLoading(true, "Generating fresh video ideas with AI...");
     
-    // Simulate AI generation
-    await new Promise(resolve => setTimeout(resolve, 2000));
-    
-    // Add new mock ideas
-    const newIdeas: IdeaCard[] = [
-      {
-        id: Date.now().toString(),
-        title: 'The Productivity Method That Changed My Coding',
+    try {
+      // Generate only 3 ideas at a time instead of 15
+      const allGeneratedIdeas = await copperReelsGemini.generateIdeas({
+        umbrella: useAppStore.getState().umbrellaStatement || '',
+        viewerType: foundationData.viewerType,
+        avatarSummary: `${foundationData.avatar.demographics}. ${foundationData.avatar.psychographics}`,
+        pillars: foundationData.pillars.map(p => ({
+          name: p.title,
+          summary: p.description
+        }))
+      });
+      
+      // Limit to 3 ideas
+      const generatedIdeas = allGeneratedIdeas.slice(0, 3);
+
+      // Transform Gemini ideas to IdeaCard format
+      const newIdeas: IdeaCard[] = generatedIdeas.map((idea, index) => ({
+        id: `gemini-${Date.now()}-${index}`,
+        title: idea.concept,
         thumbnail: '/api/placeholder/300/200',
-        pillar: 'Mindset & Motivation',
-        pillarColor: 'bg-pink-500',
-        ctrScore: 8.7,
-        description: 'Time management strategies for developers'
+        pillar: idea.pillar,
+        pillarColor: foundationData.pillars.find(p => p.title === idea.pillar)?.color || 'bg-gray-500',
+        ctrScore: Math.round(idea.difficulty * 2), // Convert 1-5 to approximate CTR score
+        description: idea.whyItWillClick
+      }));
+      
+      // Generate thumbnail briefs for each idea
+      for (const idea of newIdeas) {
+        try {
+          const thumbnailBrief = await copperReelsGemini.generateThumbnailBriefs({
+            titleText: idea.title,
+            ideaConcept: idea.description
+          });
+          if (thumbnailBrief && thumbnailBrief.length > 0) {
+            setThumbnailBriefs(prev => new Map(prev).set(idea.id, thumbnailBrief[0]));
+          }
+        } catch (error) {
+          console.error(`Failed to generate thumbnail for ${idea.title}:`, error);
+        }
       }
-    ];
-    
-    setIdeas(prev => [...newIdeas, ...prev]);
-    setIsGenerating(false);
-    setLoading(false);
+      
+      setIdeas(prev => [...newIdeas, ...prev]);
+      
+      // Save to history
+      newIdeas.forEach(idea => {
+        historyService.addItem({
+          type: 'idea',
+          title: idea.title,
+          description: idea.description,
+          data: { idea, thumbnailBrief: thumbnailBriefs.get(idea.id) }
+        });
+      });
+      
+      toast.success(`Generated ${newIdeas.length} new video ideas with thumbnails!`);
+    } catch (error) {
+      console.error('Failed to generate ideas:', error);
+      toast.error('Failed to generate ideas. Please try again.');
+    } finally {
+      setIsGenerating(false);
+      setLoading(false);
+    }
   };
 
   const handleIdeaSelect = (idea: IdeaCard) => {
@@ -179,14 +187,25 @@ export default function Ideation() {
                 />
               </div>
               
-              <Button
-                onClick={generateNewIdeas}
-                disabled={isGenerating}
-                className="bg-gradient-primary hover:shadow-glow"
-              >
-                <Plus className="w-4 h-4 mr-2" />
-                Generate New Ideas
-              </Button>
+              <div className="flex gap-2">
+                <Button
+                  onClick={() => navigate('/pattern-bank')}
+                  variant="outline"
+                  className="flex items-center gap-2"
+                >
+                  <Sparkles className="w-4 h-4" />
+                  Pattern Bank
+                </Button>
+                
+                <Button
+                  onClick={generateNewIdeas}
+                  disabled={isGenerating}
+                  className="bg-gradient-primary hover:shadow-glow"
+                >
+                  <Plus className="w-4 h-4 mr-2" />
+                  Generate New Ideas
+                </Button>
+              </div>
             </div>
           </div>
 
@@ -225,12 +244,44 @@ export default function Ideation() {
                             }`}
                           >
                             <Card className="p-4 hover:shadow-md">
-                              <div className="aspect-video bg-muted rounded-lg mb-3 overflow-hidden">
-                                <img 
-                                  src={idea.thumbnail} 
-                                  alt={idea.title}
-                                  className="w-full h-full object-cover"
-                                />
+                              <div className="aspect-video bg-muted rounded-lg mb-3 overflow-hidden relative">
+                                {thumbnailBriefs.get(idea.id) ? (
+                                  <TooltipProvider>
+                                    <Tooltip>
+                                      <TooltipTrigger asChild>
+                                        <div className="w-full h-full relative bg-gradient-to-br from-purple-600 to-blue-600 cursor-help">
+                                          <div className="absolute inset-0 flex flex-col justify-between p-3">
+                                            <div className="text-white font-bold text-sm drop-shadow-lg">
+                                              {thumbnailBriefs.get(idea.id).overlayText}
+                                            </div>
+                                            <div className="text-white/80 text-[10px]">
+                                              {thumbnailBriefs.get(idea.id).subject}
+                                            </div>
+                                          </div>
+                                          <div className="absolute bottom-0 right-0 p-2 text-white/60 text-[8px]">
+                                            {thumbnailBriefs.get(idea.id).colorMood}
+                                          </div>
+                                          <div className="absolute top-2 right-2">
+                                            <Info className="w-3 h-3 text-white/60" />
+                                          </div>
+                                        </div>
+                                      </TooltipTrigger>
+                                      <TooltipContent className="max-w-xs">
+                                        <div className="space-y-1 text-xs">
+                                          <p><strong>Background:</strong> {thumbnailBriefs.get(idea.id).background}</p>
+                                          <p><strong>Composition:</strong> {thumbnailBriefs.get(idea.id).composition}</p>
+                                          <p><strong>Expression:</strong> {thumbnailBriefs.get(idea.id).expressionOrHero}</p>
+                                        </div>
+                                      </TooltipContent>
+                                    </Tooltip>
+                                  </TooltipProvider>
+                                ) : (
+                                  <img 
+                                    src={idea.thumbnail} 
+                                    alt={idea.title}
+                                    className="w-full h-full object-cover"
+                                  />
+                                )}
                               </div>
                               
                               <h4 className="font-medium text-sm mb-2 line-clamp-2">
@@ -298,6 +349,22 @@ export default function Ideation() {
           </motion.div>
         </motion.div>
       </div>
+      
+      {/* Magic Title Generator */}
+      <MagicTitleGenerator 
+        ideaTitle={selectedIdea?.title}
+        onTitleSelect={(title) => {
+          if (selectedIdea) {
+            // Update the selected idea with the new title
+            const updatedIdea = { ...selectedIdea, title };
+            setSelectedIdea(updatedIdea);
+            setIdeas(prev => prev.map(idea => 
+              idea.id === selectedIdea.id ? updatedIdea : idea
+            ));
+            toast.success('Idea title updated!');
+          }
+        }}
+      />
     </div>
   );
 }

@@ -69,6 +69,9 @@ interface AppState {
   isLoading: boolean;
   loadingMessage: string;
   
+  // Admin Features
+  customPrompts: Record<string, string>;
+  
   // Actions
   setCurrentStep: (step: AppState['currentStep']) => void;
   setUmbrellaStatement: (statement: string) => void;
@@ -76,6 +79,7 @@ interface AppState {
   setSelectedIdea: (idea: IdeaCard) => void;
   setVideoPlan: (plan: VideoPlan) => void;
   setLoading: (loading: boolean, message?: string) => void;
+  setCustomPrompt: (type: string, prompt: string) => void;
   resetStore: () => void;
 }
 
@@ -90,6 +94,7 @@ export const useAppStore = create<AppState>()(
       videoPlan: null,
       isLoading: false,
       loadingMessage: '',
+      customPrompts: {},
       
       // Actions
       setCurrentStep: (step) => set({ currentStep: step }),
@@ -98,6 +103,9 @@ export const useAppStore = create<AppState>()(
       setSelectedIdea: (idea) => set({ selectedIdea: idea }),
       setVideoPlan: (plan) => set({ videoPlan: plan }),
       setLoading: (loading, message = '') => set({ isLoading: loading, loadingMessage: message }),
+      setCustomPrompt: (type, prompt) => set((state) => ({
+        customPrompts: { ...state.customPrompts, [type]: prompt }
+      })),
       resetStore: () => set({
         currentStep: 'onboarding',
         umbrellaStatement: '',
@@ -105,7 +113,8 @@ export const useAppStore = create<AppState>()(
         selectedIdea: null,
         videoPlan: null,
         isLoading: false,
-        loadingMessage: ''
+        loadingMessage: '',
+        customPrompts: {}
       })
     }),
     {

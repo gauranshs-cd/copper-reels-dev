@@ -7,7 +7,9 @@ import { Input } from '@/components/ui/input';
 import { LoadingSpinner } from '@/components/ui/loading-spinner';
 import { ProgressIndicator } from '@/components/ui/progress-indicator';
 import { useAppStore } from '@/store/useAppStore';
+import { RefreshCw } from 'lucide-react';
 import { cn } from '@/lib/utils';
+import { toast } from 'sonner';
 
 const placeholderExamples = [
   "I help indie developers launch profitable SaaS",
@@ -20,7 +22,7 @@ const placeholderExamples = [
 
 export default function Onboarding() {
   const navigate = useNavigate();
-  const { umbrellaStatement, setUmbrellaStatement, setLoading, isLoading, setCurrentStep } = useAppStore();
+  const { umbrellaStatement, setUmbrellaStatement, setLoading, isLoading, setCurrentStep, resetStore } = useAppStore();
   const [currentPlaceholder, setCurrentPlaceholder] = useState(0);
   const [inputValue, setInputValue] = useState(umbrellaStatement);
 
@@ -111,51 +113,61 @@ export default function Onboarding() {
             className="max-w-2xl mx-auto space-y-6"
           >
             <div className="relative">
-              <AnimatePresence mode="wait">
-                <motion.div
-                  key={currentPlaceholder}
-                  initial={{ opacity: 0, y: 10 }}
-                  animate={{ opacity: 1, y: 0 }}
-                  exit={{ opacity: 0, y: -10 }}
-                  transition={{ duration: 0.3 }}
-                  className="absolute left-4 top-1/2 transform -translate-y-1/2 pointer-events-none"
-                >
-                  <span className="text-muted-foreground italic">
-                    {placeholderExamples[currentPlaceholder]}
-                  </span>
-                </motion.div>
-              </AnimatePresence>
-              
               <Input
                 value={inputValue}
                 onChange={(e) => setInputValue(e.target.value)}
+                placeholder={placeholderExamples[currentPlaceholder]}
                 className={cn(
                   "h-16 text-lg px-4 py-4 rounded-xl border-2 shadow-elegant transition-all duration-300",
-                  "focus:border-primary focus:shadow-glow",
-                  !inputValue && "text-transparent"
+                  "focus:border-primary focus:shadow-glow"
                 )}
                 onKeyDown={(e) => e.key === 'Enter' && handleGenerate()}
               />
             </div>
 
-            <motion.div
-              whileHover={{ scale: 1.02 }}
-              whileTap={{ scale: 0.98 }}
-            >
-              <Button
-                onClick={handleGenerate}
-                disabled={!inputValue.trim()}
-                size="lg"
-                className={cn(
-                  "h-14 px-8 text-lg font-semibold rounded-xl shadow-elegant",
-                  "bg-gradient-primary hover:shadow-glow transition-all duration-300",
-                  "disabled:opacity-50 disabled:cursor-not-allowed"
-                )}
+            <div className="flex items-center justify-center gap-4">
+              <motion.div
+                whileHover={{ scale: 1.02 }}
+                whileTap={{ scale: 0.98 }}
               >
-                Generate Strategy
-                <ArrowRight className="w-5 h-5 ml-2" />
-              </Button>
-            </motion.div>
+                <Button
+                  onClick={handleGenerate}
+                  disabled={!inputValue.trim()}
+                  size="lg"
+                  className={cn(
+                    "h-14 px-8 text-lg font-semibold rounded-xl shadow-elegant",
+                    "bg-gradient-primary hover:shadow-glow transition-all duration-300",
+                    "disabled:opacity-50 disabled:cursor-not-allowed"
+                  )}
+                >
+                  Generate Strategy
+                  <ArrowRight className="w-5 h-5 ml-2" />
+                </Button>
+              </motion.div>
+              
+              {umbrellaStatement && (
+                <motion.div
+                  initial={{ opacity: 0, scale: 0.9 }}
+                  animate={{ opacity: 1, scale: 1 }}
+                  whileHover={{ scale: 1.02 }}
+                  whileTap={{ scale: 0.98 }}
+                >
+                  <Button
+                    onClick={() => {
+                      resetStore();
+                      setInputValue('');
+                      toast.success('Starting fresh!');
+                    }}
+                    variant="outline"
+                    size="lg"
+                    className="h-14 px-6"
+                  >
+                    <RefreshCw className="w-5 h-5 mr-2" />
+                    Start Fresh
+                  </Button>
+                </motion.div>
+              )}
+            </div>
 
             <motion.p
               initial={{ opacity: 0 }}

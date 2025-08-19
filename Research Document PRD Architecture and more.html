@@ -1,0 +1,583 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD HTML 4.01//EN" "http://www.w3.org/TR/html4/strict.dtd">
+<html>
+<head>
+  <meta http-equiv="Content-Type" content="text/html; charset=utf-8">
+  <meta http-equiv="Content-Style-Type" content="text/css">
+  <title></title>
+  <meta name="Generator" content="Cocoa HTML Writer">
+  <meta name="CocoaVersion" content="2575.6">
+  <style type="text/css">
+    p.p1 {margin: 0.0px 0.0px 12.0px 0.0px; font: 12.0px Times; -webkit-text-stroke: #000000}
+    p.p3 {margin: 0.0px 0.0px 0.0px 0.0px; font: 12.0px Times; color: #6d6d6d; -webkit-text-stroke: #6d6d6d; min-height: 14.0px}
+    p.p5 {margin: 0.0px 0.0px 12.0px 0.0px; font: 13.0px Courier; -webkit-text-stroke: #000000}
+    p.p6 {margin: 0.0px 0.0px 0.0px 0.0px; font: 13.0px Courier; -webkit-text-stroke: #000000}
+    p.p8 {margin: 0.0px 0.0px 0.0px 0.0px; font: 13.0px Courier; -webkit-text-stroke: #000000; min-height: 16.0px}
+    li.li1 {margin: 0.0px 0.0px 12.0px 0.0px; font: 12.0px Times; -webkit-text-stroke: #000000}
+    li.li5 {margin: 0.0px 0.0px 12.0px 0.0px; font: 13.0px Courier; -webkit-text-stroke: #000000}
+    span.s1 {font-kerning: none}
+    span.s2 {-webkit-text-stroke: 0px #000000}
+    span.s3 {font: 13.0px Courier; font-kerning: none}
+    span.s4 {font: 12.0px Times; -webkit-text-stroke: 0px #000000}
+    span.s5 {font: 12.0px Times; font-kerning: none}
+    span.s6 {font: 13.0px Courier; -webkit-text-stroke: 0px #000000}
+    ol.ol1 {list-style-type: decimal}
+    ul.ul1 {list-style-type: disc}
+  </style>
+</head>
+<body>
+<p class="p1"><span class="s1">We’ve added clear <b>PAGE BREAK</b> markers). They include everything we’ve discussed: onboarding → animated one‑pager → ideas → plan → teleprompter, inspirations flow, prompts, data model, APIs, and delivery plan.</span></p>
+<h1 style="margin: 0.0px 0.0px 16.1px 0.0px; font: 24.0px Times; -webkit-text-stroke: #000000"><span class="s1"><b>Document 1: Product Requirements Document (PRD) — </b><b><i>Copper Reels</i></b><b><i></i></b></span></h1>
+<p class="p1"><span class="s1"><b>Version:</b> 1.0<br>
+<b>Owner:</b> You<br>
+<b>Last updated:</b> {{today}}</span></p>
+<p class="p3"><span class="s1"></span><br></p>
+<h2 style="margin: 0.0px 0.0px 14.9px 0.0px; font: 18.0px Times; -webkit-text-stroke: #000000"><span class="s1"><b>1) Product Summary</b></span></h2>
+<p class="p1"><span class="s1"><b>Copper Reels</b> converts a single mission statement—“I help <b>X</b> achieve <b>Y</b>”—into a complete, editable YouTube content strategy: audience/positioning, idea generation, titles/thumbnails, script &amp; storyboard, and a teleprompter-ready script. The user advances through a 3‑step wizard with an animated “one‑pager” reveal, selects ideas, and finalizes a plan. The app remembers the latest draft and lets users add reference YouTube videos to guide style.</span></p>
+<p class="p3"><span class="s1"></span><br></p>
+<h2 style="margin: 0.0px 0.0px 14.9px 0.0px; font: 18.0px Times; -webkit-text-stroke: #000000"><span class="s1"><b>2) Goals &amp; Non‑Goals</b></span></h2>
+<p class="p1"><span class="s1"><b>Goals</b><b></b></span></p>
+<ul class="ul1">
+  <li class="li1"><span class="s2"></span><span class="s1">Reduce the time from <i>idea → publishable plan</i> to under <b>10 minutes</b> for a first draft.</span></li>
+  <li class="li1"><span class="s2"></span><span class="s1">Make every AI artifact <b>editable</b>; preserve changes across sessions.</span></li>
+  <li class="li1"><span class="s2"></span><span class="s1">Provide <b>guided defaults</b> with optional “inspiration videos” to influence style without copying.</span></li>
+  <li class="li1"><span class="s2"></span><span class="s1">Produce <b>usable outputs</b>: title options, thumbnail briefs, script bricks, storyboard, teleprompter view, and exports.</span></li>
+</ul>
+<p class="p1"><span class="s1"><b>Non‑Goals</b><b></b></span></p>
+<ul class="ul1">
+  <li class="li1"><span class="s2"></span><span class="s1">Full YouTube scheduling/posting.</span></li>
+  <li class="li1"><span class="s2"></span><span class="s1">Advanced analytics beyond basic performance notes.</span></li>
+  <li class="li1"><span class="s2"></span><span class="s1">Long-form multi-person collaboration (comments/roles) in v1.</span></li>
+</ul>
+<p class="p3"><span class="s1"></span><br></p>
+<h2 style="margin: 0.0px 0.0px 14.9px 0.0px; font: 18.0px Times; -webkit-text-stroke: #000000"><span class="s1"><b>3) Personas</b></span></h2>
+<ul class="ul1">
+  <li class="li1"><span class="s2"><b></b></span><span class="s1"><b>Solo Creator (primary):</b> New or growing creators needing structure and speed.</span></li>
+  <li class="li1"><span class="s2"><b></b></span><span class="s1"><b>Producer/Editor (secondary):</b> Helps a host plan episodes quickly.</span></li>
+  <li class="li1"><span class="s2"><b></b></span><span class="s1"><b>Agent/Consultant (secondary):</b> Generates strategies for multiple clients.</span></li>
+</ul>
+<p class="p3"><span class="s1"></span><br></p>
+<h2 style="margin: 0.0px 0.0px 14.9px 0.0px; font: 18.0px Times; -webkit-text-stroke: #000000"><span class="s1"><b>4) User Stories (Must‑Have)</b></span></h2>
+<ol class="ol1">
+  <li class="li1"><span class="s2"></span><span class="s1">As a creator, I can enter <b>“I help X achieve Y”</b> and click <b>Run</b> to generate an <b>animated one‑pager</b> (Audience Avatar, Viewer Type, Content Pillars).</span></li>
+  <li class="li1"><span class="s2"></span><span class="s1">As a creator, I can <b>edit</b> any section inline; edits persist and mark downstream items as <b>stale</b> until I regenerate.</span></li>
+  <li class="li1"><span class="s2"></span><span class="s1">I can paste <b>YouTube links</b> as <b>inspirations</b>, tag what to borrow (e.g., hook style, pacing), and weight them (1–5).</span></li>
+  <li class="li1"><span class="s2"></span><span class="s1">I can hit <b>Next</b> to view <b>12–20 ideas</b>, shortlist 1–3, then pick 1 to plan.</span></li>
+  <li class="li1"><span class="s2"></span><span class="s1">For the chosen idea, I see <b>6 title options</b> (with guidance) and <b>2–3 thumbnail briefs</b>, and I choose one of each.</span></li>
+  <li class="li1"><span class="s2"></span><span class="s1">I get a <b>brick‑based script</b> (Intro, Middle x2–4, Example, Application, optional Outro) + <b>visual storyboard</b> frames.</span></li>
+  <li class="li1"><span class="s2"></span><span class="s1">I can toggle a <b>Teleprompter</b> view (full screen, speed/font controls) that renders the script cleanly.</span></li>
+  <li class="li1"><span class="s2"></span><span class="s1">I can <b>export</b>: Markdown script, B‑roll CSV, YouTube description/chapters/tags.</span></li>
+  <li class="li1"><span class="s2"></span><span class="s1">On returning, my most recent <b>draft auto‑loads</b>; I can tweak the mission statement and regenerate.</span></li>
+</ol>
+<p class="p3"><span class="s1"></span><br></p>
+<h2 style="margin: 0.0px 0.0px 14.9px 0.0px; font: 18.0px Times; -webkit-text-stroke: #000000"><span class="s1"><b>5) End‑to‑End Flow</b></span></h2>
+<p class="p1"><span class="s1"><b>Step 1: Onboarding</b> → Input mission statement + (optional) channel about + goal → Click <b>Run</b> → Animated <b>one‑pager</b> fills in.<br>
+<b>Step 1.5: Inspirations</b> → Paste links → tag traits → weights.<br>
+<b>Step 2: Ideas</b> → Grid of ideas → shortlist → pick one → <b>Next</b>.<br>
+<b>Step 3: Plan</b> → Titles, thumbnail briefs, bricks + storyboard → <b>Teleprompter</b> → <b>Export</b>.</span></p>
+<p class="p3"><span class="s1"></span><br></p>
+<h2 style="margin: 0.0px 0.0px 14.9px 0.0px; font: 18.0px Times; -webkit-text-stroke: #000000"><span class="s1"><b>6) Functional Requirements (FR)</b></span></h2>
+<p class="p1"><span class="s1"><b>FR‑1: Onboarding Form</b><b></b></span></p>
+<ul class="ul1">
+  <li class="li1"><span class="s2"></span><span class="s1">Fields: </span><span class="s3">umbrella</span><span class="s1"> (required), </span><span class="s3">channelAbout</span><span class="s1"> (optional), </span><span class="s3">primaryGoal</span><span class="s1"> (choices).</span></li>
+  <li class="li1"><span class="s2"></span><span class="s1">CTA: <b>Run</b> triggers LLM foundation; output animates in place.</span></li>
+  <li class="li1"><span class="s2"></span><span class="s1">Accept inline edits; edits flip downstream flags </span><span class="s3">patternBankStale</span><span class="s1">, </span><span class="s3">ideasStale</span><span class="s1">, </span><span class="s3">planningStale</span><span class="s1">.</span></li>
+</ul>
+<p class="p1"><span class="s1"><b>FR‑2: Animated One‑Pager</b><b></b></span></p>
+<ul class="ul1">
+  <li class="li1"><span class="s2"></span><span class="s1">Sections: Audience Avatar, Viewer Type (+ rationale), Content Pillars, Channel Promise (derived).</span></li>
+  <li class="li1"><span class="s2"></span><span class="s1">Skeleton → type‑in reveal; progress bar 0–100%.</span></li>
+  <li class="li1"><span class="s2"></span><span class="s1">Each section supports <b>Regenerate</b> (local) and <b>Lock</b> (prevent overwrite).</span></li>
+</ul>
+<p class="p1"><span class="s1"><b>FR‑3: Inspirations Drawer</b><b></b></span></p>
+<ul class="ul1">
+  <li class="li5"><span class="s4"></span><span class="s5">Paste multiple YouTube URLs → fetch </span><span class="s1">title, channel, duration, publishedAt, thumbnail</span><span class="s5">.</span></li>
+  <li class="li5"><span class="s4"></span><span class="s5">Tag chips: </span><span class="s1">title_vibe, hook_style, pacing, visual_motif, structure, cta_style, editing_style</span><span class="s5">.</span></li>
+  <li class="li1"><span class="s2"></span><span class="s1">Weight slider 1–5; notes textarea.</span></li>
+  <li class="li1"><span class="s2"></span><span class="s1">Derived <b>styleGuide</b> flows into Ideas/Titles/Thumbs/Script prompts.</span></li>
+</ul>
+<p class="p1"><span class="s1"><b>FR‑4: Ideas Hub</b><b></b></span></p>
+<ul class="ul1">
+  <li class="li1"><span class="s2"></span><span class="s1">Generate <b>12–20</b> ideas from foundation + pattern bank + styleGuide.</span></li>
+  <li class="li1"><span class="s2"></span><span class="s1">Card shows: concept, pillar, difficulty badge (1–5), why‑it‑clicks, thumbnail hint.</span></li>
+  <li class="li1"><span class="s2"></span><span class="s1">Actions: shortlist (multi), <b>Refresh</b> with filters (“more beginner”, “contrarian”, “shorter”).</span></li>
+</ul>
+<p class="p1"><span class="s1"><b>FR‑5: Title &amp; Thumbnail Selection</b><b></b></span></p>
+<ul class="ul1">
+  <li class="li1"><span class="s2"></span><span class="s1">Titles: <b>6 options</b> with score (0–1), shape label, micro‑guidance.</span></li>
+  <li class="li1"><span class="s2"></span><span class="s1">Thumbnails: <b>2–3 briefs</b> (overlay text ≤ 4 words, subject, composition, color mood, props, shot list, avoid, model prompt, negative prompt).</span></li>
+  <li class="li1"><span class="s2"></span><span class="s1">Choose one title + one brief; store in plan.</span></li>
+</ul>
+<p class="p1"><span class="s1"><b>FR‑6: Script &amp; Storyboard (Bricks)</b><b></b></span></p>
+<ul class="ul1">
+  <li class="li1"><span class="s2"></span><span class="s1">Bricks: INTRO → 2–4 MIDDLE → EXAMPLE → APPLICATION → (optional) OUTRO.</span></li>
+  <li class="li1"><span class="s2"></span><span class="s1">Each brick: narration, on‑screen text (≤ 8 words), callouts, B‑roll, beats.</span></li>
+  <li class="li1"><span class="s2"></span><span class="s1">Storyboard frames aligned to bricks with shot types and assets to prep.</span></li>
+</ul>
+<p class="p1"><span class="s1"><b>FR‑7: Teleprompter</b><b></b></span></p>
+<ul class="ul1">
+  <li class="li1"><span class="s2"></span><span class="s1">Full‑screen, adjustable speed/font, mirrored mode, scene markers, elapsed/remaining timer.</span></li>
+</ul>
+<p class="p1"><span class="s1"><b>FR‑8: Exports</b><b></b></span></p>
+<ul class="ul1">
+  <li class="li1"><span class="s2"></span><span class="s1">Markdown script; CSV B‑roll; chapters/description/tags (SEO) block.</span></li>
+</ul>
+<p class="p1"><span class="s1"><b>FR‑9: Persistence &amp; Memory</b><b></b></span></p>
+<ul class="ul1">
+  <li class="li1"><span class="s2"></span><span class="s1">Auto‑save brief to DB + localStorage; auto‑load last draft on arrival.</span></li>
+</ul>
+<p class="p3"><span class="s1"></span><br></p>
+<h2 style="margin: 0.0px 0.0px 14.9px 0.0px; font: 18.0px Times; -webkit-text-stroke: #000000"><span class="s1"><b>7) Non‑Functional Requirements (NFR)</b></span></h2>
+<ul class="ul1">
+  <li class="li1"><span class="s2"><b></b></span><span class="s1"><b>Performance:</b> First paint &lt; 2s; LLM roundtrips streamed; wizard navigation instant.</span></li>
+  <li class="li1"><span class="s2"><b></b></span><span class="s1"><b>Reliability:</b> Autosave every 2s idle; draft recovery after refresh.</span></li>
+  <li class="li1"><span class="s2"><b></b></span><span class="s1"><b>Security:</b> Token‑based auth; secrets in vault; audit logs for generation calls.</span></li>
+  <li class="li1"><span class="s2"><b></b></span><span class="s1"><b>Accessibility:</b> Keyboard nav; WCAG AA contrast; screen‑reader labels.</span></li>
+  <li class="li1"><span class="s2"><b></b></span><span class="s1"><b>Internationalization:</b> Copy and date formats separable; English first.</span></li>
+  <li class="li1"><span class="s2"><b></b></span><span class="s1"><b>Privacy:</b> Store minimal YouTube metadata; no raw copyrighted content.</span></li>
+</ul>
+<p class="p3"><span class="s1"></span><br></p>
+<h2 style="margin: 0.0px 0.0px 14.9px 0.0px; font: 18.0px Times; -webkit-text-stroke: #000000"><span class="s1"><b>8) Success Metrics (V1)</b></span></h2>
+<ul class="ul1">
+  <li class="li1"><span class="s2"></span><span class="s1">TTFP (time to first plan): median <b>≤ 10 min</b>.</span></li>
+  <li class="li1"><span class="s2"></span><span class="s1">% users who complete Step 3 after Step 1: <b>≥ 50%</b>.</span></li>
+  <li class="li1"><span class="s2"></span><span class="s1">Avg. edits per brick: <b>≤ 3</b> (indicates quality).</span></li>
+  <li class="li1"><span class="s2"></span><span class="s1">Export usage rate: <b>≥ 40%</b> of sessions.</span></li>
+</ul>
+<p class="p3"><span class="s1"></span><br></p>
+<h2 style="margin: 0.0px 0.0px 14.9px 0.0px; font: 18.0px Times; -webkit-text-stroke: #000000"><span class="s1"><b>9) Milestones</b></span></h2>
+<ul class="ul1">
+  <li class="li1"><span class="s2"><b></b></span><span class="s1"><b>M1 (Foundation &amp; Ideas):</b> Onboarding → one‑pager → inspirations → idea grid.</span></li>
+  <li class="li1"><span class="s2"><b></b></span><span class="s1"><b>M2 (Plan):</b> Titles/Thumbnails → bricks/storyboard → teleprompter.</span></li>
+  <li class="li1"><span class="s2"><b></b></span><span class="s1"><b>M3 (Polish):</b> Exports, stale indicators, autosave, A11y, perf.</span></li>
+</ul>
+<p class="p3"><span class="s1"></span><br></p>
+<h2 style="margin: 0.0px 0.0px 14.9px 0.0px; font: 18.0px Times; -webkit-text-stroke: #000000"><span class="s1"><b>10) Risks &amp; Mitigations</b></span></h2>
+<ul class="ul1">
+  <li class="li1"><span class="s2"><b></b></span><span class="s1"><b>LLM variance:</b> Provide <b>Regenerate</b> per‑section + <b>Lock</b>.</span></li>
+  <li class="li1"><span class="s2"><b></b></span><span class="s1"><b>YouTube API limits:</b> Cache results; throttle; degrade gracefully (titles only).</span></li>
+  <li class="li1"><span class="s2"><b></b></span><span class="s1"><b>Scope creep:</b> Keep v1 to 3 steps; defer analytics and scheduling.</span></li>
+</ul>
+<p class="p3"><span class="s1"></span><br></p>
+<h2 style="margin: 0.0px 0.0px 14.9px 0.0px; font: 18.0px Times; -webkit-text-stroke: #000000"><span class="s1"><b>11) Acceptance Criteria (DoD)</b></span></h2>
+<ul class="ul1">
+  <li class="li1"><span class="s2"></span><span class="s1">All FRs implemented; JSON outputs validated; editable artifacts persist.</span></li>
+  <li class="li1"><span class="s2"></span><span class="s1">One‑pager animates; stale flags behave; inspirations influence is observable.</span></li>
+  <li class="li1"><span class="s2"></span><span class="s1">Teleprompter fully functional; exports produce valid files.</span></li>
+</ul>
+<p class="p3"><span class="s1"></span><br></p>
+<h2 style="margin: 0.0px 0.0px 14.9px 0.0px; font: 18.0px Times; -webkit-text-stroke: #000000"><span class="s1"><b>12) Glossary</b></span></h2>
+<ul class="ul1">
+  <li class="li1"><span class="s2"><b></b></span><span class="s1"><b>CreativeBrief:</b> Canonical state derived from onboarding + inspirations.</span></li>
+  <li class="li1"><span class="s2"><b></b></span><span class="s1"><b>Pattern Bank:</b> Extracted title/thumbnail patterns from niche videos.</span></li>
+  <li class="li1"><span class="s2"><b></b></span><span class="s1"><b>Bricks:</b> Script blocks (Intro/Middle/Example/Application/Outro).</span></li>
+</ul>
+<p class="p1"><span class="s1">— <b>PAGE BREAK</b> —</span></p>
+<h1 style="margin: 0.0px 0.0px 16.1px 0.0px; font: 24.0px Times; -webkit-text-stroke: #000000"><span class="s1"><b>🧩 Document 2: Architecture &amp; Technical Design — </b><b><i>Copper Reels</i></b><b><i></i></b></span></h1>
+<p class="p1"><span class="s1"><b>Version:</b> 1.0</span></p>
+<p class="p3"><span class="s1"></span><br></p>
+<h2 style="margin: 0.0px 0.0px 14.9px 0.0px; font: 18.0px Times; -webkit-text-stroke: #000000"><span class="s1"><b>A) System Overview</b></span></h2>
+<p class="p1"><span class="s1">A Next.js web app with server routes orchestrating LLM “bots” and background jobs. State centers on a <b>CreativeBrief</b> that feeds deterministic pipelines: <b>Foundation → Pattern Bank → Ideas → Titles/Thumbs → Script/Storyboard → Exports</b>.</span></p>
+<p class="p3"><span class="s1"></span><br></p>
+<h2 style="margin: 0.0px 0.0px 14.9px 0.0px; font: 18.0px Times; -webkit-text-stroke: #000000"><span class="s1"><b>B) Tech Stack (recommended)</b></span></h2>
+<ul class="ul1">
+  <li class="li1"><span class="s2"><b></b></span><span class="s1"><b>Frontend:</b> Next.js 14 (App Router) + TypeScript + Tailwind + Framer Motion + TipTap</span></li>
+  <li class="li1"><span class="s2"><b></b></span><span class="s1"><b>State:</b> Zustand (client), React Query (server)</span></li>
+  <li class="li1"><span class="s2"><b></b></span><span class="s1"><b>Backend:</b> Next Route Handlers or NestJS; tRPC/HTTP</span></li>
+  <li class="li1"><span class="s2"><b></b></span><span class="s1"><b>DB:</b> Postgres (Prisma)</span></li>
+  <li class="li1"><span class="s2"><b></b></span><span class="s1"><b>Cache/Queue:</b> Redis + BullMQ</span></li>
+  <li class="li1"><span class="s2"><b></b></span><span class="s1"><b>Storage:</b> S3 (thumbnails/exports)</span></li>
+  <li class="li1"><span class="s2"><b></b></span><span class="s1"><b>LLM Orchestration:</b> minimal functions or LangGraph</span></li>
+  <li class="li1"><span class="s2"><b></b></span><span class="s1"><b>Auth:</b> NextAuth (Google/Email)</span></li>
+  <li class="li1"><span class="s2"><b></b></span><span class="s1"><b>Telemetry:</b> PostHog + structured logs</span></li>
+</ul>
+<p class="p3"><span class="s1"></span><br></p>
+<h2 style="margin: 0.0px 0.0px 14.9px 0.0px; font: 18.0px Times; -webkit-text-stroke: #000000"><span class="s1"><b>C) High‑Level Architecture (text diagram)</b></span></h2>
+<p class="p6"><span class="s1">UI (Next.js + Tailwind + Framer Motion)</span></p>
+<p class="p6"><span class="s1"><span class="Apple-converted-space">   </span>├─ Onboarding (Run) → /api/foundation/generate ─→ LLM (Positioning Bot)</span></p>
+<p class="p6"><span class="s1"><span class="Apple-converted-space">   </span>│<span class="Apple-converted-space">      </span>└─ Save: Avatar, ViewerType, Pillars → Postgres (CreativeBrief)</span></p>
+<p class="p6"><span class="s1"><span class="Apple-converted-space">   </span>├─ Inspirations Drawer → /api/inspirations/meta → YouTube Data API</span></p>
+<p class="p6"><span class="s1"><span class="Apple-converted-space">   </span>│<span class="Apple-converted-space">      </span>└─ StyleGuide JSON → stored in CreativeBrief</span></p>
+<p class="p6"><span class="s1"><span class="Apple-converted-space">   </span>├─ Ideas Hub → /api/ideas/generate ─→ LLM (Ideation Bot)</span></p>
+<p class="p6"><span class="s1"><span class="Apple-converted-space">   </span>├─ Plan Page</span></p>
+<p class="p6"><span class="s1"><span class="Apple-converted-space">   </span>│<span class="Apple-converted-space">      </span>├─ /api/titles/generate → LLM (Title Bot)</span></p>
+<p class="p6"><span class="s1"><span class="Apple-converted-space">   </span>│<span class="Apple-converted-space">      </span>├─ /api/thumbnails/generate → LLM (Thumb Brief Bot)</span></p>
+<p class="p6"><span class="s1"><span class="Apple-converted-space">   </span>│<span class="Apple-converted-space">      </span>└─ /api/script/generate → LLM (Script &amp; Storyboard Bot)</span></p>
+<p class="p6"><span class="s1"><span class="Apple-converted-space">   </span>└─ Exports</span></p>
+<p class="p6"><span class="s1"><span class="Apple-converted-space">          </span>├─ /api/export/script.md</span></p>
+<p class="p6"><span class="s1"><span class="Apple-converted-space">          </span>└─ /api/export/broll.csv</span></p>
+<p class="p6"><span class="s1">Redis (caching; job status)<span class="Apple-converted-space">  </span>|<span class="Apple-converted-space">  </span>BullMQ (background thumbnail renders if using image gen)</span></p>
+<p class="p6"><span class="s1">S3 (assets, exports) <span class="Apple-converted-space">        </span>|<span class="Apple-converted-space">  </span>Postgres (projects, ideas, plans)</span></p>
+<p class="p3"><span class="s1"></span><br></p>
+<h2 style="margin: 0.0px 0.0px 14.9px 0.0px; font: 18.0px Times; -webkit-text-stroke: #000000"><span class="s1"><b>D) Data Model (key entities; Prisma‑style)</b></span></h2>
+<p class="p6"><span class="s1">Channel(id, name, umbrella, viewerType, avatarId, createdAt, updatedAt)</span></p>
+<p class="p6"><span class="s1">AudienceAvatar(id, channelId, demographics JSON, psychographics JSON)</span></p>
+<p class="p6"><span class="s1">Pillar(id, channelId, name, summary)</span></p>
+<p class="p6"><span class="s1">PatternBank(id, channelId, powerWords[], titleShapes JSON, thumbPatterns JSON, sources JSON)</span></p>
+<p class="p6"><span class="s1">Idea(id, channelId, pillarId?, status, concept, whyItWillClick, difficulty, thumbnailHint, chosenTitle?, chosenThumb?)</span></p>
+<p class="p6"><span class="s1">TitleDraft(id, ideaId, text, score, shape, powerWordsUsed[])</span></p>
+<p class="p6"><span class="s1">ThumbDraft(id, ideaId, url|s3Key, notes)</span></p>
+<p class="p6"><span class="s1">VideoPlan(id, ideaId, bricks JSON[], storyboard JSON[], chosenTitle, chosenThumbBriefIndex)</span></p>
+<p class="p6"><span class="s1">Inspiration(id, channelId, url, title, channelTitle, durationSec, publishedAt, tags[], weight, notes)</span></p>
+<blockquote style="margin: 0.0px 0.0px 12.0px 0.0px; font: 12.0px Times; -webkit-text-stroke: #000000"><span class="s1"><b>CreativeBrief</b> is a <i>composition</i> of Channel + Avatar + Pillars + PatternBank + Inspirations + Ideas + Plan + Status Flags.</span></blockquote>
+<p class="p3"><span class="s1"></span><br></p>
+<h2 style="margin: 0.0px 0.0px 14.9px 0.0px; font: 18.0px Times; -webkit-text-stroke: #000000"><span class="s1"><b>E) State &amp; Dependency Graph</b></span></h2>
+<ul class="ul1">
+  <li class="li5"><span class="s4"></span><span class="s5">Editing </span><span class="s1">umbrella</span><span class="s5"> or </span><span class="s1">pillars</span><span class="s5"> sets: </span><span class="s1">patternBankStale=true</span><span class="s5">, </span><span class="s1">ideasStale=true</span><span class="s5">, </span><span class="s1">planningStale=true</span><span class="s5">.</span></li>
+  <li class="li5"><span class="s4"></span><span class="s5">Adding inspirations sets: </span><span class="s1">ideasStale=true</span><span class="s5">, </span><span class="s1">planningStale=true</span><span class="s5">.</span></li>
+  <li class="li1"><span class="s2"></span><span class="s1">Changing chosen title sets: </span><span class="s3">planningStale=true</span><span class="s1">.</span></li>
+</ul>
+<p class="p1"><span class="s1">Store </span><span class="s3">status</span><span class="s1"> with booleans; surface as small amber dots in UI.</span></p>
+<p class="p3"><span class="s1"></span><br></p>
+<h2 style="margin: 0.0px 0.0px 14.9px 0.0px; font: 18.0px Times; -webkit-text-stroke: #000000"><span class="s1"><b>F) APIs (contract sketches)</b></span></h2>
+<p class="p5"><span class="s5"><b>POST</b> </span><span class="s1">/api/foundation/generate</span><span class="s5"><br>
+<i>Input:</i> </span><span class="s1">{ umbrella, about?, goal? }</span><span class="s5"><br>
+<i>Output:</i> </span><span class="s1">{ avatar, viewerType, pillars, rationale }</span></p>
+<p class="p5"><span class="s5"><b>POST</b> </span><span class="s1">/api/inspirations/meta</span><span class="s5"><br>
+<i>Input:</i> </span><span class="s1">{ urls: string[] }</span><span class="s5"><br>
+<i>Output:</i> </span><span class="s1">{ videos: { url, title, channel, durationSec, publishedAt, thumbnail }[] }</span></p>
+<p class="p5"><span class="s5"><b>POST</b> </span><span class="s1">/api/ideas/generate</span><span class="s5"><br>
+<i>Input:</i> </span><span class="s1">{ briefId, foundation, patternBank?, styleGuide? }</span><span class="s5"><br>
+<i>Output:</i> </span><span class="s1">{ ideas: Idea[] }</span></p>
+<p class="p5"><span class="s5"><b>POST</b> </span><span class="s1">/api/titles/generate</span><span class="s5"><br>
+<i>Input:</i> </span><span class="s1">{ briefId, idea, patternBank?, styleGuide? }</span><span class="s5"><br>
+<i>Output:</i> </span><span class="s1">{ titles: TitleDraft[] , guidance }</span></p>
+<p class="p5"><span class="s5"><b>POST</b> </span><span class="s1">/api/thumbnails/generate</span><span class="s5"><br>
+<i>Input:</i> </span><span class="s1">{ briefId, idea, patternBank?, styleGuide? }</span><span class="s5"><br>
+<i>Output:</i> </span><span class="s1">{ briefs: ThumbBrief[] }</span></p>
+<p class="p5"><span class="s5"><b>POST</b> </span><span class="s1">/api/script/generate</span><span class="s5"><br>
+<i>Input:</i> </span><span class="s1">{ briefId, idea, chosenTitle, styleGuide? }</span><span class="s5"><br>
+<i>Output:</i> </span><span class="s1">{ runtimeEstimateSec, bricks[], storyboard[], metadata }</span></p>
+<p class="p5"><span class="s5"><b>GET</b> </span><span class="s1">/api/export/script.md?planId=...</span><span class="s5"> → stream Markdown<br>
+<b>GET</b> </span><span class="s1">/api/export/broll.csv?planId=...</span><span class="s5"> → stream CSV</span></p>
+<p class="p1"><span class="s1">All LLM responses <b>validated</b> by Zod; reject with actionable error messages.</span></p>
+<p class="p3"><span class="s1"></span><br></p>
+<h2 style="margin: 0.0px 0.0px 14.9px 0.0px; font: 18.0px Times; -webkit-text-stroke: #000000"><span class="s1"><b>G) LLM Orchestration</b></span></h2>
+<p class="p1"><span class="s1">Bots (from your prompt pack):</span></p>
+<ol class="ol1">
+  <li class="li1"><span class="s2"><b></b></span><span class="s1"><b>Positioning Bot</b> → foundation</span></li>
+  <li class="li1"><span class="s2"><b></b></span><span class="s1"><b>Skyscraper Query Expansion</b> → queries (optional in v1)</span></li>
+  <li class="li1"><span class="s2"><b></b></span><span class="s1"><b>Pattern Bank Analysis</b> → title/thumbnail patterns (optional in v1)</span></li>
+  <li class="li1"><span class="s2"><b></b></span><span class="s1"><b>Idea Generator</b> → ideas</span></li>
+  <li class="li1"><span class="s2"><b></b></span><span class="s1"><b>Title Generator</b> → 6 alts + scores</span></li>
+  <li class="li1"><span class="s2"><b></b></span><span class="s1"><b>Thumbnail Brief Generator</b> → 2–3 briefs</span></li>
+  <li class="li1"><span class="s2"><b></b></span><span class="s1"><b>Script &amp; Storyboard Bot</b> → bricks + frames</span></li>
+  <li class="li1"><span class="s2"><b></b></span><span class="s1"><b>B‑roll Extractor</b> → consolidated list</span></li>
+</ol>
+<p class="p1"><span class="s1"><b>StyleGuide</b> derived from inspirations gets appended to USER message for 4–7.</span></p>
+<p class="p3"><span class="s1"></span><br></p>
+<h2 style="margin: 0.0px 0.0px 14.9px 0.0px; font: 18.0px Times; -webkit-text-stroke: #000000"><span class="s1"><b>H) Error Handling &amp; Retries</b></span></h2>
+<ul class="ul1">
+  <li class="li1"><span class="s2"></span><span class="s1">LLM: validate JSON → if invalid, single auto‑retry with stricter temperature (e.g., 0.1).</span></li>
+  <li class="li1"><span class="s2"></span><span class="s1">Network: exponential backoff (200ms, 800ms, 2s).</span></li>
+  <li class="li1"><span class="s2"></span><span class="s1">User‑visible: toast with “Try again” + show raw validation error keys.</span></li>
+</ul>
+<p class="p3"><span class="s1"></span><br></p>
+<h2 style="margin: 0.0px 0.0px 14.9px 0.0px; font: 18.0px Times; -webkit-text-stroke: #000000"><span class="s1"><b>I) Observability</b></span></h2>
+<ul class="ul1">
+  <li class="li5"><span class="s4"></span><span class="s5">Log each generation: </span><span class="s1">{bot, durationMs, tokens, success, staleInputs}</span><span class="s5">.</span></li>
+  <li class="li5"><span class="s4"></span><span class="s5">Track step completion events: </span><span class="s1">onboarding_run</span><span class="s5">, </span><span class="s1">ideas_shortlisted</span><span class="s5">, </span><span class="s1">plan_exported</span><span class="s5">.</span></li>
+</ul>
+<p class="p3"><span class="s1"></span><br></p>
+<h2 style="margin: 0.0px 0.0px 14.9px 0.0px; font: 18.0px Times; -webkit-text-stroke: #000000"><span class="s1"><b>J) Security &amp; Secrets</b></span></h2>
+<ul class="ul1">
+  <li class="li1"><span class="s2"></span><span class="s1">Environment secrets via platform vault.</span></li>
+  <li class="li1"><span class="s2"></span><span class="s1">Signed upload URLs for S3.</span></li>
+  <li class="li1"><span class="s2"></span><span class="s1">Limit YouTube metadata storage to essentials.</span></li>
+</ul>
+<p class="p3"><span class="s1"></span><br></p>
+<h2 style="margin: 0.0px 0.0px 14.9px 0.0px; font: 18.0px Times; -webkit-text-stroke: #000000"><span class="s1"><b>K) Deployment &amp; Environments</b></span></h2>
+<ul class="ul1">
+  <li class="li1"><span class="s2"><b></b></span><span class="s1"><b>Envs:</b> dev, staging, prod.</span></li>
+  <li class="li1"><span class="s2"><b></b></span><span class="s1"><b>CI:</b> typecheck, lint, unit tests; pull request previews.</span></li>
+  <li class="li1"><span class="s2"><b></b></span><span class="s1"><b>CD:</b> blue‑green or rolling; feature flags for risky changes.</span></li>
+</ul>
+<p class="p1"><span class="s1">— <b>PAGE BREAK</b> —</span></p>
+<h1 style="margin: 0.0px 0.0px 16.1px 0.0px; font: 24.0px Times; -webkit-text-stroke: #000000"><span class="s1"><b>🛠️ Document 3: Development Guide (+ Prompt Appendix) — </b><b><i>Copper Reels</i></b><b><i></i></b></span></h1>
+<p class="p1"><span class="s1"><b>Version:</b> 1.0</span></p>
+<p class="p3"><span class="s1"></span><br></p>
+<h2 style="margin: 0.0px 0.0px 14.9px 0.0px; font: 18.0px Times; -webkit-text-stroke: #000000"><span class="s1"><b>1) Repo Structure (suggested)</b></span></h2>
+<p class="p6"><span class="s1">apps/web</span></p>
+<p class="p6"><span class="s1"><span class="Apple-converted-space">  </span>/app (routes, server actions)</span></p>
+<p class="p6"><span class="s1"><span class="Apple-converted-space">  </span>/components (UI)</span></p>
+<p class="p6"><span class="s1"><span class="Apple-converted-space">  </span>/lib (llm, youtube, jobs, zod)</span></p>
+<p class="p6"><span class="s1"><span class="Apple-converted-space">  </span>/styles</span></p>
+<p class="p6"><span class="s1">packages/db (Prisma)</span></p>
+<p class="p6"><span class="s1">packages/worker (BullMQ consumers)</span></p>
+<p class="p6"><span class="s1">packages/ui (shared components)</span></p>
+<p class="p3"><span class="s1"></span><br></p>
+<h2 style="margin: 0.0px 0.0px 14.9px 0.0px; font: 18.0px Times; -webkit-text-stroke: #000000"><span class="s1"><b>2) Setup</b></span></h2>
+<ul class="ul1">
+  <li class="li1"><span class="s2"></span><span class="s1">Node 18+, PNPM/Yarn</span></li>
+  <li class="li1"><span class="s6"></span><span class="s3">cp .env.example .env.local</span><span class="s1"> (fill LLM key, DB URL, S3 creds, YT key)</span></li>
+  <li class="li5"><span class="s2"></span><span class="s1">pnpm install</span></li>
+  <li class="li5"><span class="s2"></span><span class="s1">pnpm prisma migrate dev</span></li>
+  <li class="li5"><span class="s2"></span><span class="s1">pnpm dev</span></li>
+</ul>
+<p class="p3"><span class="s1"></span><br></p>
+<h2 style="margin: 0.0px 0.0px 14.9px 0.0px; font: 18.0px Times; -webkit-text-stroke: #000000"><span class="s1"><b>3) Environment Variables</b></span></h2>
+<p class="p6"><span class="s1">DATABASE_URL=postgres://...</span></p>
+<p class="p6"><span class="s1">OPENAI_API_KEY=...</span></p>
+<p class="p6"><span class="s1">S3_BUCKET=...</span></p>
+<p class="p6"><span class="s1">S3_REGION=...</span></p>
+<p class="p6"><span class="s1">YOUTUBE_API_KEY=...</span></p>
+<p class="p6"><span class="s1">NEXTAUTH_SECRET=...</span></p>
+<p class="p6"><span class="s1">NEXTAUTH_URL=http://localhost:3000</span></p>
+<p class="p3"><span class="s1"></span><br></p>
+<h2 style="margin: 0.0px 0.0px 14.9px 0.0px; font: 18.0px Times; -webkit-text-stroke: #000000"><span class="s1"><b>4) Dev Data: Seeding &amp; Mocks</b></span></h2>
+<ul class="ul1">
+  <li class="li1"><span class="s2"></span><span class="s1">Provide a seed script that inserts a demo Channel with umbrella.</span></li>
+  <li class="li1"><span class="s2"></span><span class="s1">Mock YouTube responses for local dev if quota is limited.</span></li>
+  <li class="li1"><span class="s2"></span><span class="s1">Store 2–3 inspiration links for demo.</span></li>
+</ul>
+<p class="p3"><span class="s1"></span><br></p>
+<h2 style="margin: 0.0px 0.0px 14.9px 0.0px; font: 18.0px Times; -webkit-text-stroke: #000000"><span class="s1"><b>5) UI Building Blocks</b></span></h2>
+<ul class="ul1">
+  <li class="li1"><span class="s2"><b></b></span><span class="s1"><b>Stepper shell</b> with Back/Next, autosave indicator.</span></li>
+  <li class="li1"><span class="s2"><b></b></span><span class="s1"><b>One‑pager</b> sections as cards with Skeleton loaders.</span></li>
+  <li class="li1"><span class="s2"><b></b></span><span class="s1"><b>Ideas grid</b> with shortlist stars and quick filters.</span></li>
+  <li class="li1"><span class="s2"><b></b></span><span class="s1"><b>Plan page</b> split: BrickEditor (TipTap) + StoryboardPanel.</span></li>
+  <li class="li1"><span class="s2"><b></b></span><span class="s1"><b>Teleprompter</b> overlay with keyboard shortcuts.</span></li>
+</ul>
+<p class="p3"><span class="s1"></span><br></p>
+<h2 style="margin: 0.0px 0.0px 14.9px 0.0px; font: 18.0px Times; -webkit-text-stroke: #000000"><span class="s1"><b>6) Animation Tips (Framer Motion)</b></span></h2>
+<ul class="ul1">
+  <li class="li1"><span class="s2"></span><span class="s1">Stagger section reveals (</span><span class="s3">delay: 0.15 * index</span><span class="s1">).</span></li>
+  <li class="li1"><span class="s2"></span><span class="s1">Use subtle elevation and typewriter effect for content fill.</span></li>
+  <li class="li1"><span class="s2"></span><span class="s1">Keep durations 0.25–0.35s for responsiveness.</span></li>
+</ul>
+<p class="p3"><span class="s1"></span><br></p>
+<h2 style="margin: 0.0px 0.0px 14.9px 0.0px; font: 18.0px Times; -webkit-text-stroke: #000000"><span class="s1"><b>7) State &amp; Validations</b></span></h2>
+<ul class="ul1">
+  <li class="li1"><span class="s2"></span><span class="s1">Use <b>Zustand</b> slice for CreativeBrief; persist to localStorage + server.</span></li>
+  <li class="li1"><span class="s2"></span><span class="s1">Validate all LLM JSON via <b>Zod</b>; display field errors (human-readable labels).</span></li>
+  <li class="li1"><span class="s2"></span><span class="s1">Flip </span><span class="s3">...Stale</span><span class="s1"> flags on upstream edits.</span></li>
+</ul>
+<p class="p3"><span class="s1"></span><br></p>
+<h2 style="margin: 0.0px 0.0px 14.9px 0.0px; font: 18.0px Times; -webkit-text-stroke: #000000"><span class="s1"><b>8) Calling the LLMs (pattern)</b></span></h2>
+<p class="p6"><span class="s1">const res = await fetch('/api/ideas/generate', { method: 'POST', body: JSON.stringify(input) });</span></p>
+<p class="p6"><span class="s1">const data = await res.json();</span></p>
+<p class="p6"><span class="s1">const parsed = IdeaSetSchema.parse(data); // Zod</span></p>
+<ul class="ul1">
+  <li class="li1"><span class="s2"></span><span class="s1">Always </span><span class="s3">try/catch</span><span class="s1">; on parse fail, show toast with </span><span class="s3">.issues[0].path</span><span class="s1"> and </span><span class="s3">.message</span><span class="s1">.</span></li>
+</ul>
+<p class="p3"><span class="s1"></span><br></p>
+<h2 style="margin: 0.0px 0.0px 14.9px 0.0px; font: 18.0px Times; -webkit-text-stroke: #000000"><span class="s1"><b>9) Exports</b></span></h2>
+<ul class="ul1">
+  <li class="li1"><span class="s2"></span><span class="s1">Markdown script: join bricks with headings, narration, and on‑screen pills.</span></li>
+  <li class="li5"><span class="s4"></span><span class="s5">CSV B‑roll: columns </span><span class="s1">[slug, description, shotType, durationSec, props, notes]</span><span class="s5">.</span></li>
+</ul>
+<p class="p3"><span class="s1"></span><br></p>
+<h2 style="margin: 0.0px 0.0px 14.9px 0.0px; font: 18.0px Times; -webkit-text-stroke: #000000"><span class="s1"><b>10) QA Checklist (V1)</b></span></h2>
+<ul class="ul1">
+  <li class="li1"><span class="s2"></span><span class="s1">Onboarding → Run animates; sections editable; Lock prevents overwrites.</span></li>
+  <li class="li1"><span class="s2"></span><span class="s1">Inspirations influence visible (e.g., hook phrasing, pacing hints).</span></li>
+  <li class="li1"><span class="s2"></span><span class="s1">Ideas regenerate with filters; shortlist stored.</span></li>
+  <li class="li1"><span class="s2"></span><span class="s1">Title choices have shape labels and guidance.</span></li>
+  <li class="li1"><span class="s2"></span><span class="s1">Teleprompter: speed/font/mirror; scene markers.</span></li>
+  <li class="li1"><span class="s2"></span><span class="s1">Exports download and open correctly.</span></li>
+</ul>
+<p class="p3"><span class="s1"></span><br></p>
+<h2 style="margin: 0.0px 0.0px 14.9px 0.0px; font: 18.0px Times; -webkit-text-stroke: #000000"><span class="s1"><b>11) Delivery Plan</b></span></h2>
+<ul class="ul1">
+  <li class="li1"><span class="s2"><b></b></span><span class="s1"><b>Day 1–2:</b> Onboarding UI + foundation call + animated one‑pager.</span></li>
+  <li class="li1"><span class="s2"><b></b></span><span class="s1"><b>Day 3:</b> Inspirations drawer + styleGuide derivation.</span></li>
+  <li class="li1"><span class="s2"><b></b></span><span class="s1"><b>Day 4:</b> Ideas hub + shortlist logic + filters.</span></li>
+  <li class="li1"><span class="s2"><b></b></span><span class="s1"><b>Day 5:</b> Titles/Thumbs generation + selection state.</span></li>
+  <li class="li1"><span class="s2"><b></b></span><span class="s1"><b>Day 6–7:</b> Script/Storyboard + Teleprompter + Exports.</span></li>
+  <li class="li1"><span class="s2"><b></b></span><span class="s1"><b>Day 8:</b> Polish (autosave, stale flags, a11y, perf).</span></li>
+</ul>
+<p class="p3"><span class="s1"></span><br></p>
+<h2 style="margin: 0.0px 0.0px 14.9px 0.0px; font: 18.0px Times; -webkit-text-stroke: #000000"><span class="s1"><b>12) Prompt Appendix (copy‑paste ready)</b></span></h2>
+<blockquote style="margin: 0.0px 0.0px 12.0px 0.0px; font: 12.0px Times; -webkit-text-stroke: #000000"><span class="s1">All prompts output <b>JSON only</b> (no prose). Replace </span><span class="s3">{{placeholders}}</span><span class="s1"> at runtime.</span></blockquote>
+<h3 style="margin: 0.0px 0.0px 14.0px 0.0px; font: 14.0px Times; -webkit-text-stroke: #000000"><span class="s1"><b>12.1 Positioning Bot (Foundation)</b></span></h3>
+<p class="p1"><span class="s1"><b>SYSTEM</b><b></b></span></p>
+<p class="p6"><span class="s1">You are Copper Reels’ Positioning Bot, a YouTube growth strategist using the YTGS method.</span></p>
+<p class="p6"><span class="s1">Return ONLY a single JSON object that matches the schema below. Do not include markdown, commentary, or explanations.</span></p>
+<p class="p8"><span class="s1"></span><br></p>
+<p class="p6"><span class="s1">SCHEMA</span></p>
+<p class="p6"><span class="s1">{ "type":"object","required":["avatar","viewerType","pillars","notes"],</span></p>
+<p class="p6"><span class="s1"><span class="Apple-converted-space">  </span>"properties":{</span></p>
+<p class="p6"><span class="s1"><span class="Apple-converted-space">    </span>"avatar":{"type":"object","required":["demographics","psychographics"],</span></p>
+<p class="p6"><span class="s1"><span class="Apple-converted-space">      </span>"properties":{</span></p>
+<p class="p6"><span class="s1"><span class="Apple-converted-space">        </span>"demographics":{"type":"object",</span></p>
+<p class="p6"><span class="s1"><span class="Apple-converted-space">          </span>"properties":{"ageRange":{"type":"string"},"locations":{"type":"array","items":{"type":"string"}},"roles":{"type":"array","items":{"type":"string"}},"incomeRange":{"type":"string"}}},</span></p>
+<p class="p6"><span class="s1"><span class="Apple-converted-space">        </span>"psychographics":{"type":"object","required":["fears","goals","rankedProblems"],</span></p>
+<p class="p6"><span class="s1"><span class="Apple-converted-space">          </span>"properties":{"fears":{"type":"array","items":{"type":"string"}},"goals":{"type":"array","items":{"type":"string"}},</span></p>
+<p class="p6"><span class="s1"><span class="Apple-converted-space">            </span>"rankedProblems":{"type":"array","items":{"type":"object","required":["problem","whyItMatters"],"properties":{"problem":{"type":"string"},"whyItMatters":{"type":"string"}}}}}}</span></p>
+<p class="p6"><span class="s1"><span class="Apple-converted-space">      </span>}},</span></p>
+<p class="p6"><span class="s1"><span class="Apple-converted-space">    </span>"viewerType":{"type":"string","enum":["LEARNER","ENTHUSIAST","EXPERT"]},</span></p>
+<p class="p6"><span class="s1"><span class="Apple-converted-space">    </span>"pillars":{"type":"array","minItems":3,"maxItems":5,"items":{"type":"object","required":["name","summary"],"properties":{"name":{"type":"string"},"summary":{"type":"string"}}}},</span></p>
+<p class="p6"><span class="s1"><span class="Apple-converted-space">    </span>"notes":{"type":"object","properties":{"rationale":{"type":"string"},"toneOfVoice":{"type":"array","items":{"type":"string"}}}}</span></p>
+<p class="p6"><span class="s1">}}</span></p>
+<p class="p6"><span class="s1">RULES</span></p>
+<p class="p6"><span class="s1">- Pick exactly one viewerType.</span></p>
+<p class="p6"><span class="s1">- Keep language concise and channel-ready.</span></p>
+<p class="p6"><span class="s1">- Output JSON ONLY.</span></p>
+<p class="p1"><span class="s1"><b>USER</b><b></b></span></p>
+<p class="p6"><span class="s1">Umbrella: {{umbrella_statement}}</span></p>
+<p class="p6"><span class="s1">Channel name (optional): {{channel_name}}</span></p>
+<p class="p6"><span class="s1">Region/Language (optional): {{locale}}</span></p>
+<p class="p6"><span class="s1">Existing content hints (optional): {{content_hints}}</span></p>
+<p class="p6"><span class="s1">Constraints (optional): {{constraints}}</span></p>
+<p class="p8"><span class="s1"></span><br></p>
+<p class="p6"><span class="s1">Produce the foundation JSON now.</span></p>
+<h3 style="margin: 0.0px 0.0px 14.0px 0.0px; font: 14.0px Times; -webkit-text-stroke: #000000"><span class="s1"><b>12.2 Skyscraper Research — Query Expansion (optional)</b></span></h3>
+<p class="p1"><span class="s1"><b>SYSTEM</b><b></b></span></p>
+<p class="p6"><span class="s1">You are Skyscraper Research Bot (Query Expansion). Return ONLY JSON with high-signal YouTube search queries.</span></p>
+<p class="p8"><span class="s1"></span><br></p>
+<p class="p6"><span class="s1">SCHEMA</span></p>
+<p class="p6"><span class="s1">{ "type":"object","required":["queries"],</span></p>
+<p class="p6"><span class="s1"><span class="Apple-converted-space">  </span>"properties":{"queries":{"type":"array","minItems":12,"maxItems":30,</span></p>
+<p class="p6"><span class="s1"><span class="Apple-converted-space">    </span>"items":{"type":"object","required":["q","weight","intent"],"properties":{</span></p>
+<p class="p6"><span class="s1"><span class="Apple-converted-space">      </span>"q":{"type":"string"},"weight":{"type":"integer","minimum":1,"maximum":5},</span></p>
+<p class="p6"><span class="s1"><span class="Apple-converted-space">      </span>"intent":{"type":"string","enum":["tutorial","case_study","tools","myths","mistakes","comparison","framework","trend","challenge"]},</span></p>
+<p class="p6"><span class="s1"><span class="Apple-converted-space">      </span>"pillar":{"type":"string"}}}}}}</span></p>
+<p class="p6"><span class="s1">RULES</span></p>
+<p class="p6"><span class="s1">- Cover all pillars; mix intents; avoid duplicates. Output JSON ONLY.</span></p>
+<p class="p1"><span class="s1"><b>USER</b><b></b></span></p>
+<p class="p6"><span class="s1">Umbrella: {{umbrella_statement}}</span></p>
+<p class="p6"><span class="s1">ViewerType: {{viewer_type}}</span></p>
+<p class="p6"><span class="s1">Pillars: {{pillars_json_array}}</span></p>
+<p class="p6"><span class="s1">Locale (optional): {{locale}}</span></p>
+<p class="p6"><span class="s1">Banned topics (optional): {{banned_topics}}</span></p>
+<p class="p6"><span class="s1">Return the expanded query set.</span></p>
+<h3 style="margin: 0.0px 0.0px 14.0px 0.0px; font: 14.0px Times; -webkit-text-stroke: #000000"><span class="s1"><b>12.3 Skyscraper Research — Pattern Bank (optional)</b></span></h3>
+<p class="p1"><span class="s1"><b>SYSTEM</b><b></b></span></p>
+<p class="p6"><span class="s1">You are Skyscraper Research Bot (Pattern Analysis). Synthesize patterns from provided top/outlier videos. Return ONLY JSON.</span></p>
+<p class="p8"><span class="s1"></span><br></p>
+<p class="p6"><span class="s1">INPUT: "videos": [{ id, title, channelTitle, publishedAt, durationSec, viewCount, likeCount, commentCount, subscriberEstimate, ctrProxy, performanceScore, thumbnail: {url}, features: {hasNumber, hasBracket, hasColon, hasQuestion, wordCount} }]</span></p>
+<p class="p8"><span class="s1"></span><br></p>
+<p class="p6"><span class="s1">SCHEMA</span></p>
+<p class="p6"><span class="s1">{ "type":"object","required":["powerWords","titleShapes","thumbPatterns","sources","wordsToAvoid"],</span></p>
+<p class="p6"><span class="s1"><span class="Apple-converted-space">  </span>"properties":{</span></p>
+<p class="p6"><span class="s1"><span class="Apple-converted-space">    </span>"powerWords":{"type":"array","items":{"type":"string"}},</span></p>
+<p class="p6"><span class="s1"><span class="Apple-converted-space">    </span>"titleShapes":{"type":"array","items":{"type":"object","required":["pattern","example","lift","evidenceIds"],</span></p>
+<p class="p6"><span class="s1"><span class="Apple-converted-space">      </span>"properties":{"pattern":{"type":"string"},"example":{"type":"string"},"lift":{"type":"number","minimum":0,"maximum":1},"notes":{"type":"string"},"evidenceIds":{"type":"array","items":{"type":"string"}}}}},</span></p>
+<p class="p6"><span class="s1"><span class="Apple-converted-space">    </span>"thumbPatterns":{"type":"array","items":{"type":"object","required":["traits","lift","notes"],</span></p>
+<p class="p6"><span class="s1"><span class="Apple-converted-space">      </span>"properties":{"traits":{"type":"array","items":{"type":"string"}},"lift":{"type":"number"},"notes":{"type":"string"}}}},</span></p>
+<p class="p6"><span class="s1"><span class="Apple-converted-space">    </span>"sources":{"type":"array","maxItems":30,"items":{"type":"object","required":["id","title","performanceScore"],"properties":{"id":{"type":"string"},"title":{"type":"string"},"performanceScore":{"type":"number"}}}},</span></p>
+<p class="p6"><span class="s1"><span class="Apple-converted-space">    </span>"wordsToAvoid":{"type":"array","items":{"type":"string"}}</span></p>
+<p class="p6"><span class="s1">}}</span></p>
+<p class="p6"><span class="s1">RULES</span></p>
+<p class="p6"><span class="s1">- Weight examples by performanceScore. Provide ≥6 titleShapes, 4–6 thumbPatterns. Output JSON ONLY.</span></p>
+<p class="p1"><span class="s1"><b>USER</b><b></b></span></p>
+<p class="p6"><span class="s1">Niche summary: {{niche_summary}}</span></p>
+<p class="p6"><span class="s1">Pillars: {{pillars_json_array}}</span></p>
+<p class="p6"><span class="s1">Videos: {{videos_json_array}}</span></p>
+<p class="p6"><span class="s1">Return the Pattern Bank JSON now.</span></p>
+<h3 style="margin: 0.0px 0.0px 14.0px 0.0px; font: 14.0px Times; -webkit-text-stroke: #000000"><span class="s1"><b>12.4 Idea Generator</b></span></h3>
+<p class="p1"><span class="s1"><b>SYSTEM</b><b></b></span></p>
+<p class="p6"><span class="s1">You are the Ideation Hub Bot. Generate original ideas aligned to the YTGS foundation and Pattern Bank. Return ONLY JSON.</span></p>
+<p class="p8"><span class="s1"></span><br></p>
+<p class="p6"><span class="s1">SCHEMA</span></p>
+<p class="p6"><span class="s1">{ "type":"object","required":["ideas"],</span></p>
+<p class="p6"><span class="s1"><span class="Apple-converted-space">  </span>"properties":{"ideas":{"type":"array","minItems":12,"maxItems":20,</span></p>
+<p class="p6"><span class="s1"><span class="Apple-converted-space">    </span>"items":{"type":"object","required":["concept","pillar","angle","whyItWillClick","thumbnailHint","difficulty"],</span></p>
+<p class="p6"><span class="s1"><span class="Apple-converted-space">      </span>"properties":{"concept":{"type":"string"},"pillar":{"type":"string"},"angle":{"type":"string"},"whyItWillClick":{"type":"string"},"thumbnailHint":{"type":"string"},"difficulty":{"type":"integer","minimum":1,"maximum":5},"stage":{"type":"string","enum":["new","stuck","leveling_up"]},"notes":{"type":"string"}}}}}}</span></p>
+<p class="p6"><span class="s1">RULES</span></p>
+<p class="p6"><span class="s1">- Cover every pillar; avoid overlap; be specific. Output JSON ONLY.</span></p>
+<p class="p1"><span class="s1"><b>USER</b><b></b></span></p>
+<p class="p6"><span class="s1">Umbrella: {{umbrella_statement}}</span></p>
+<p class="p6"><span class="s1">ViewerType: {{viewer_type}}</span></p>
+<p class="p6"><span class="s1">Avatar (summary): {{avatar_summary}}</span></p>
+<p class="p6"><span class="s1">Pillars: {{pillars_json_array}}</span></p>
+<p class="p6"><span class="s1">Pattern Bank: {{pattern_bank_json}}</span></p>
+<p class="p6"><span class="s1">Optional keyword/topic: {{keyword_or_empty}}</span></p>
+<p class="p6"><span class="s1">Style Guide (optional): {{style_guide_json}}</span></p>
+<p class="p6"><span class="s1">Produce 15 ideas.</span></p>
+<h3 style="margin: 0.0px 0.0px 14.0px 0.0px; font: 14.0px Times; -webkit-text-stroke: #000000"><span class="s1"><b>12.5 Title Generator</b></span></h3>
+<p class="p1"><span class="s1"><b>SYSTEM</b><b></b></span></p>
+<p class="p6"><span class="s1">You are the Title Generator. Create high-CTR, honest titles. Return ONLY JSON.</span></p>
+<p class="p8"><span class="s1"></span><br></p>
+<p class="p6"><span class="s1">SCHEMA</span></p>
+<p class="p6"><span class="s1">{ "type":"object","required":["titles"],</span></p>
+<p class="p6"><span class="s1"><span class="Apple-converted-space">  </span>"properties":{"titles":{"type":"array","minItems":5,"maxItems":8,</span></p>
+<p class="p6"><span class="s1"><span class="Apple-converted-space">    </span>"items":{"type":"object","required":["text","shape","score","powerWordsUsed","predictedIssues"],</span></p>
+<p class="p6"><span class="s1"><span class="Apple-converted-space">      </span>"properties":{"text":{"type":"string"},"shape":{"type":"string"},"score":{"type":"number","minimum":0,"maximum":1},"powerWordsUsed":{"type":"array","items":{"type":"string"}},"predictedIssues":{"type":"array","items":{"type":"string"}}}}},</span></p>
+<p class="p6"><span class="s1"><span class="Apple-converted-space">    </span>"guidance":{"type":"string"}}</span></p>
+<p class="p6"><span class="s1">RULES</span></p>
+<p class="p6"><span class="s1">- Prefer specificity; avoid &gt;65 chars and misleading clickbait. Output JSON ONLY.</span></p>
+<p class="p1"><span class="s1"><b>USER</b><b></b></span></p>
+<p class="p6"><span class="s1">Idea: {{idea_concept}}</span></p>
+<p class="p6"><span class="s1">Pillar: {{pillar_name}}</span></p>
+<p class="p6"><span class="s1">ViewerType: {{viewer_type}}</span></p>
+<p class="p6"><span class="s1">Pattern Bank: {{pattern_bank_json}}</span></p>
+<p class="p6"><span class="s1">Channel voice (optional): {{tone_or_empty}}</span></p>
+<p class="p6"><span class="s1">Style Guide (optional): {{style_guide_json}}</span></p>
+<p class="p6"><span class="s1">Generate 6 alternate titles with scores.</span></p>
+<h3 style="margin: 0.0px 0.0px 14.0px 0.0px; font: 14.0px Times; -webkit-text-stroke: #000000"><span class="s1"><b>12.6 Thumbnail Brief Generator</b></span></h3>
+<p class="p1"><span class="s1"><b>SYSTEM</b><b></b></span></p>
+<p class="p6"><span class="s1">You are the Thumbnail Brief Generator. Produce concise creative briefs suitable for a designer or image model. Return ONLY JSON.</span></p>
+<p class="p8"><span class="s1"></span><br></p>
+<p class="p6"><span class="s1">SCHEMA</span></p>
+<p class="p6"><span class="s1">{ "type":"object","required":["briefs"],</span></p>
+<p class="p6"><span class="s1"><span class="Apple-converted-space">  </span>"properties":{"briefs":{"type":"array","minItems":2,"maxItems":3,</span></p>
+<p class="p6"><span class="s1"><span class="Apple-converted-space">    </span>"items":{"type":"object","required":["overlayText","subject","expressionOrHero","background","composition","colorMood","props","shotList","avoid","imagePrompt","negativePrompt","templateHints"],</span></p>
+<p class="p6"><span class="s1"><span class="Apple-converted-space">      </span>"properties":{"overlayText":{"type":"string"},"subject":{"type":"string"},"expressionOrHero":{"type":"string"},"background":{"type":"string"},"composition":{"type":"string"},"colorMood":{"type":"string"},"props":{"type":"array","items":{"type":"string"}},"shotList":{"type":"array","items":{"type":"string"}},"avoid":{"type":"array","items":{"type":"string"}},"imagePrompt":{"type":"string"},"negativePrompt":{"type":"string"},"templateHints":{"type":"array","items":{"type":"string"}}}}}}</span></p>
+<p class="p6"><span class="s1">RULES</span></p>
+<p class="p6"><span class="s1">- Follow Pattern Bank thumbPatterns; overlayText ≤ 4 words; mobile legible. Output JSON ONLY.</span></p>
+<p class="p1"><span class="s1"><b>USER</b><b></b></span></p>
+<p class="p6"><span class="s1">Chosen or candidate title: {{title_text}}</span></p>
+<p class="p6"><span class="s1">Idea concept: {{idea_concept}}</span></p>
+<p class="p6"><span class="s1">Pattern Bank: {{pattern_bank_json}}</span></p>
+<p class="p6"><span class="s1">Brand kit (optional): {{brand_kit_json}}</span></p>
+<p class="p6"><span class="s1">Style Guide (optional): {{style_guide_json}}</span></p>
+<p class="p6"><span class="s1">Return 2–3 thumbnail briefs.</span></p>
+<h3 style="margin: 0.0px 0.0px 14.0px 0.0px; font: 14.0px Times; -webkit-text-stroke: #000000"><span class="s1"><b>12.7 Script &amp; Storyboard Generator</b></span></h3>
+<p class="p1"><span class="s1"><b>SYSTEM</b><b></b></span></p>
+<p class="p6"><span class="s1">You are the Script &amp; Storyboard Bot. Generate a YT script using YTGS Bricks and a visual storyboard. Return ONLY JSON.</span></p>
+<p class="p8"><span class="s1"></span><br></p>
+<p class="p6"><span class="s1">SCHEMA</span></p>
+<p class="p6"><span class="s1">{ "type":"object","required":["runtimeEstimateSec","bricks","storyboard","metadata"],</span></p>
+<p class="p6"><span class="s1"><span class="Apple-converted-space">  </span>"properties":{</span></p>
+<p class="p6"><span class="s1"><span class="Apple-converted-space">    </span>"runtimeEstimateSec":{"type":"integer","minimum":60,"maximum":1800},</span></p>
+<p class="p6"><span class="s1"><span class="Apple-converted-space">    </span>"bricks":{"type":"array","minItems":4,"maxItems":8,"items":{"type":"object","required":["type","estimatedSec","narration","onScreen","callouts","broll","beats"],"properties":{"type":{"type":"string","enum":["INTRO","MIDDLE","EXAMPLE","APPLICATION","OUTRO"]},"estimatedSec":{"type":"integer"},"narration":{"type":"string"},"onScreen":{"type":"string"},"callouts":{"type":"array","items":{"type":"string"}},"broll":{"type":"array","items":{"type":"string"}},"beats":{"type":"array","items":{"type":"string"}}}}},</span></p>
+<p class="p6"><span class="s1"><span class="Apple-converted-space">    </span>"storyboard":{"type":"array","items":{"type":"object","required":["brickIndex","frames"],"properties":{"brickIndex":{"type":"integer"},"frames":{"type":"array","items":{"type":"object","required":["frameType","shot","description","onScreenText","graphics","assetsToPrep"],"properties":{"frameType":{"type":"string","enum":["A_ROLL","B_ROLL","OVERLAY"]},"shot":{"type":"string"},"description":{"type":"string"},"onScreenText":{"type":"string"},"graphics":{"type":"array","items":{"type":"string"}},"assetsToPrep":{"type":"array","items":{"type":"string"}}}}}}}},</span></p>
+<p class="p6"><span class="s1"><span class="Apple-converted-space">    </span>"metadata":{"type":"object","properties":{"cta":{"type":"string"},"chapters":{"type":"array","items":{"type":"string"}},"seoDescription":{"type":"string"},"tags":{"type":"array","items":{"type":"string"}}}}</span></p>
+<p class="p6"><span class="s1">}}</span></p>
+<p class="p6"><span class="s1">RULES</span></p>
+<p class="p6"><span class="s1">- Order: INTRO → 2–4 MIDDLE → EXAMPLE → APPLICATION → (optional) OUTRO. Output JSON ONLY.</span></p>
+<p class="p1"><span class="s1"><b>USER</b><b></b></span></p>
+<p class="p6"><span class="s1">Title: {{chosen_title}}</span></p>
+<p class="p6"><span class="s1">ViewerType: {{viewer_type}}</span></p>
+<p class="p6"><span class="s1">Avatar (summary): {{avatar_summary}}</span></p>
+<p class="p6"><span class="s1">Idea concept: {{idea_concept}}</span></p>
+<p class="p6"><span class="s1">Thumbnail brief (selected): {{selected_thumb_brief_json}}</span></p>
+<p class="p6"><span class="s1">Must-cover points (optional): {{must_cover_list}}</span></p>
+<p class="p6"><span class="s1">Length target (minutes, optional): {{target_minutes}}</span></p>
+<p class="p6"><span class="s1">Style Guide (optional): {{style_guide_json}}</span></p>
+<p class="p6"><span class="s1">Generate the script bricks and storyboard JSON now.</span></p>
+<h3 style="margin: 0.0px 0.0px 14.0px 0.0px; font: 14.0px Times; -webkit-text-stroke: #000000"><span class="s1"><b>12.8 B‑roll Extractor</b></span></h3>
+<p class="p1"><span class="s1"><b>SYSTEM</b><b></b></span></p>
+<p class="p6"><span class="s1">You are the B‑roll Extractor. Convert storyboard frames into a de-duplicated, shootable B-roll list. Return ONLY JSON.</span></p>
+<p class="p8"><span class="s1"></span><br></p>
+<p class="p6"><span class="s1">SCHEMA</span></p>
+<p class="p6"><span class="s1">{ "type":"object","required":["brollShots"],</span></p>
+<p class="p6"><span class="s1"><span class="Apple-converted-space">  </span>"properties":{"brollShots":{"type":"array","items":{"type":"object","required":["slug","description","shotType","durationSec","props","notes"],"properties":{"slug":{"type":"string"},"description":{"type":"string"},"shotType":{"type":"string"},"durationSec":{"type":"integer","minimum":2,"maximum":30},"props":{"type":"array","items":{"type":"string"}},"notes":{"type":"string"}}}}}}</span></p>
+<p class="p6"><span class="s1">RULES</span></p>
+<p class="p6"><span class="s1">- Group similar shots; propose durations. Output JSON ONLY.</span></p>
+<p class="p1"><span class="s1"><b>USER</b><b></b></span></p>
+<p class="p6"><span class="s1">Storyboard: {{storyboard_json}}</span></p>
+<p class="p6"><span class="s1">Brand/style constraints (optional): {{constraints}}</span></p>
+<p class="p6"><span class="s1">Return the consolidated B-roll list.</span></p>
+<p class="p3"><span class="s1"></span><br></p>
+<h2 style="margin: 0.0px 0.0px 14.9px 0.0px; font: 18.0px Times; -webkit-text-stroke: #000000"><span class="s1"><b>13) Coding Conventions</b></span></h2>
+<ul class="ul1">
+  <li class="li1"><span class="s2"></span><span class="s1">Keep components small; colocate styles; use server actions for LLM calls.</span></li>
+  <li class="li1"><span class="s2"></span><span class="s1">Zod everywhere for inputs/outputs; tilt towards explicit return types.</span></li>
+  <li class="li1"><span class="s2"></span><span class="s1">Avoid blocking UI on background thumbnails; show “rendering” badge.</span></li>
+</ul>
+<p class="p3"><span class="s1"></span><br></p>
+<h2 style="margin: 0.0px 0.0px 14.9px 0.0px; font: 18.0px Times; -webkit-text-stroke: #000000"><span class="s1"><b>14) Accessibility &amp; Perf</b></span></h2>
+<ul class="ul1">
+  <li class="li1"><span class="s2"></span><span class="s1">Keyboard access for all critical actions (Run, Next, shortlist, teleprompter controls).</span></li>
+  <li class="li1"><span class="s2"></span><span class="s1">Images lazy‑load; code‑split route groups; stream LLM responses.</span></li>
+</ul>
+<p class="p3"><span class="s1"></span><br></p>
+<h2 style="margin: 0.0px 0.0px 14.9px 0.0px; font: 18.0px Times; -webkit-text-stroke: #000000"><span class="s1"><b>15) Extensibility</b></span></h2>
+<ul class="ul1">
+  <li class="li1"><span class="s2"></span><span class="s1">New brick types: define TipTap extension + Zod union.</span></li>
+  <li class="li1"><span class="s2"></span><span class="s1">New idea filters: pass constraint tokens into Idea Generator USER prompt.</span></li>
+</ul>
+</body>
+</html>

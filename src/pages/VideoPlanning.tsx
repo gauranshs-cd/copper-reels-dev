@@ -2,13 +2,16 @@ import { useState, useEffect } from 'react';
 import { motion, Reorder } from 'framer-motion';
 import { useNavigate } from 'react-router-dom';
 import { 
-  ArrowLeft, 
+  ArrowLeft,
+  ArrowRight, 
   GripVertical, 
   Play, 
   FileText, 
   Download,
   ToggleLeft,
-  ToggleRight
+  ToggleRight,
+  RefreshCw,
+  Sparkles
 } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { Card } from '@/components/ui/card';
@@ -17,88 +20,15 @@ import { EditableField } from '@/components/ui/editable-field';
 import { ProgressIndicator } from '@/components/ui/progress-indicator';
 import { useAppStore } from '@/store/useAppStore';
 import type { VideoBrick, StoryboardFrame, VideoPlan } from '@/store/useAppStore';
+import { copperReelsGemini } from '@/lib/gemini';
+import { toast } from 'sonner';
+import { LoadingSpinner } from '@/components/ui/loading-spinner';
 
-const mockVideoPlan: VideoPlan = {
+// Empty initial plan - will be generated with AI
+const emptyVideoPlan: VideoPlan = {
   teleprompterMode: false,
-  bricks: [
-    {
-      id: '1',
-      type: 'INTRO',
-      title: 'Hook & Introduction',
-      content: 'Hey developers! Are you tired of spending hours setting up the same tools for every project? Today I\'m sharing the 5 essential tools that have completely transformed my development workflow...',
-      duration: '0:30',
-      order: 1
-    },
-    {
-      id: '2',
-      type: 'MIDDLE',
-      title: 'Tool #1: VS Code Extensions',
-      content: 'First up is this incredible VS Code extension pack that gives you superpowers. Let me show you exactly how to set it up and the specific extensions that will save you hours...',
-      duration: '2:00',
-      order: 2
-    },
-    {
-      id: '3',
-      type: 'EXAMPLE',
-      title: 'Live Demo: Speed Coding',
-      content: 'Watch this - I\'m going to build a complete React component in under 3 minutes using these tools. Notice how the auto-completion and snippets speed up the process...',
-      duration: '3:00',
-      order: 3
-    },
-    {
-      id: '4',
-      type: 'APPLICATION',
-      title: 'Implementation Steps',
-      content: 'Now let\'s break down exactly how you can implement this in your own workflow. Step 1: Download these extensions. Step 2: Configure your settings like this...',
-      duration: '2:30',
-      order: 4
-    },
-    {
-      id: '5',
-      type: 'OUTRO',
-      title: 'Call to Action',
-      content: 'If this saved you time, smash that like button and subscribe for more developer productivity tips. Drop a comment with your favorite coding tool - I read every single one!',
-      duration: '0:30',
-      order: 5
-    }
-  ],
-  storyboard: [
-    {
-      id: '1',
-      brickId: '1',
-      thumbnail: 'Close-up of frustrated developer',
-      visualNotes: 'Split screen showing messy vs clean workflow',
-      brollSuggestions: ['Screen recording of slow setup', 'Developer nodding', 'Clean desktop workspace']
-    },
-    {
-      id: '2',
-      brickId: '2',
-      thumbnail: 'VS Code interface with extensions',
-      visualNotes: 'Highlight extension marketplace',
-      brollSuggestions: ['Extension installation process', 'Before/after comparison', 'Extension icons animation']
-    },
-    {
-      id: '3',
-      brickId: '3',
-      thumbnail: 'Speed coding montage',
-      visualNotes: 'Time-lapse effect with timer',
-      brollSuggestions: ['Hands typing rapidly', 'Code appearing fast', 'Completion suggestions popping up']
-    },
-    {
-      id: '4',
-      brickId: '4',
-      thumbnail: 'Step-by-step tutorial overlay',
-      visualNotes: 'Numbered steps with highlights',
-      brollSuggestions: ['Settings screenshots', 'Configuration files', 'Mouse clicks and navigation']
-    },
-    {
-      id: '5',
-      brickId: '5',
-      thumbnail: 'Enthusiastic creator on camera',
-      visualNotes: 'Subscribe button animation',
-      brollSuggestions: ['Like button clicking', 'Comment section scroll', 'Subscribe bell icon']
-    }
-  ]
+  bricks: [],
+  storyboard: []
 };
 
 const brickTypeColors = {
@@ -118,15 +48,96 @@ export default function VideoPlanning() {
     setCurrentStep 
   } = useAppStore();
   
-  const [currentPlan, setCurrentPlan] = useState<VideoPlan>(videoPlan || mockVideoPlan);
+  const [currentPlan, setCurrentPlan] = useState<VideoPlan>(videoPlan || emptyVideoPlan);
+  const [isGeneratingTitles, setIsGeneratingTitles] = useState(false);
+  const [generatedTitles, setGeneratedTitles] = useState<any[]>([]);
+  const [isGeneratingThumbnails, setIsGeneratingThumbnails] = useState(false);
+  const [generatedThumbnails, setGeneratedThumbnails] = useState<any[]>([]);
+  const [isGeneratingPlan, setIsGeneratingPlan] = useState(false);
+
+  const generateScriptStructure = async () => {
+    setIsGeneratingPlan(true);
+    try {
+      const foundationData = useAppStore.getState().foundationData;
+      const umbrellaStatement = useAppStore.getState().umbrellaStatement;
+      
+      // Build comprehensive context
+      const title = selectedIdea?.title || umbrellaStatement || 'Your Video Title';
+      const concept = selectedIdea?.description || umbrellaStatement || '';
+      
+      // Build detailed avatar summary with ALL context
+      let avatarSummary = '';
+      if (foundationData) {
+        avatarSummary = `
+          Demographics: ${foundationData.avatar.demographics}.
+          Psychographics: ${foundationData.avatar.psychographics}.
+          Pain Points: ${foundationData.avatar.painPoints}.
+          Goals: ${foundationData.avatar.goals}.
+          Content Pillars: ${foundationData.pillars.map(p => p.title).join(', ')}.
+        `;
+      } else if (umbrellaStatement) {
+        avatarSummary = `Based on: ${umbrellaStatement}`;
+      }
+      
+      // Add explicit context about the niche
+      if (umbrellaStatement) {
+        avatarSummary += ` Niche Context: ${umbrellaStatement}`;
+      }
+      
+      console.log('Generating script with context:', {
+        title,
+        concept,
+        avatarSummary,
+        umbrellaStatement
+      });
+      
+      const result = await copperReelsGemini.generateScriptAndStoryboard({
+        chosenTitle: title,
+        viewerType: foundationData?.viewerType || 'LEARNER',
+        avatarSummary: avatarSummary,
+        ideaConcept: concept,
+        selectedThumbBrief: {},
+        targetMinutes: 10
+      });
+      
+      // Transform the result to match our VideoPlan structure
+      const newPlan: VideoPlan = {
+        teleprompterMode: false,
+        bricks: result.bricks.map((brick, index) => ({
+          id: `brick-${index}`,
+          type: brick.type,
+          title: `${brick.type} Section`,
+          content: brick.narration,
+          duration: `${Math.floor(brick.estimatedSec / 60)}:${(brick.estimatedSec % 60).toString().padStart(2, '0')}`,
+          order: index + 1
+        })),
+        storyboard: result.bricks.map((brick, index) => ({
+          id: `frame-${index}`,
+          brickId: `brick-${index}`,
+          thumbnail: brick.onScreen,
+          visualNotes: brick.callouts.join(', '),
+          brollSuggestions: brick.broll
+        }))
+      };
+      
+      setCurrentPlan(newPlan);
+      setVideoPlan(newPlan);
+      toast.success('Script structure generated!');
+    } catch (error) {
+      console.error('Failed to generate script structure:', error);
+      toast.error('Failed to generate script structure');
+    } finally {
+      setIsGeneratingPlan(false);
+    }
+  };
 
   useEffect(() => {
     setCurrentStep('plan');
-    if (!videoPlan) {
-      setVideoPlan(mockVideoPlan);
-      setCurrentPlan(mockVideoPlan);
+    // Auto-generate script structure if not exists
+    if (!videoPlan || videoPlan.bricks.length === 0) {
+      generateScriptStructure();
     }
-  }, [setCurrentStep, videoPlan, setVideoPlan]);
+  }, [setCurrentStep]);
 
   const updateBrick = (brickId: string, field: keyof VideoBrick, value: string) => {
     const updatedBricks = currentPlan.bricks.map(brick =>
@@ -162,6 +173,53 @@ export default function VideoPlanning() {
     setVideoPlan(updatedPlan);
   };
 
+  const generateTitles = async () => {
+    if (!selectedIdea) {
+      toast.error('No idea selected');
+      return;
+    }
+
+    setIsGeneratingTitles(true);
+    try {
+      const result = await copperReelsGemini.generateTitles({
+        ideaConcept: selectedIdea.title,
+        pillarName: selectedIdea.pillar,
+        viewerType: useAppStore.getState().foundationData?.viewerType || 'LEARNER'
+      });
+      
+      setGeneratedTitles(result.titles);
+      toast.success(`Generated ${result.titles.length} title variations!`);
+    } catch (error) {
+      console.error('Failed to generate titles:', error);
+      toast.error('Failed to generate titles');
+    } finally {
+      setIsGeneratingTitles(false);
+    }
+  };
+
+  const generateThumbnails = async () => {
+    if (!selectedIdea) {
+      toast.error('No idea selected');
+      return;
+    }
+
+    setIsGeneratingThumbnails(true);
+    try {
+      const briefs = await copperReelsGemini.generateThumbnailBriefs({
+        titleText: selectedIdea.title,
+        ideaConcept: selectedIdea.description
+      });
+      
+      setGeneratedThumbnails(briefs);
+      toast.success(`Generated ${briefs.length} thumbnail briefs!`);
+    } catch (error) {
+      console.error('Failed to generate thumbnails:', error);
+      toast.error('Failed to generate thumbnail briefs');
+    } finally {
+      setIsGeneratingThumbnails(false);
+    }
+  };
+
   const exportBrollList = () => {
     const brollItems = currentPlan.storyboard.flatMap(frame => frame.brollSuggestions);
     const brollText = brollItems.map((item, index) => `${index + 1}. ${item}`).join('\n');
@@ -186,6 +244,19 @@ export default function VideoPlanning() {
     );
   }
 
+  if (isGeneratingPlan) {
+    return (
+      <div className="min-h-screen bg-gradient-subtle flex items-center justify-center">
+        <div className="text-center">
+          <LoadingSpinner size="lg" message="Generating script structure..." />
+          <p className="mt-4 text-muted-foreground">
+            Creating video bricks and storyboard for: {selectedIdea.title}
+          </p>
+        </div>
+      </div>
+    );
+  }
+
   return (
     <div className="min-h-screen bg-gradient-subtle">
       <div className="container mx-auto px-4 py-8">
@@ -201,15 +272,80 @@ export default function VideoPlanning() {
             <div className="flex flex-col lg:flex-row lg:items-center lg:justify-between gap-4">
               <div>
                 <h1 className="text-4xl font-bold mb-2">Video Planning</h1>
-                <p className="text-muted-foreground mb-4">
-                  Planning: <strong>{selectedIdea.title}</strong>
+                <p className="text-muted-foreground mb-2">
+                  {selectedIdea ? (
+                    <>Planning: <strong>{selectedIdea.title}</strong></>
+                  ) : (
+                    <>Based on: <strong>{useAppStore.getState().umbrellaStatement}</strong></>
+                  )}
                 </p>
-                <Badge className="bg-primary/10 text-primary">
-                  {selectedIdea.pillar}
-                </Badge>
+                {selectedIdea?.pillar && (
+                  <Badge className="bg-primary/10 text-primary">
+                    {selectedIdea.pillar}
+                  </Badge>
+                )}
+                <div className="mt-2 text-xs text-muted-foreground">
+                  <Sparkles className="w-3 h-3 inline mr-1" />
+                  Context: {useAppStore.getState().umbrellaStatement || 'No context set'}
+                </div>
               </div>
               
-              <div className="flex items-center space-x-4">
+              <div className="flex flex-wrap items-center gap-2">
+                <Button
+                  onClick={generateScriptStructure}
+                  disabled={isGeneratingPlan}
+                  variant="outline"
+                  title="Regenerate content with your context"
+                >
+                  {isGeneratingPlan ? (
+                    <>
+                      <LoadingSpinner className="w-4 h-4 mr-2" />
+                      <span>Regenerating...</span>
+                    </>
+                  ) : (
+                    <>
+                      <RefreshCw className="w-4 h-4 mr-2" />
+                      <span>Refresh Content</span>
+                    </>
+                  )}
+                </Button>
+                
+                <Button
+                  onClick={generateTitles}
+                  disabled={isGeneratingTitles}
+                  className="bg-gradient-primary hover:shadow-glow"
+                >
+                  {isGeneratingTitles ? (
+                    <>
+                      <LoadingSpinner className="w-4 h-4 mr-2" />
+                      <span>Generating...</span>
+                    </>
+                  ) : (
+                    <>
+                      <FileText className="w-4 h-4 mr-2" />
+                      <span>Generate Titles</span>
+                    </>
+                  )}
+                </Button>
+                
+                <Button
+                  onClick={generateThumbnails}
+                  disabled={isGeneratingThumbnails}
+                  className="bg-gradient-primary hover:shadow-glow"
+                >
+                  {isGeneratingThumbnails ? (
+                    <>
+                      <LoadingSpinner className="w-4 h-4 mr-2" />
+                      <span>Generating...</span>
+                    </>
+                  ) : (
+                    <>
+                      <Play className="w-4 h-4 mr-2" />
+                      <span>Generate Thumbnails</span>
+                    </>
+                  )}
+                </Button>
+                
                 <Button
                   variant="outline"
                   onClick={toggleTeleprompterMode}
@@ -402,6 +538,54 @@ export default function VideoPlanning() {
             </motion.div>
           </div>
 
+          {/* Generated Titles Section */}
+          {generatedTitles.length > 0 && (
+            <motion.div
+              initial={{ opacity: 0, y: 20 }}
+              animate={{ opacity: 1, y: 0 }}
+              className="mt-8"
+            >
+              <Card className="p-6 shadow-elegant">
+                <h3 className="text-xl font-bold mb-4">Generated Title Variations</h3>
+                <div className="space-y-3">
+                  {generatedTitles.map((title, index) => (
+                    <div key={index} className="p-3 bg-muted rounded-lg">
+                      <p className="font-medium">{title.text}</p>
+                      <div className="flex items-center gap-2 mt-2">
+                        <Badge variant="secondary">Score: {(title.score * 100).toFixed(0)}%</Badge>
+                        <Badge variant="outline">{title.shape}</Badge>
+                      </div>
+                    </div>
+                  ))}
+                </div>
+              </Card>
+            </motion.div>
+          )}
+
+          {/* Generated Thumbnails Section */}
+          {generatedThumbnails.length > 0 && (
+            <motion.div
+              initial={{ opacity: 0, y: 20 }}
+              animate={{ opacity: 1, y: 0 }}
+              className="mt-8"
+            >
+              <Card className="p-6 shadow-elegant">
+                <h3 className="text-xl font-bold mb-4">Generated Thumbnail Briefs</h3>
+                <div className="grid md:grid-cols-2 gap-4">
+                  {generatedThumbnails.map((thumbnail, index) => (
+                    <div key={index} className="p-4 bg-muted rounded-lg">
+                      <h4 className="font-semibold mb-2">Brief {index + 1}</h4>
+                      <p className="text-sm mb-2"><strong>Text:</strong> {thumbnail.overlayText}</p>
+                      <p className="text-sm mb-2"><strong>Subject:</strong> {thumbnail.subject}</p>
+                      <p className="text-sm mb-2"><strong>Mood:</strong> {thumbnail.colorMood}</p>
+                      <p className="text-sm"><strong>Background:</strong> {thumbnail.background}</p>
+                    </div>
+                  ))}
+                </div>
+              </Card>
+            </motion.div>
+          )}
+
           {/* Navigation */}
           <motion.div
             initial={{ opacity: 0, y: 20 }}
@@ -418,11 +602,13 @@ export default function VideoPlanning() {
               <span>Back to Ideas</span>
             </Button>
             
-            <div className="text-center">
-              <p className="text-sm text-muted-foreground">
-                🎬 Your video plan is ready! Export your B-roll list and start creating.
-              </p>
-            </div>
+            <Button
+              onClick={() => navigate('/script-builder')}
+              className="flex items-center space-x-2 bg-gradient-primary hover:shadow-glow"
+            >
+              <span>Build Script</span>
+              <ArrowRight className="w-4 h-4" />
+            </Button>
           </motion.div>
         </motion.div>
       </div>

@@ -1,35 +1,21 @@
-import { useEffect } from 'react';
+import { useEffect, useState } from 'react';
 import { motion } from 'framer-motion';
 import { useNavigate } from 'react-router-dom';
-import { ArrowLeft, ArrowRight, Users, Eye, Lightbulb } from 'lucide-react';
+import { ArrowLeft, ArrowRight, Users, Eye, Lightbulb, RefreshCw } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { Card } from '@/components/ui/card';
 import { Badge } from '@/components/ui/badge';
 import { EditableField } from '@/components/ui/editable-field';
-import { ProgressIndicator } from '@/components/ui/progress-indicator';
+import { NavigationFlow } from '@/components/NavigationFlow';
+import { GenerationStatus } from '@/components/GenerationStatus';
+import { LoadingSpinner } from '@/components/ui/loading-spinner';
 import { useAppStore } from '@/store/useAppStore';
+import { copperReelsGemini } from '@/lib/gemini';
+import { sessionService } from '@/lib/supabase/session-service';
+import { supabase } from '@/integrations/supabase/client';
+import { toast } from 'sonner';
+import { historyService } from '@/lib/history';
 import type { Avatar, ContentPillar, FoundationData } from '@/store/useAppStore';
-
-// Mock data generation
-const generateMockFoundation = (statement: string): FoundationData => {
-  return {
-    avatar: {
-      demographics: "25-40 years old, college-educated, primarily based in North America and Europe, household income $50k-$150k",
-      psychographics: "Growth-minded, tech-savvy, values efficiency and learning, frustrated with information overload, seeks actionable advice",
-      painPoints: "Struggling to find reliable, step-by-step guidance that actually works, overwhelmed by conflicting advice online",
-      goals: "Wants to achieve measurable progress in their field, build confidence in their abilities, create sustainable systems"
-    },
-    viewerType: 'LEARNER',
-    viewerTypeRationale: "Based on your statement, your audience is primarily in learning mode - they're seeking knowledge and actionable steps to improve their situation.",
-    pillars: [
-      { id: '1', title: 'Fundamentals', description: 'Core concepts and foundational knowledge', color: 'bg-blue-500' },
-      { id: '2', title: 'Practical Tutorials', description: 'Step-by-step implementation guides', color: 'bg-green-500' },
-      { id: '3', title: 'Case Studies', description: 'Real-world examples and success stories', color: 'bg-purple-500' },
-      { id: '4', title: 'Tools & Resources', description: 'Reviews and recommendations', color: 'bg-orange-500' },
-      { id: '5', title: 'Mindset & Motivation', description: 'Overcoming challenges and staying focused', color: 'bg-pink-500' }
-    ]
-  };
-};
 
 export default function Foundation() {
   const navigate = useNavigate();
@@ -37,18 +23,123 @@ export default function Foundation() {
     umbrellaStatement, 
     foundationData, 
     setFoundationData, 
-    setCurrentStep 
+    setCurrentStep,
+    setLoading 
   } = useAppStore();
+  
+  const [isGenerating, setIsGenerating] = useState(false);
+
+  const generateFoundation = async () => {
+    if (!umbrellaStatement) return;
+    
+    console.log('Starting foundation generation for:', umbrellaStatement);
+    console.log('Gemini API Key exists:', !!import.meta.env.VITE_GEMINI_API_KEY);
+    
+    setIsGenerating(true);
+    setLoading(true, 'Generating your content foundation with Gemini...');
+    
+    try {
+      // Generate foundation using Gemini
+      const startTime = Date.now();
+      console.log('Calling Gemini API...');
+      const foundation = await copperReelsGemini.generateFoundation({
+        umbrella: umbrellaStatement
+      });
+      console.log('OpenAI response received:', foundation);
+      const duration = Date.now() - startTime;
+      
+      // Transform OpenAI response to match our app structure
+      const transformedData: FoundationData = {
+        avatar: {
+          demographics: `${foundation.avatar.demographics.ageRange}, ${foundation.avatar.demographics.locations.join(', ')}, ${foundation.avatar.demographics.roles.join(', ')}${foundation.avatar.demographics.incomeRange ? `, ${foundation.avatar.demographics.incomeRange}` : ''}`,
+          psychographics: `${foundation.avatar.psychographics.goals.join('. ')}`,
+          painPoints: foundation.avatar.psychographics.rankedProblems
+            .map(p => `${p.problem}: ${p.whyItMatters}`)
+            .join('. '),
+          goals: foundation.avatar.psychographics.goals.join('. ')
+        },
+        viewerType: foundation.viewerType,
+        viewerTypeRationale: foundation.notes.rationale,
+        pillars: foundation.pillars.map((pillar, index) => ({
+          id: `pillar-${index + 1}`,
+          title: pillar.name,
+          description: pillar.summary,
+          color: ['bg-blue-500', 'bg-green-500', 'bg-purple-500', 'bg-orange-500', 'bg-pink-500'][index] || 'bg-gray-500'
+        }))
+      };
+      
+      setFoundationData(transformedData);
+      
+      // Save to history
+      historyService.addItem({
+        type: 'foundation',
+        title: 'Foundation Generated',
+        description: `${transformedData.pillars.length} content pillars for ${transformedData.viewerType.toLowerCase()} viewers`,
+        data: transformedData
+      });
+      
+      // Log to Supabase if user is authenticated
+      const { data: { user } } = await supabase.auth.getUser();
+      if (user) {
+        try {
+          // Create or get session
+          let session = await sessionService.getActiveSession(user.id);
+          if (!session) {
+            session = await sessionService.createSession(user.id);
+          }
+          
+          // Log the generation
+          await sessionService.logGeneration({
+            sessionId: session.id,
+            botType: 'positioning',
+            success: true,
+            durationMs: duration,
+            requestPayload: { umbrella: umbrellaStatement },
+            responsePayload: foundation
+          });
+        } catch (dbError) {
+          console.error('Failed to log to database:', dbError);
+        }
+      }
+      
+      toast.success('Foundation generated successfully!');
+      setIsGenerating(false);
+      setLoading(false);
+    } catch (error) {
+      console.error('Failed to generate foundation:', error);
+      const errorMessage = error instanceof Error ? error.message : 'Unknown error';
+      toast.error(`Failed to generate foundation: ${errorMessage}. Please try again.`);
+      
+      // Fallback to a simplified version if API fails
+      const fallbackData: FoundationData = {
+        avatar: {
+          demographics: "Unable to generate demographics. Please refresh to try again.",
+          psychographics: "Unable to generate psychographics. Please refresh to try again.",
+          painPoints: "Unable to identify pain points. Please refresh to try again.",
+          goals: "Unable to identify goals. Please refresh to try again."
+        },
+        viewerType: 'LEARNER',
+        viewerTypeRationale: "Unable to determine viewer type. Using default.",
+        pillars: [
+          { id: '1', title: 'Content Pillar 1', description: 'Please regenerate to get AI suggestions', color: 'bg-blue-500' },
+          { id: '2', title: 'Content Pillar 2', description: 'Please regenerate to get AI suggestions', color: 'bg-green-500' },
+          { id: '3', title: 'Content Pillar 3', description: 'Please regenerate to get AI suggestions', color: 'bg-purple-500' }
+        ]
+      };
+      setFoundationData(fallbackData);
+      setIsGenerating(false);
+      setLoading(false);
+    }
+  };
 
   useEffect(() => {
     setCurrentStep('foundation');
     
-    // Generate mock foundation data if not exists
+    // Generate foundation data if not exists
     if (!foundationData && umbrellaStatement) {
-      const mockData = generateMockFoundation(umbrellaStatement);
-      setFoundationData(mockData);
+      generateFoundation();
     }
-  }, [foundationData, umbrellaStatement, setFoundationData, setCurrentStep]);
+  }, []);
 
   const updateAvatar = (field: keyof Avatar, value: string) => {
     if (!foundationData) return;
@@ -78,9 +169,8 @@ export default function Foundation() {
   }
 
   return (
-    <div className="min-h-screen bg-gradient-subtle">
-      <div className="container mx-auto px-4 py-8">
-        <ProgressIndicator currentStep="foundation" />
+    <div className="min-h-screen bg-gradient-subtle pb-32">
+      <div className="container mx-auto px-4 py-6">
         
         <motion.div
           initial={{ opacity: 0, y: 20 }}
@@ -101,10 +191,34 @@ export default function Foundation() {
               initial={{ opacity: 0, y: 20 }}
               animate={{ opacity: 1, y: 0 }}
               transition={{ delay: 0.2 }}
-              className="text-xl text-muted-foreground max-w-2xl mx-auto"
+              className="text-xl text-muted-foreground max-w-2xl mx-auto mb-4"
             >
               Based on your statement: <em>"{umbrellaStatement}"</em>
             </motion.p>
+            <motion.div
+              initial={{ opacity: 0, y: 20 }}
+              animate={{ opacity: 1, y: 0 }}
+              transition={{ delay: 0.3 }}
+            >
+              <Button
+                variant="outline"
+                onClick={generateFoundation}
+                disabled={isGenerating}
+                className="flex items-center space-x-2"
+              >
+                {isGenerating ? (
+                  <>
+                    <LoadingSpinner className="w-4 h-4" />
+                    <span>Regenerating...</span>
+                  </>
+                ) : (
+                  <>
+                    <RefreshCw className="w-4 h-4" />
+                    <span>Regenerate Foundation</span>
+                  </>
+                )}
+              </Button>
+            </motion.div>
           </div>
 
           <div className="grid lg:grid-cols-2 gap-8 mb-12">
@@ -241,32 +355,14 @@ export default function Foundation() {
             </Card>
           </motion.div>
 
-          {/* Navigation */}
-          <motion.div
-            initial={{ opacity: 0, y: 20 }}
-            animate={{ opacity: 1, y: 0 }}
-            transition={{ delay: 0.8 }}
-            className="flex justify-between"
-          >
-            <Button
-              variant="outline"
-              onClick={() => navigate('/onboarding')}
-              className="flex items-center space-x-2"
-            >
-              <ArrowLeft className="w-4 h-4" />
-              <span>Back to Statement</span>
-            </Button>
-            
-            <Button
-              onClick={() => navigate('/ideation')}
-              className="flex items-center space-x-2 bg-gradient-primary hover:shadow-glow"
-            >
-              <span>Next: Generate Ideas</span>
-              <ArrowRight className="w-4 h-4" />
-            </Button>
-          </motion.div>
         </motion.div>
       </div>
+      
+      {/* Navigation Flow at Bottom */}
+      <NavigationFlow
+        canProceed={!!foundationData}
+        nextLabel="Generate Ideas"
+      />
     </div>
   );
 }
