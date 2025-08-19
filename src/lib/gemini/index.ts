@@ -361,6 +361,7 @@ Make it specific, actionable, and psychologically targeted to the avatar.`;
             chosenTitle: params.chosenTitle,
             viewerType: params.viewerType,
             ideaConcept: params.ideaConcept,
+            avatarSummary: params.avatarSummary,
             targetMinutes: params.targetMinutes
           });
         }

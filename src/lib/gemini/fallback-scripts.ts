@@ -1,5 +1,19 @@
+import { generateYTGSScript } from './ytgs-script-template';
+
 // Fallback script templates when API quota is exceeded
 export const generateFallbackScript = (params: {
+  chosenTitle: string;
+  viewerType: string;
+  ideaConcept: string;
+  avatarSummary?: string;
+  targetMinutes?: number;
+}) => {
+  // Use the YTGS-compliant template
+  return generateYTGSScript(params);
+}
+
+// Original simple fallback for compatibility
+export const generateSimpleFallback = (params: {
   chosenTitle: string;
   viewerType: string;
   ideaConcept: string;
