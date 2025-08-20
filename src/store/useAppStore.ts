@@ -30,6 +30,10 @@ export interface IdeaCard {
   pillarColor: string;
   ctrScore: number;
   description: string;
+  concept?: string;
+  angle?: string;
+  whyItWillClick?: string;
+  thumbnailBrief?: string;
 }
 
 export interface VideoBrick {
@@ -65,6 +69,11 @@ interface AppState {
   selectedIdea: IdeaCard | null;
   videoPlan: VideoPlan | null;
   
+  // Current Workflow State
+  currentIdea: any | null;
+  currentScript: any | null;
+  currentThumbnail: any | null;
+  
   // UI State
   isLoading: boolean;
   loadingMessage: string;
@@ -80,6 +89,12 @@ interface AppState {
   setVideoPlan: (plan: VideoPlan) => void;
   setLoading: (loading: boolean, message?: string) => void;
   setCustomPrompt: (type: string, prompt: string) => void;
+  
+  // New Workflow Actions
+  setCurrentIdea: (idea: any) => void;
+  setCurrentScript: (script: any) => void;
+  setCurrentThumbnail: (thumbnail: any) => void;
+  
   resetStore: () => void;
 }
 
@@ -92,6 +107,9 @@ export const useAppStore = create<AppState>()(
       foundationData: null,
       selectedIdea: null,
       videoPlan: null,
+      currentIdea: null,
+      currentScript: null,
+      currentThumbnail: null,
       isLoading: false,
       loadingMessage: '',
       customPrompts: {},
@@ -106,12 +124,21 @@ export const useAppStore = create<AppState>()(
       setCustomPrompt: (type, prompt) => set((state) => ({
         customPrompts: { ...state.customPrompts, [type]: prompt }
       })),
+      
+      // New Workflow Actions
+      setCurrentIdea: (idea) => set({ currentIdea: idea }),
+      setCurrentScript: (script) => set({ currentScript: script }),
+      setCurrentThumbnail: (thumbnail) => set({ currentThumbnail: thumbnail }),
+      
       resetStore: () => set({
         currentStep: 'onboarding',
         umbrellaStatement: '',
         foundationData: null,
         selectedIdea: null,
         videoPlan: null,
+        currentIdea: null,
+        currentScript: null,
+        currentThumbnail: null,
         isLoading: false,
         loadingMessage: '',
         customPrompts: {}
@@ -123,7 +150,10 @@ export const useAppStore = create<AppState>()(
         umbrellaStatement: state.umbrellaStatement,
         foundationData: state.foundationData,
         selectedIdea: state.selectedIdea,
-        videoPlan: state.videoPlan
+        videoPlan: state.videoPlan,
+        currentIdea: state.currentIdea,
+        currentScript: state.currentScript,
+        currentThumbnail: state.currentThumbnail
       })
     }
   )

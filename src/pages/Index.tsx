@@ -30,10 +30,12 @@ const Index = () => {
           transition={{ delay: 0.2, duration: 0.6 }}
           className="mb-8"
         >
-          <div className="inline-flex items-center space-x-2 bg-primary/10 px-6 py-3 rounded-full mb-6">
-            <Sparkles className="w-6 h-6 text-primary" />
-            <span className="text-primary font-bold text-lg">Copper Reels</span>
-          </div>
+          <img 
+            src="/copper-logo.svg" 
+            alt="Copper Reels" 
+            className="h-24 mx-auto mb-6"
+            style={{ maxWidth: '350px' }}
+          />
           
           <h1 className="text-6xl md:text-7xl font-bold text-foreground mb-6 leading-tight">
             YouTube Content

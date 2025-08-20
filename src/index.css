@@ -1,3 +1,6 @@
+/* Import Copper Reels brand theme first */
+@import './styles/theme.css';
+
 @tailwind base;
 @tailwind components;
 @tailwind utilities;
@@ -17,11 +20,11 @@ All colors MUST be HSL.
     --popover: 0 0% 100%;
     --popover-foreground: 224 71.4% 4.1%;
 
-    /* Purple/Indigo Brand Colors */
-    --primary: 238 100% 67%; /* #6366F1 */
+    /* Copper Reels Brand Colors - Teal/Green/Blue */
+    --primary: 164 39% 50%; /* Green from logo */
     --primary-foreground: 0 0% 100%;
-    --primary-light: 248 95% 86%; /* Lighter purple */
-    --primary-glow: 256 91% 74%; /* #8B5CF6 */
+    --primary-light: 164 39% 70%; /* Lighter green */
+    --primary-glow: 199 84% 55%; /* Blue glow */
 
     --secondary: 220 14.3% 95.9%;
     --secondary-foreground: 220.9 39.3% 11%;

@@ -1,7 +1,7 @@
 import { useEffect, useState } from 'react';
 import { motion } from 'framer-motion';
 import { useNavigate } from 'react-router-dom';
-import { ArrowLeft, ArrowRight, Users, Eye, Lightbulb, RefreshCw } from 'lucide-react';
+import { ArrowLeft, ArrowRight, Users, Eye, Lightbulb, RefreshCw, Sparkles } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { Card } from '@/components/ui/card';
 import { Badge } from '@/components/ui/badge';
@@ -157,12 +157,18 @@ export default function Foundation() {
     setFoundationData({ ...foundationData, pillars: updatedPillars });
   };
 
-  if (!foundationData) {
+  // Don't show error if we have umbrellaStatement (coming from onboarding)
+  if (!foundationData && !umbrellaStatement) {
     return (
       <div className="min-h-screen bg-gradient-subtle flex items-center justify-center">
-        <div className="text-center">
-          <h2 className="text-2xl font-bold mb-4">No foundation data found</h2>
-          <Button onClick={() => navigate('/onboarding')}>Return to Onboarding</Button>
+        <div className="text-center space-y-4">
+          <Sparkles className="w-16 h-16 text-primary mx-auto" />
+          <h2 className="text-2xl font-bold">Let's Set Up Your Foundation</h2>
+          <p className="text-muted-foreground max-w-md">Define your channel's core identity and content strategy</p>
+          <Button onClick={() => navigate('/onboarding')} className="bg-gradient-primary">
+            <ArrowRight className="w-4 h-4 mr-2" />
+            Start Setup
+          </Button>
         </div>
       </div>
     );

@@ -307,14 +307,62 @@ Make it specific, actionable, and psychologically targeted to the avatar.`;
     tone?: string;
     styleGuide?: any;
   }) {
-    const systemPrompt = prompts.TITLE_GENERATOR_SYSTEM;
-    const userPrompt = prompts.buildTitleGeneratorUserPrompt(params);
-    
-    const result = await this.callGemini(systemPrompt, userPrompt, 'TITLE_GENERATOR');
-    return z.object({ 
-      titles: z.array(TitleDraftSchema),
-      guidance: z.string().optional().default('')
-    }).parse(result);
+    try {
+      const systemPrompt = prompts.TITLE_GENERATOR_SYSTEM;
+      const userPrompt = prompts.buildTitleGeneratorUserPrompt(params);
+      
+      const result = await this.callGemini(systemPrompt, userPrompt, 'TITLE_GENERATOR');
+      return z.object({ 
+        titles: z.array(TitleDraftSchema),
+        guidance: z.string().optional().default('')
+      }).parse(result);
+    } catch (error: any) {
+      console.error('Title generation failed:', error);
+      
+      // Fallback title generation
+      const fallbackTitles = [
+        {
+          text: `How to ${params.ideaConcept} (Complete Guide)`,
+          shape: 'How-to',
+          score: 0.8,
+          powerWordsUsed: ['Complete', 'Guide'],
+          predictedIssues: []
+        },
+        {
+          text: `${params.ideaConcept} - What You Need to Know`,
+          shape: 'Educational',
+          score: 0.75,
+          powerWordsUsed: ['Need'],
+          predictedIssues: []
+        },
+        {
+          text: `The Truth About ${params.ideaConcept}`,
+          shape: 'Curiosity',
+          score: 0.85,
+          powerWordsUsed: ['Truth'],
+          predictedIssues: []
+        },
+        {
+          text: `${params.ideaConcept} in ${new Date().getFullYear()} (Updated)`,
+          shape: 'Timely',
+          score: 0.7,
+          powerWordsUsed: ['Updated'],
+          predictedIssues: []
+        },
+        {
+          text: `Why ${params.ideaConcept} Actually Works`,
+          shape: 'Explanation',
+          score: 0.8,
+          powerWordsUsed: ['Actually', 'Works'],
+          predictedIssues: []
+        }
+      ];
+      
+      return {
+        titles: fallbackTitles,
+        guidance: 'Generated using fallback patterns due to API issue'
+      };
+    }
   }
 
   // 5. Thumbnail Brief Generator

@@ -8,10 +8,12 @@ import { AuthProvider } from "@/components/auth/AuthProvider";
 import { ProtectedRoute } from "@/components/auth/ProtectedRoute";
 import { AdminButton } from "@/components/AdminButton";
 import { HistorySidebar } from "@/components/HistorySidebar";
+import { UserMenu } from "@/components/UserMenu";
+import { AppHeader } from "@/components/AppHeader";
 import { useState } from 'react';
 import { Button } from "@/components/ui/button";
 import { Clock } from 'lucide-react';
-import Index from "./pages/Index";
+import Index from "./pages/Index-new";
 import Auth from "./pages/Auth";
 import Onboarding from "./pages/Onboarding";
 import Foundation from "./pages/Foundation";
@@ -36,12 +38,16 @@ const App = () => {
             <AuthProvider>
               <AdminButton />
               
-              {/* History Button */}
+              {/* App Header with User Menu - only show on protected routes */}
+              {window.location.pathname !== '/' && window.location.pathname !== '/auth' && <AppHeader />}
+              
+              {/* History Button - Now positioned to avoid header overlap */}
               <Button
                 onClick={() => setHistoryOpen(true)}
-                className="fixed left-4 top-4 z-30"
+                className="fixed left-4 top-20 z-30"
                 variant="outline"
                 size="icon"
+                aria-label="View history"
               >
                 <Clock className="w-4 h-4" />
               </Button>
@@ -65,9 +71,11 @@ const App = () => {
                 }}
               />
               
-              <Routes>
-                <Route path="/" element={<Index />} />
-                <Route path="/auth" element={<Auth />} />
+              {/* Main content with padding for header */}
+              <div className="pt-16">
+                <Routes>
+                  <Route path="/" element={<Index />} />
+                  <Route path="/auth" element={<Auth />} />
                 <Route path="/test" element={<Test />} />
                 <Route path="/onboarding" element={
                   <ProtectedRoute>
@@ -99,9 +107,10 @@ const App = () => {
                     <PatternBank />
                   </ProtectedRoute>
                 } />
-                {/* ADD ALL CUSTOM ROUTES ABOVE THE CATCH-ALL "*" ROUTE */}
-                <Route path="*" element={<NotFound />} />
-              </Routes>
+                  {/* ADD ALL CUSTOM ROUTES ABOVE THE CATCH-ALL "*" ROUTE */}
+                  <Route path="*" element={<NotFound />} />
+                </Routes>
+              </div>
             </AuthProvider>
           </BrowserRouter>
         </TooltipProvider>

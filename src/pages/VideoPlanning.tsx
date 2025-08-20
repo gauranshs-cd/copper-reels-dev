@@ -21,6 +21,7 @@ import { ProgressIndicator } from '@/components/ui/progress-indicator';
 import { useAppStore } from '@/store/useAppStore';
 import type { VideoBrick, StoryboardFrame, VideoPlan } from '@/store/useAppStore';
 import { copperReelsGemini } from '@/lib/gemini';
+import { generateThumbnailVariations, addTextOverlay } from '@/lib/thumbnail-generator';
 import { toast } from 'sonner';
 import { LoadingSpinner } from '@/components/ui/loading-spinner';
 
@@ -205,16 +206,53 @@ export default function VideoPlanning() {
 
     setIsGeneratingThumbnails(true);
     try {
+      // Generate thumbnail briefs first
       const briefs = await copperReelsGemini.generateThumbnailBriefs({
         titleText: selectedIdea.title,
         ideaConcept: selectedIdea.description
       });
       
-      setGeneratedThumbnails(briefs);
-      toast.success(`Generated ${briefs.length} thumbnail briefs!`);
+      // Generate real thumbnail images
+      const imagePromises = briefs.slice(0, 3).map(async (brief) => {
+        const imageUrls = await generateThumbnailVariations(
+          brief.imagePrompt,
+          1
+        );
+        
+        // Add text overlay if specified
+        if (brief.overlayText && imageUrls[0]) {
+          try {
+            const imageWithText = await addTextOverlay(
+              imageUrls[0],
+              brief.overlayText,
+              'center'
+            );
+            return {
+              ...brief,
+              generatedImageUrl: imageWithText
+            };
+          } catch (e) {
+            console.error('Failed to add text overlay:', e);
+            return {
+              ...brief,
+              generatedImageUrl: imageUrls[0]
+            };
+          }
+        }
+        
+        return {
+          ...brief,
+          generatedImageUrl: imageUrls[0]
+        };
+      });
+      
+      const briefsWithImages = await Promise.all(imagePromises);
+      
+      setGeneratedThumbnails(briefsWithImages);
+      toast.success(`Generated ${briefsWithImages.length} thumbnails with real images!`);
     } catch (error) {
       console.error('Failed to generate thumbnails:', error);
-      toast.error('Failed to generate thumbnail briefs');
+      toast.error('Failed to generate thumbnails');
     } finally {
       setIsGeneratingThumbnails(false);
     }
@@ -570,15 +608,33 @@ export default function VideoPlanning() {
               className="mt-8"
             >
               <Card className="p-6 shadow-elegant">
-                <h3 className="text-xl font-bold mb-4">Generated Thumbnail Briefs</h3>
-                <div className="grid md:grid-cols-2 gap-4">
-                  {generatedThumbnails.map((thumbnail, index) => (
-                    <div key={index} className="p-4 bg-muted rounded-lg">
-                      <h4 className="font-semibold mb-2">Brief {index + 1}</h4>
-                      <p className="text-sm mb-2"><strong>Text:</strong> {thumbnail.overlayText}</p>
-                      <p className="text-sm mb-2"><strong>Subject:</strong> {thumbnail.subject}</p>
-                      <p className="text-sm mb-2"><strong>Mood:</strong> {thumbnail.colorMood}</p>
-                      <p className="text-sm"><strong>Background:</strong> {thumbnail.background}</p>
+                <h3 className="text-xl font-bold mb-4">Generated Thumbnails</h3>
+                <div className="grid md:grid-cols-3 gap-4">
+                  {generatedThumbnails.map((thumbnail: any, index) => (
+                    <div key={index} className="space-y-2">
+                      {/* Thumbnail Image */}
+                      <div className="aspect-video bg-muted rounded-lg overflow-hidden relative">
+                        {thumbnail.generatedImageUrl ? (
+                          <img 
+                            src={thumbnail.generatedImageUrl} 
+                            alt={`Thumbnail ${index + 1}`}
+                            className="w-full h-full object-cover"
+                          />
+                        ) : (
+                          <div className="flex items-center justify-center h-full">
+                            <span className="text-muted-foreground">Loading image...</span>
+                          </div>
+                        )}
+                      </div>
+                      
+                      {/* Thumbnail Details */}
+                      <div className="p-3 bg-muted rounded-lg">
+                        <h4 className="font-semibold mb-2">Option {index + 1}</h4>
+                        {thumbnail.overlayText && (
+                          <p className="text-sm mb-1"><strong>Text:</strong> {thumbnail.overlayText}</p>
+                        )}
+                        <p className="text-xs text-muted-foreground">{thumbnail.colorMood}</p>
+                      </div>
                     </div>
                   ))}
                 </div>

@@ -30,6 +30,7 @@ export default function ScriptBuilder() {
   const [generationStatus, setGenerationStatus] = useState('Initializing AI...');
   const [generationProgress, setGenerationProgress] = useState(0);
   const [generationSteps, setGenerationSteps] = useState<any[]>([]);
+  const [loadingError, setLoadingError] = useState<string | null>(null);
 
   useEffect(() => {
     // Try to restore from localStorage first
@@ -186,6 +187,7 @@ export default function ScriptBuilder() {
       // More specific error messages
       if (error instanceof Error) {
         if (error.message.includes('quota')) {
+          setLoadingError('API quota exceeded. Please try again later.');
           toast.error('API quota exceeded. Please try again later.');
         } else if (error.message.includes('JSON')) {
           toast.error('Error parsing AI response. Retrying with simpler format...');
@@ -193,13 +195,16 @@ export default function ScriptBuilder() {
           setTimeout(() => generateFullScript(), 2000);
           return;
         } else {
+          setLoadingError(error.message);
           toast.error(`Script generation failed: ${error.message}`);
         }
       } else {
+        setLoadingError('Failed to generate script. Please try again.');
         toast.error('Failed to generate script. Please try again.');
       }
       
       setIsGenerating(false);
+      setHasGenerated(true);
     }
   };
 
@@ -347,6 +352,40 @@ Return ONLY a JSON object with this structure:
     return scriptBricks.map(brick => brick.narration).join('\n\n');
   };
 
+  // Show loading screen if error occurred
+  if (loadingError) {
+    return (
+      <div className="min-h-screen flex items-center justify-center bg-gradient-subtle">
+        <div className="text-center space-y-4 p-8 max-w-lg">
+          <div className="bg-red-100 dark:bg-red-900/20 p-4 rounded-full w-20 h-20 mx-auto flex items-center justify-center">
+            <span className="text-4xl">⚠️</span>
+          </div>
+          <h2 className="text-2xl font-bold">Script Generation Error</h2>
+          <p className="text-muted-foreground">{loadingError}</p>
+          <div className="flex gap-4 justify-center pt-4">
+            <Button 
+              variant="outline"
+              onClick={() => navigate('/ideation')}
+            >
+              Back to Ideas
+            </Button>
+            <Button 
+              onClick={() => {
+                setLoadingError(null);
+                setHasGenerated(false);
+                generateFullScript();
+              }}
+              className="bg-gradient-primary"
+            >
+              <RefreshCw className="w-4 h-4 mr-2" />
+              Try Again
+            </Button>
+          </div>
+        </div>
+      </div>
+    );
+  }
+
   // Show generation status overlay
   if (isGenerating && scriptBricks.length === 0) {
     return (
@@ -359,6 +398,35 @@ Return ONLY a JSON object with this structure:
           steps={generationSteps}
         />
       </>
+    );
+  }
+
+  // Show empty state if no script and not generating
+  if (!isGenerating && scriptBricks.length === 0 && !hasGenerated) {
+    return (
+      <div className="min-h-screen flex items-center justify-center bg-gradient-subtle">
+        <div className="text-center space-y-4 p-8">
+          <motion.div
+            initial={{ scale: 0 }}
+            animate={{ scale: 1 }}
+            transition={{ type: "spring", duration: 0.5 }}
+          >
+            <Sparkles className="w-20 h-20 text-primary mx-auto" />
+          </motion.div>
+          <h2 className="text-3xl font-bold">Ready to Create Your Script!</h2>
+          <p className="text-muted-foreground max-w-md mx-auto">
+            Let's generate an engaging script for your video. This will take about 30 seconds.
+          </p>
+          <Button 
+            size="lg" 
+            onClick={generateFullScript}
+            className="bg-gradient-primary hover:shadow-glow"
+          >
+            <Sparkles className="w-5 h-5 mr-2" />
+            Generate Script
+          </Button>
+        </div>
+      </div>
     );
   }
 
