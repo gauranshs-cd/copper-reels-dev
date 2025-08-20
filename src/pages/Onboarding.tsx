@@ -93,9 +93,9 @@ export default function Onboarding() {
               <span className="text-primary font-medium">Copper Reels Strategy Builder</span>
             </div>
             
-            <h1 className="text-5xl md:text-6xl font-bold text-foreground mb-6 leading-tight">
-              Turn Your Expertise Into
-              <span className="text-transparent bg-gradient-primary bg-clip-text block">
+            <h1 className="text-5xl md:text-6xl font-bold mb-6 leading-tight">
+              <span className="text-foreground">Turn Your Expertise Into</span>
+              <span className="block mt-2 bg-gradient-to-r from-[#4CAF84] to-[#29B6F6] bg-clip-text text-transparent">
                 YouTube Success
               </span>
             </h1>
