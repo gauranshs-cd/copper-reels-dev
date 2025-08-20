@@ -26,17 +26,26 @@ import { Badge } from '@/components/ui/badge';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
 import { toast } from 'sonner';
 import { cn } from '@/lib/utils';
+import { StripeCheckout } from '@/components/StripeCheckout';
 
 export default function Services() {
   const navigate = useNavigate();
   const [selectedPackage, setSelectedPackage] = useState<'starter' | 'professional' | 'enterprise'>('professional');
   const [billingCycle, setBillingCycle] = useState<'one-time' | 'monthly'>('one-time');
+  const [showCheckout, setShowCheckout] = useState(false);
+  const [checkoutPackage, setCheckoutPackage] = useState<'payAsYouGo' | 'bundle10' | null>(null);
 
   const handleCheckout = (packageType: string) => {
-    // Stripe integration will go here
-    toast.info('Redirecting to secure checkout...');
-    // For now, book a call
-    window.open('https://calendly.com/copperreels/video-editing-consultation', '_blank');
+    if (packageType === 'starter') {
+      setCheckoutPackage('payAsYouGo');
+      setShowCheckout(true);
+    } else if (packageType === 'professional') {
+      setCheckoutPackage('bundle10');
+      setShowCheckout(true);
+    } else {
+      // Enterprise - book a call
+      window.open('https://calendly.com/copperreels/video-editing-consultation', '_blank');
+    }
   };
 
   const packages = {
@@ -470,5 +479,22 @@ export default function Services() {
         </div>
       </section>
     </div>
+
+    {/* Stripe Checkout Modal */}
+    {showCheckout && checkoutPackage && (
+      <StripeCheckout
+        packageType={checkoutPackage}
+        estimatedMinutes={checkoutPackage === 'bundle10' ? 10 : 1}
+        onSuccess={() => {
+          setShowCheckout(false);
+          toast.success('Order placed successfully! Check your email for confirmation.');
+        }}
+        onCancel={() => {
+          setShowCheckout(false);
+          setCheckoutPackage(null);
+        }}
+      />
+    )}
+  </div>
   );
 }
