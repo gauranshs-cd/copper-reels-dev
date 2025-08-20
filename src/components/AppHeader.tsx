@@ -3,6 +3,7 @@ import { motion } from 'framer-motion';
 import { Button } from '@/components/ui/button';
 import { UserMenu } from '@/components/UserMenu';
 import { useAuth } from '@/components/auth/AuthProvider';
+import { cn } from '@/lib/utils';
 import { 
   Home, 
   Sparkles, 
@@ -11,6 +12,7 @@ import {
   FileText,
   Palette,
   Settings,
+  DollarSign,
   ArrowLeft
 } from 'lucide-react';
 
@@ -27,6 +29,7 @@ export function AppHeader() {
     { path: '/ideation', icon: Lightbulb, label: 'Ideas' },
     { path: '/plan', icon: Video, label: 'Planning' },
     { path: '/script-builder', icon: FileText, label: 'Script' },
+    { path: '/services', icon: DollarSign, label: 'Services', highlight: true },
     { path: '/pattern-bank', icon: Palette, label: 'Patterns' },
     { path: '/settings', icon: Settings, label: 'Settings' },
   ];
@@ -73,10 +76,13 @@ export function AppHeader() {
               {navItems.map(item => (
                 <Button
                   key={item.path}
-                  variant={location.pathname === item.path ? "default" : "ghost"}
+                  variant={location.pathname === item.path ? "default" : item.highlight ? "secondary" : "ghost"}
                   size="sm"
                   onClick={() => navigate(item.path)}
-                  className="gap-2"
+                  className={cn(
+                    "gap-2",
+                    item.highlight && location.pathname !== item.path && "bg-gradient-to-r from-purple-600/20 to-pink-600/20 hover:from-purple-600/30 hover:to-pink-600/30 border-purple-600/30"
+                  )}
                 >
                   <item.icon className="w-4 h-4" />
                   <span className="hidden lg:block">{item.label}</span>

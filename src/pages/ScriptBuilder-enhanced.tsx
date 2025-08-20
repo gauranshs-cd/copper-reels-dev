@@ -20,6 +20,7 @@ import {
   Check,
   X
 } from 'lucide-react';
+import { InlineEditingCTA, FloatingEditingCTA } from '@/components/VideoEditingUpsell';
 import { Button } from '@/components/ui/button';
 import { Card } from '@/components/ui/card';
 import { Badge } from '@/components/ui/badge';
@@ -300,7 +301,15 @@ Call to action: Like, subscribe, watch next`,
     a.click();
     URL.revokeObjectURL(url);
     
-    toast.success('Script exported!');
+    toast.success('Script exported! Need help turning this into a video?', {
+      duration: 5000,
+      action: {
+        label: 'Get Editing',
+        onClick: () => {
+          // Will trigger upsell modal
+        }
+      }
+    });
   };
 
   if (!scriptData || !selectedIdea) {
@@ -506,6 +515,15 @@ Call to action: Like, subscribe, watch next`,
                   )}
                 </Button>
               </div>
+              
+              {/* Video Editing Upsell */}
+              {scriptSections.length > 0 && (
+                <div className="mt-6">
+                  <InlineEditingCTA 
+                    scriptLength={Math.ceil(scriptSections.length * 0.85)}
+                  />
+                </div>
+              )}
             </TabsContent>
 
             {/* Teleprompter View */}
@@ -672,6 +690,11 @@ Call to action: Like, subscribe, watch next`,
           </Tabs>
         </motion.div>
       </div>
+      
+      {/* Floating Edit CTA - shows after 2 seconds */}
+      {scriptSections.length > 0 && (
+        <FloatingEditingCTA context="script" />
+      )}
     </div>
   );
 }

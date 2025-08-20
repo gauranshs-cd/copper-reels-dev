@@ -22,6 +22,7 @@ import VideoPlanning from "./pages/VideoPlanning-enhanced";
 import ScriptBuilder from "./pages/ScriptBuilder-enhanced";
 import PatternBank from "./pages/PatternBank";
 import Settings from "./pages/Settings";
+import Services from "./pages/Services";
 import NotFound from "./pages/NotFound";
 import Test from "./pages/Test";
 
@@ -113,6 +114,7 @@ const App = () => {
                     <Settings />
                   </ProtectedRoute>
                 } />
+                <Route path="/services" element={<Services />} />
                   {/* ADD ALL CUSTOM ROUTES ABOVE THE CATCH-ALL "*" ROUTE */}
                   <Route path="*" element={<NotFound />} />
                 </Routes>

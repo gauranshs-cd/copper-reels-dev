@@ -1,6 +1,7 @@
 import { useState, useEffect } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
 import { useNavigate } from 'react-router-dom';
+import { InlineEditingCTA } from '@/components/VideoEditingUpsell';
 import { 
   Sparkles, 
   RefreshCw, 
@@ -537,30 +538,37 @@ export default function IdeationEnhanced() {
 
           {/* Additional Context Section */}
           {ideasWithThumbnails.length > 0 && (
-            <Card className="p-6 mb-8">
-              <h3 className="font-semibold mb-4 flex items-center gap-2">
-                <MessageCircle className="w-5 h-5 text-primary" />
-                Additional Context
-              </h3>
-              <p className="text-sm text-muted-foreground mb-4">
-                Add any additional information to refine your ideas
-              </p>
-              <div className="flex gap-2">
-                <Input
-                  placeholder="E.g., trending topics, specific angles, competitor videos..."
-                  className="flex-1"
-                  onKeyDown={(e) => {
-                    if (e.key === 'Enter') {
-                      generateIdeas(e.currentTarget.value);
-                      e.currentTarget.value = '';
-                    }
-                  }}
-                />
-                <Button variant="outline">
-                  Add Context
-                </Button>
+            <>
+              <Card className="p-6 mb-8">
+                <h3 className="font-semibold mb-4 flex items-center gap-2">
+                  <MessageCircle className="w-5 h-5 text-primary" />
+                  Additional Context
+                </h3>
+                <p className="text-sm text-muted-foreground mb-4">
+                  Add any additional information to refine your ideas
+                </p>
+                <div className="flex gap-2">
+                  <Input
+                    placeholder="E.g., trending topics, specific angles, competitor videos..."
+                    className="flex-1"
+                    onKeyDown={(e) => {
+                      if (e.key === 'Enter') {
+                        generateIdeas(e.currentTarget.value);
+                        e.currentTarget.value = '';
+                      }
+                    }}
+                  />
+                  <Button variant="outline">
+                    Add Context
+                  </Button>
+                </div>
+              </Card>
+              
+              {/* Video Editing Upsell */}
+              <div className="mb-8">
+                <InlineEditingCTA variant="compact" />
               </div>
-            </Card>
+            </>
           )}
         </motion.div>
       </div>
