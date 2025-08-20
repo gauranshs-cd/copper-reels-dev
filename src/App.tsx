@@ -21,6 +21,7 @@ import Ideation from "./pages/Ideation-enhanced";
 import VideoPlanning from "./pages/VideoPlanning-enhanced";
 import ScriptBuilder from "./pages/ScriptBuilder-enhanced";
 import PatternBank from "./pages/PatternBank";
+import Settings from "./pages/Settings";
 import NotFound from "./pages/NotFound";
 import Test from "./pages/Test";
 
@@ -105,6 +106,11 @@ const App = () => {
                 <Route path="/pattern-bank" element={
                   <ProtectedRoute>
                     <PatternBank />
+                  </ProtectedRoute>
+                } />
+                <Route path="/settings" element={
+                  <ProtectedRoute>
+                    <Settings />
                   </ProtectedRoute>
                 } />
                   {/* ADD ALL CUSTOM ROUTES ABOVE THE CATCH-ALL "*" ROUTE */}

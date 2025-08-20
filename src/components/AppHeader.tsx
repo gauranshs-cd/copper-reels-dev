@@ -10,6 +10,7 @@ import {
   Video, 
   FileText,
   Palette,
+  Settings,
   ArrowLeft
 } from 'lucide-react';
 
@@ -27,6 +28,7 @@ export function AppHeader() {
     { path: '/plan', icon: Video, label: 'Planning' },
     { path: '/script-builder', icon: FileText, label: 'Script' },
     { path: '/pattern-bank', icon: Palette, label: 'Patterns' },
+    { path: '/settings', icon: Settings, label: 'Settings' },
   ];
 
   const currentPage = navItems.find(item => item.path === location.pathname);

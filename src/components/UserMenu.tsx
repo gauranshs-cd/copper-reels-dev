@@ -140,7 +140,7 @@ export function UserMenu() {
             
             {/* Settings & Help */}
             <DropdownMenuItem 
-              onClick={() => toast.info('Settings coming soon!')}
+              onClick={() => navigate('/settings')}
               className="cursor-pointer"
             >
               <Settings className="mr-2 h-4 w-4" />
