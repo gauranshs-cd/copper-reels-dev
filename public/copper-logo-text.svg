@@ -1,0 +1,18 @@
+<svg width="600" height="100" viewBox="0 0 600 100" fill="none" xmlns="http://www.w3.org/2000/svg">
+  <!-- COPPER REELS text -->
+  <text x="10" y="60" font-family="Arial, sans-serif" font-size="48" font-weight="bold" fill="url(#gradient)">
+    COPPER REELS
+  </text>
+  
+  <!-- Tagline -->
+  <text x="10" y="85" font-family="Arial, sans-serif" font-size="14" fill="#666">
+    AI-Powered YouTube Content Creation
+  </text>
+  
+  <defs>
+    <linearGradient id="gradient" x1="0%" y1="0%" x2="100%" y2="0%">
+      <stop offset="0%" stop-color="#4CAF84"/>
+      <stop offset="100%" stop-color="#29B6F6"/>
+    </linearGradient>
+  </defs>
+</svg>
