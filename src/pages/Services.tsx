@@ -182,6 +182,7 @@ export default function Services() {
   ];
 
   return (
+    <>
     <div className="min-h-screen bg-gradient-subtle">
       {/* Hero Section */}
       <section className="relative overflow-hidden">
@@ -495,6 +496,6 @@ export default function Services() {
         }}
       />
     )}
-  </div>
+    </>
   );
 }
