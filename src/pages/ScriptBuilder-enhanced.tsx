@@ -87,7 +87,27 @@ export default function ScriptBuilderEnhanced() {
   const scrollIntervalRef = useRef<NodeJS.Timeout | null>(null);
 
   useEffect(() => {
-    // Auto-generate script on mount
+    // Try to restore from localStorage first
+    const savedSections = localStorage.getItem('copper_reels_script_sections');
+    if (savedSections && !scriptSections.length) {
+      try {
+        const parsed = JSON.parse(savedSections);
+        if (parsed && parsed.length > 0) {
+          setScriptSections(parsed);
+          // Generate full script from saved sections
+          const script = parsed.map((section: ScriptSection) => 
+            `[${section.time}] ${section.brick}\n\n${section.scriptBeats}\n\n`
+          ).join('\n---\n\n');
+          setFullScript(script);
+          toast.info('Restored your previous script');
+          return;
+        }
+      } catch (e) {
+        console.error('Failed to restore saved sections:', e);
+      }
+    }
+    
+    // Auto-generate script on mount if no saved data
     if (scriptData && !scriptSections.length) {
       generateScript();
     }
@@ -177,24 +197,39 @@ Call to action: Like, subscribe, watch next`,
         }
       ];
       
+      // Save sections to localStorage immediately
+      localStorage.setItem('copper_reels_script_sections', JSON.stringify(sections));
+      
       // Use actual Gemini API if available
       if (selectedIdea) {
         try {
-          const generatedSections = await copperReelsGemini.generateVideoScriptTable({
-            topic: selectedIdea.concept,
-            avatarProfile: scriptData.research?.[0]?.description || 'Target audience',
-            targetAudience: selectedIdea.metadata?.targetAudience || 'Content creators',
-            duration: 6
-          });
+          // Add timeout wrapper for API call
+          const timeoutPromise = new Promise((_, reject) => 
+            setTimeout(() => reject(new Error('Script generation timed out after 20 seconds')), 20000)
+          );
+          
+          const generatedSections = await Promise.race([
+            copperReelsGemini.generateVideoScriptTable({
+              topic: selectedIdea.concept,
+              avatarProfile: scriptData.research?.[0]?.description || 'Target audience',
+              targetAudience: selectedIdea.metadata?.targetAudience || 'Content creators',
+              duration: 6
+            }),
+            timeoutPromise
+          ]) as Awaited<ReturnType<typeof copperReelsGemini.generateVideoScriptTable>>;
           
           if (generatedSections && generatedSections.length > 0) {
             setScriptSections(generatedSections);
+            localStorage.setItem('copper_reels_script_sections', JSON.stringify(generatedSections));
           } else {
             setScriptSections(sections);
           }
         } catch (error) {
-          console.log('Using default sections');
+          console.log('Using default sections due to:', error);
           setScriptSections(sections);
+          if (error instanceof Error && error.message.includes('timeout')) {
+            toast.warning('Generation timed out, using template structure');
+          }
         }
       } else {
         setScriptSections(sections);

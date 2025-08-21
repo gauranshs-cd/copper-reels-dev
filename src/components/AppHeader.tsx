@@ -13,7 +13,8 @@ import {
   Palette,
   Settings,
   DollarSign,
-  ArrowLeft
+  ArrowLeft,
+  Users
 } from 'lucide-react';
 
 export function AppHeader() {
