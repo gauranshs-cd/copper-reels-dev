@@ -236,17 +236,18 @@ export default function ScriptBuilder() {
       // Save bricks to localStorage immediately after generation
       localStorage.setItem('copper_reels_script_bricks', JSON.stringify(bricks));
       
-      // Try to generate table format but don't let it block completion
-      try {
-        // Generate table format in background - don't await
-        generateTableFormat().catch(err => {
-          console.warn('Table format generation failed (non-blocking):', err);
-        });
-      } catch (tableError) {
-        console.warn('Could not start table generation:', tableError);
-      }
+      // Update progress to 80%
+      setGenerationSteps(prev => prev.map((s, i) => 
+        i <= 2 ? { ...s, status: 'completed' } : 
+        i === 3 ? { ...s, status: 'active' } : s
+      ));
+      setGenerationStatus('Adding visual elements and B-roll suggestions...');
+      setGenerationProgress(80);
       
-      // Complete the generation regardless of table format
+      // Small delay for visual feedback
+      await new Promise(resolve => setTimeout(resolve, 300));
+      
+      // Move to 90%
       setGenerationSteps(prev => prev.map((s, i) => 
         i <= 3 ? { ...s, status: 'completed' } : 
         i === 4 ? { ...s, status: 'active' } : s
@@ -254,21 +255,29 @@ export default function ScriptBuilder() {
       setGenerationStatus('Finalizing your script...');
       setGenerationProgress(90);
       
+      // Try to generate table format in background (non-blocking)
+      generateTableFormat().catch(err => {
+        console.warn('Table format generation failed (non-critical):', err);
+      });
+      
       // Small delay for visual feedback
       await new Promise(resolve => setTimeout(resolve, 500));
       
-      // Final progress
+      // Complete to 100%
       setGenerationSteps(prev => prev.map(s => ({ ...s, status: 'completed' })));
       setGenerationStatus('Script generated successfully!');
       setGenerationProgress(100);
       
+      // Mark as complete
       setHasGenerated(true);
-      toast.success('Script generated successfully!');
+      toast.success('Script generated successfully! Your script is ready to use.');
       
-      // Small delay to show completion
+      // Small delay to show completion, then cleanup
       setTimeout(() => {
         setIsGenerating(false);
-      }, 1000);
+        setGenerationStatus('');
+        setGenerationProgress(0);
+      }, 1500);
     } catch (error) {
       console.error('Failed to generate script:', error);
       setGenerationSteps(prev => prev.map((s, i) => 
@@ -501,6 +510,23 @@ Return ONLY a JSON object with this structure:
           estimatedTime={45}
           steps={generationSteps}
         />
+        {/* Emergency complete button if stuck at 80% */}
+        {generationProgress >= 80 && generationProgress < 100 && (
+          <div className="fixed bottom-8 left-1/2 transform -translate-x-1/2 z-50">
+            <Button
+              onClick={() => {
+                setIsGenerating(false);
+                setHasGenerated(true);
+                setGenerationProgress(100);
+                toast.success('Script completed manually');
+              }}
+              variant="secondary"
+              className="shadow-lg"
+            >
+              Complete Script Now
+            </Button>
+          </div>
+        )}
       </>
     );
   }

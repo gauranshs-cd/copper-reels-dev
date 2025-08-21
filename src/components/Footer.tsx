@@ -182,7 +182,7 @@ export function Footer() {
           <div className="flex items-center gap-3">
             <Mail className="w-4 h-4 text-muted-foreground" />
             <span className="text-sm text-muted-foreground">
-              arvind@copperdigital.com
+              arvind@copperreels.com
             </span>
           </div>
           <div className="flex items-center gap-3">

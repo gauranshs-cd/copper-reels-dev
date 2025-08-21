@@ -43,8 +43,8 @@ const App = () => {
             <AuthProvider>
               <AdminButton />
               
-              {/* App Header with User Menu - only show on protected routes */}
-              {window.location.pathname !== '/' && window.location.pathname !== '/auth' && <AppHeader />}
+              {/* App Header with User Menu - show on all pages */}
+              <AppHeader />
               
               {/* History Button - Now positioned to avoid header overlap */}
               <Button

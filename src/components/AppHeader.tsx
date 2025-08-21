@@ -21,20 +21,20 @@ export function AppHeader() {
   const location = useLocation();
   const { user } = useAuth();
 
-  if (!user) return null;
-
-  const navItems = [
-    { path: '/', icon: Home, label: 'Home' },
-    { path: '/foundation', icon: Sparkles, label: 'Foundation' },
-    { path: '/ideation', icon: Lightbulb, label: 'Ideas' },
-    { path: '/plan', icon: Video, label: 'Planning' },
-    { path: '/script-builder', icon: FileText, label: 'Script' },
-    { path: '/services', icon: DollarSign, label: 'Services', highlight: true },
-    { path: '/pattern-bank', icon: Palette, label: 'Patterns' },
-    { path: '/settings', icon: Settings, label: 'Settings' },
+  const allNavItems = [
+    { path: '/', icon: Home, label: 'Home', public: true },
+    { path: '/about', icon: Users, label: 'About', public: true },
+    { path: '/services', icon: DollarSign, label: 'Services', highlight: true, public: true },
+    { path: '/foundation', icon: Sparkles, label: 'Foundation', public: false },
+    { path: '/ideation', icon: Lightbulb, label: 'Ideas', public: false },
+    { path: '/plan', icon: Video, label: 'Planning', public: false },
+    { path: '/script-builder', icon: FileText, label: 'Script', public: false },
+    { path: '/pattern-bank', icon: Palette, label: 'Patterns', public: false },
+    { path: '/settings', icon: Settings, label: 'Settings', public: false },
   ];
 
-  const currentPage = navItems.find(item => item.path === location.pathname);
+  const navItems = user ? allNavItems : allNavItems.filter(item => item.public);
+  const currentPage = allNavItems.find(item => item.path === location.pathname);
 
   return (
     <motion.header 
@@ -91,18 +91,29 @@ export function AppHeader() {
             </nav>
           </div>
 
-          {/* Right side - User Menu */}
+          {/* Right side - User Menu or Login */}
           <div className="flex items-center gap-4">
             {/* Current page indicator */}
-            {currentPage && (
+            {currentPage && user && (
               <div className="hidden sm:flex items-center gap-2 text-sm text-muted-foreground">
                 <currentPage.icon className="w-4 h-4" />
                 <span>{currentPage.label}</span>
               </div>
             )}
             
-            {/* User Menu */}
-            <UserMenu />
+            {/* User Menu or Login Button */}
+            {user ? (
+              <UserMenu />
+            ) : (
+              <div className="flex items-center gap-2">
+                <Button variant="ghost" onClick={() => navigate('/auth')}>
+                  Sign In
+                </Button>
+                <Button onClick={() => navigate('/auth')}>
+                  Get Started
+                </Button>
+              </div>
+            )}
           </div>
         </div>
       </div>
