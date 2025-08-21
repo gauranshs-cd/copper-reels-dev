@@ -6,7 +6,11 @@ import { generateFallbackScript } from './fallback-scripts';
 
 // Initialize Gemini client
 const apiKey = import.meta.env.VITE_GEMINI_API_KEY || '';
-console.log('Initializing Gemini with key:', apiKey ? 'Key exists' : 'No key found');
+console.log('Initializing Gemini with key:', apiKey ? `Key exists (${apiKey.substring(0, 10)}...)` : 'No key found');
+
+if (!apiKey) {
+  console.error('CRITICAL: No Gemini API key found! Please set VITE_GEMINI_API_KEY in .env file');
+}
 
 const genAI = new GoogleGenerativeAI(apiKey);
 
@@ -177,10 +181,28 @@ export class CopperReelsGemini {
       }
     } catch (error: any) {
       console.error('Gemini API error:', error);
+      console.error('Error details:', {
+        message: error?.message,
+        status: error?.status,
+        statusText: error?.statusText,
+        details: error?.details
+      });
       
-      // Check if it's a quota error
+      // Check for various error types
+      if (error?.message?.includes('API key not valid')) {
+        throw new Error('Invalid API key. Please check your Gemini API key configuration.');
+      }
+      
       if (error?.message?.includes('quota') || error?.message?.includes('429') || error?.message?.includes('RESOURCE_EXHAUSTED')) {
         throw new Error('API quota exceeded. Using fallback generation.');
+      }
+      
+      if (error?.message?.includes('PERMISSION_DENIED')) {
+        throw new Error('Permission denied. Please check your API key has the correct permissions.');
+      }
+      
+      if (error?.message?.includes('Failed to fetch')) {
+        throw new Error('Network error. Please check your internet connection.');
       }
       
       throw error;

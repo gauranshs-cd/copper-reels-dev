@@ -230,9 +230,21 @@ export default function Foundation() {
       toast.success('Foundation generated successfully!');
       setIsGenerating(false);
       setLoading(false);
-    } catch (error) {
+    } catch (error: any) {
       console.error('Failed to generate foundation:', error);
-      toast.error('Failed to generate foundation. Please try again.');
+      const errorMessage = error?.message || 'Unknown error';
+      
+      // More specific error messages
+      if (errorMessage.includes('quota') || errorMessage.includes('429')) {
+        toast.error('API quota exceeded. Please try again later or contact support.');
+      } else if (errorMessage.includes('API key')) {
+        toast.error('API key issue. Please contact support.');
+      } else if (errorMessage.includes('network') || errorMessage.includes('fetch')) {
+        toast.error('Network error. Please check your connection and try again.');
+      } else {
+        toast.error(`Failed to generate foundation: ${errorMessage}`);
+      }
+      
       setIsGenerating(false);
       setLoading(false);
     }
