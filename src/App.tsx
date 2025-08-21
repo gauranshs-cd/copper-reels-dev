@@ -28,6 +28,12 @@ import Test from "./pages/Test";
 import ChatInterface from "./pages/ChatInterface";
 import Dashboard from "./pages/Dashboard";
 import About from "./pages/About";
+import Documentation from "./pages/Documentation";
+import Blog from "./pages/Blog";
+import Contact from "./pages/Contact";
+import Careers from "./pages/Careers";
+import Privacy from "./pages/Privacy";
+import Terms from "./pages/Terms";
 
 const queryClient = new QueryClient();
 
@@ -129,6 +135,12 @@ const App = () => {
                 } />
                 <Route path="/services" element={<Services />} />
                 <Route path="/about" element={<About />} />
+                <Route path="/documentation" element={<Documentation />} />
+                <Route path="/blog" element={<Blog />} />
+                <Route path="/contact" element={<Contact />} />
+                <Route path="/careers" element={<Careers />} />
+                <Route path="/privacy" element={<Privacy />} />
+                <Route path="/terms" element={<Terms />} />
                   {/* ADD ALL CUSTOM ROUTES ABOVE THE CATCH-ALL "*" ROUTE */}
                   <Route path="*" element={<NotFound />} />
                 </Routes>

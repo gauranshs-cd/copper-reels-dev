@@ -8,7 +8,8 @@ import {
   Phone, 
   MapPin,
   ArrowRight,
-  Heart
+  Heart,
+  MessageCircle
 } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
@@ -30,16 +31,16 @@ export function Footer() {
       { name: 'Contact', href: '/contact' },
     ],
     resources: [
-      { name: 'Documentation', href: '/docs' },
-      { name: 'YouTube Guide', href: '/guide' },
-      { name: 'Case Studies', href: '/case-studies' },
-      { name: 'Support', href: '/support' },
+      { name: 'Documentation', href: '/documentation' },
+      { name: 'YouTube Guide', href: '/documentation' },
+      { name: 'Case Studies', href: '/blog' },
+      { name: 'Support', href: '/contact' },
     ],
     legal: [
       { name: 'Privacy Policy', href: '/privacy' },
       { name: 'Terms of Service', href: '/terms' },
-      { name: 'Cookie Policy', href: '/cookies' },
-      { name: 'Compliance', href: '/compliance' },
+      { name: 'Cookie Policy', href: '/privacy' },
+      { name: 'Compliance', href: '/privacy' },
     ],
   };
 
@@ -185,16 +186,27 @@ export function Footer() {
               arvind@copperreels.com
             </span>
           </div>
-          <div className="flex items-center gap-3">
-            <Phone className="w-4 h-4 text-muted-foreground" />
-            <span className="text-sm text-muted-foreground">
-              +1 (800) 829-4933
-            </span>
+          <div className="flex items-center gap-4">
+            <div className="flex items-center gap-2">
+              <Phone className="w-4 h-4 text-muted-foreground" />
+              <a href="tel:+14697420195" className="text-sm text-muted-foreground hover:text-foreground transition-colors">
+                +1 (469) 742-0195
+              </a>
+            </div>
+            <a 
+              href="https://wa.me/14697420195" 
+              target="_blank" 
+              rel="noopener noreferrer"
+              className="flex items-center gap-1 text-sm text-muted-foreground hover:text-green-500 transition-colors"
+            >
+              <MessageCircle className="w-4 h-4" />
+              WhatsApp
+            </a>
           </div>
           <div className="flex items-center gap-3">
             <MapPin className="w-4 h-4 text-muted-foreground" />
             <span className="text-sm text-muted-foreground">
-              4060 Spring Valley Rd, Suite 202, Farmers Branch, TX 75244
+              4100 Spring Valley Rd, STE 525, Dallas, TX 75244
             </span>
           </div>
         </div>

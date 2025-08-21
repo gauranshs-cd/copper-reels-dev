@@ -15,6 +15,18 @@ import { ScriptGenerationPage } from '@/pages/ScriptGeneration-new';
 import { ThumbnailGeneratorPage } from '@/pages/ThumbnailGenerator-new';
 import { PreviewPage } from '@/pages/Preview-new';
 
+// Import public pages
+import Index from '@/pages/Index-new';
+import About from '@/pages/About';
+import Services from '@/pages/Services';
+import Documentation from '@/pages/Documentation';
+import Blog from '@/pages/Blog';
+import Contact from '@/pages/Contact';
+import Careers from '@/pages/Careers';
+import Privacy from '@/pages/Privacy';
+import Terms from '@/pages/Terms';
+import PatternBank from '@/pages/PatternBank';
+
 interface Workspace {
   id: string;
   name: string;
@@ -270,9 +282,22 @@ export default function App() {
     <ThemeProvider defaultTheme="dark" storageKey="copper-reels-theme">
       <div className="min-h-screen bg-background">
         <Routes>
-          <Route path="/" element={<WorkspaceSelector />} />
+          {/* Public Pages */}
+          <Route path="/" element={<Index />} />
+          <Route path="/about" element={<About />} />
+          <Route path="/services" element={<Services />} />
+          <Route path="/documentation" element={<Documentation />} />
+          <Route path="/blog" element={<Blog />} />
+          <Route path="/contact" element={<Contact />} />
+          <Route path="/careers" element={<Careers />} />
+          <Route path="/privacy" element={<Privacy />} />
+          <Route path="/terms" element={<Terms />} />
+          <Route path="/pattern-bank" element={<PatternBank />} />
+          
+          {/* App Pages */}
+          <Route path="/workspace" element={<WorkspaceSelector />} />
           <Route path="/foundation" element={<Foundation />} />
-          <Route path="/*" element={<MainWorkflow />} />
+          <Route path="/app/*" element={<MainWorkflow />} />
         </Routes>
         <Toaster />
       </div>

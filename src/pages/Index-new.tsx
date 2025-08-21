@@ -36,35 +36,35 @@ export default function Index() {
   const features = [
     {
       icon: Lightbulb,
-      title: 'AI Ideation',
-      description: 'Generate viral video ideas tailored to your niche',
+      title: 'Set Your Foundation',
+      description: 'Pick your niche + goals',
       color: 'from-[#4CAF84] to-[#29B6F6]'
     },
     {
       icon: FileText,
-      title: 'Script Builder',
-      description: 'Create engaging scripts with psychological triggers',
+      title: 'Generate Ideas',
+      description: 'AI delivers viral-ready concepts',
       color: 'from-[#29B6F6] to-[#1E88E5]'
     },
     {
       icon: Image,
-      title: 'Thumbnail Generator',
-      description: 'Design eye-catching thumbnails that get clicks',
+      title: 'Publish & Grow',
+      description: 'Get scripts, thumbnails, and editing if you need it',
       color: 'from-[#A4CCC4] to-[#4CAF84]'
     },
     {
       icon: TrendingUp,
-      title: 'Pattern Banking',
-      description: 'Learn from viral patterns and replicate success',
+      title: 'Scale & Optimize',
+      description: 'Track performance and refine your strategy',
       color: 'from-[#1E88E5] to-[#29B6F6]'
     }
   ];
 
   const stats = [
-    { label: 'Videos Created', value: '10K+', icon: Video },
-    { label: 'Average CTR Boost', value: '47%', icon: Target },
-    { label: 'Active Creators', value: '2.5K', icon: Users },
-    { label: 'Views Generated', value: '50M+', icon: BarChart3 }
+    { label: 'Clients Served', value: '1,200+', icon: Video },
+    { label: 'Social Followers', value: '100K+', icon: Target },
+    { label: 'Years in Business', value: '15+', icon: Users },
+    { label: 'AI Tool Users', value: '700K+', icon: BarChart3 }
   ];
 
   return (
@@ -81,15 +81,21 @@ export default function Index() {
             className="text-center max-w-4xl mx-auto"
           >
             <h1 className="text-5xl md:text-6xl font-bold mb-6">
-              <span className="text-gradient">Transform Your</span>
+              <span className="text-gradient">Your AI-Powered</span>
               <br />
-              YouTube Success
+              YouTube Growth Assistant
             </h1>
             
-            <p className="text-xl text-muted-foreground mb-8 max-w-2xl mx-auto">
-              AI-powered content creation system that helps you generate viral ideas, 
-              write engaging scripts, and design thumbnails that convert.
+            <p className="text-xl text-muted-foreground mb-4 max-w-2xl mx-auto">
+              Generate viral ideas, scripts, and thumbnails in minutes — then scale with our full-service editing when you're ready.
             </p>
+            
+            <div className="inline-flex items-center gap-2 mb-8 px-4 py-2 bg-primary/10 rounded-full border border-primary/20">
+              <Sparkles className="w-4 h-4 text-primary" />
+              <span className="text-sm font-medium">
+                30-day free trial • Then just $10/month • Cancel anytime
+              </span>
+            </div>
             
             <div className="flex flex-col sm:flex-row gap-4 justify-center">
               {user ? (
@@ -120,7 +126,7 @@ export default function Index() {
                     onClick={() => navigate('/auth')}
                     className="bg-gradient-primary text-white hover:shadow-glow group"
                   >
-                    Get Started Free
+                    Start 30-Day Free Trial
                     <ArrowRight className="w-4 h-4 ml-2 group-hover:translate-x-1 transition-transform" />
                   </Button>
                   <Button
@@ -210,7 +216,7 @@ export default function Index() {
             className="text-center"
           >
             <h2 className="text-4xl font-bold text-white mb-4">
-              Ready to Transform Your Channel?
+              Ready to Grow Your Channel?
             </h2>
             <p className="text-xl text-white/90 mb-8 max-w-2xl mx-auto">
               Join thousands of creators who are using Copper Reels to grow their YouTube channels
@@ -241,11 +247,11 @@ export default function Index() {
               How It Works
             </h2>
             <p className="text-xl text-muted-foreground">
-              Three simple steps to YouTube success
+              Four simple steps to YouTube success
             </p>
           </motion.div>
 
-          <div className="grid md:grid-cols-3 gap-8 max-w-4xl mx-auto">
+          <div className="grid md:grid-cols-4 gap-8 max-w-6xl mx-auto">
             {[
               {
                 step: '1',
@@ -261,6 +267,11 @@ export default function Index() {
                 step: '3',
                 title: 'Create & Publish',
                 description: 'Get scripts, thumbnails, and everything you need'
+              },
+              {
+                step: '4',
+                title: 'Scale & Optimize',
+                description: 'Track performance and refine your strategy'
               }
             ].map((item, index) => (
               <motion.div
@@ -278,7 +289,7 @@ export default function Index() {
                   <h3 className="text-xl font-semibold mb-2">{item.title}</h3>
                   <p className="text-muted-foreground">{item.description}</p>
                 </div>
-                {index < 2 && (
+                {index < 3 && (
                   <div className="hidden md:block absolute top-8 left-[60%] w-[80%] h-0.5 bg-gradient-to-r from-[#4CAF84] to-[#29B6F6]" />
                 )}
               </motion.div>
@@ -301,38 +312,39 @@ export default function Index() {
               Success Stories
             </Badge>
             <h2 className="text-3xl md:text-4xl font-bold mb-4">
-              Trusted by <span className="text-gradient">2,500+ Creators</span>
+              Built on <span className="text-gradient">15+ Years of Business Excellence</span>
             </h2>
             <p className="text-xl text-muted-foreground max-w-2xl mx-auto">
-              See how content creators are scaling their channels with Copper Reels
+              From enterprise solutions to mobile apps, podcasts to YouTube - we've helped businesses scale with proven strategies. 
+              See our LinkedIn recommendations and 15+ years of business success since 2010.
             </p>
           </motion.div>
 
           <div className="grid md:grid-cols-3 gap-6">
             {[
               {
-                name: 'Sarah Johnson',
-                channel: 'TechSavvySarah',
-                avatar: 'SJ',
+                name: 'Henry',
+                channel: 'Video Client',
+                avatar: 'H',
                 rating: 5,
-                text: 'Copper Reels helped me go from 1K to 100K subscribers in 6 months. The AI suggestions are spot-on!',
-                metric: '100x Growth'
+                text: 'Our video team is awesome!',
+                metric: 'Team Excellence'
               },
               {
-                name: 'Mike Chen',
-                channel: 'CodingWithMike',
-                avatar: 'MC',
+                name: 'CEO CasperEdge',
+                channel: 'SaaS Platform',
+                avatar: 'CE',
                 rating: 5,
-                text: 'The script builder is a game-changer. My watch time increased by 300% using their frameworks.',
-                metric: '+300% Watch Time'
+                text: 'Our team is so great and understanding, so motivated and flexible too.',
+                metric: 'Flexible & Motivated'
               },
               {
-                name: 'Emma Davis',
-                channel: 'LifestyleEmma',
-                avatar: 'ED',
+                name: 'Tech Client',
+                channel: 'Enterprise Solutions',
+                avatar: 'TC',
                 rating: 5,
-                text: 'Finally, a tool that understands YouTube algorithms. Every video I create now gets 10x more views.',
-                metric: '10x More Views'
+                text: 'You have done awesome work time and time again. Big and small clients, all kinds of projects.',
+                metric: 'Proven Results'
               }
             ].map((testimonial, index) => (
               <motion.div
@@ -365,6 +377,85 @@ export default function Index() {
                 </Card>
               </motion.div>
             ))}
+          </div>
+        </div>
+      </section>
+
+      {/* AI Capabilities Section */}
+      <section className="py-20">
+        <div className="container mx-auto px-4">
+          <motion.div
+            initial={{ opacity: 0 }}
+            whileInView={{ opacity: 1 }}
+            viewport={{ once: true }}
+            className="text-center mb-12"
+          >
+            <Badge className="mb-4" variant="default">
+              <Brain className="w-3 h-3 mr-1" />
+              AI-Powered Intelligence
+            </Badge>
+            <h2 className="text-3xl md:text-4xl font-bold mb-4">
+              Built on $50k+ of Creator Training
+            </h2>
+            <p className="text-xl text-muted-foreground max-w-3xl mx-auto">
+              We've flown across the country to learn from successful creators and built their strategies into our AI
+            </p>
+          </motion.div>
+
+          <div className="grid md:grid-cols-3 gap-8 max-w-6xl mx-auto">
+            <motion.div
+              initial={{ opacity: 0, y: 20 }}
+              whileInView={{ opacity: 1, y: 0 }}
+              viewport={{ once: true }}
+              transition={{ delay: 0.1 }}
+              className="text-center"
+            >
+              <Card className="p-6 h-full">
+                <div className="w-12 h-12 mx-auto mb-4 rounded-lg bg-primary flex items-center justify-center">
+                  <Target className="w-6 h-6 text-primary-foreground" />
+                </div>
+                <h3 className="text-xl font-bold mb-2">Viral Pattern Analysis</h3>
+                <p className="text-muted-foreground">
+                  Our AI studies thousands of viral videos to identify patterns that drive clicks, views, and engagement
+                </p>
+              </Card>
+            </motion.div>
+
+            <motion.div
+              initial={{ opacity: 0, y: 20 }}
+              whileInView={{ opacity: 1, y: 0 }}
+              viewport={{ once: true }}
+              transition={{ delay: 0.2 }}
+              className="text-center"
+            >
+              <Card className="p-6 h-full">
+                <div className="w-12 h-12 mx-auto mb-4 rounded-lg bg-primary/80 flex items-center justify-center">
+                  <Zap className="w-6 h-6 text-primary-foreground" />
+                </div>
+                <h3 className="text-xl font-bold mb-2">Psychological Triggers</h3>
+                <p className="text-muted-foreground">
+                  Leverages proven psychological principles to create hooks that grab attention and keep viewers watching
+                </p>
+              </Card>
+            </motion.div>
+
+            <motion.div
+              initial={{ opacity: 0, y: 20 }}
+              whileInView={{ opacity: 1, y: 0 }}
+              viewport={{ once: true }}
+              transition={{ delay: 0.3 }}
+              className="text-center"
+            >
+              <Card className="p-6 h-full">
+                <div className="w-12 h-12 mx-auto mb-4 rounded-lg bg-primary/60 flex items-center justify-center">
+                  <TrendingUp className="w-6 h-6 text-primary-foreground" />
+                </div>
+                <h3 className="text-xl font-bold mb-2">Performance Optimization</h3>
+                <p className="text-muted-foreground">
+                  Continuously learns from your results to refine strategies and improve future content performance
+                </p>
+              </Card>
+            </motion.div>
           </div>
         </div>
       </section>
@@ -450,7 +541,7 @@ export default function Index() {
                 className="bg-gradient-primary text-white hover:shadow-glow"
               >
                 <Sparkles className="w-5 h-5 mr-2" />
-                Start Creating Now
+                Start free today. Upgrade anytime.
               </Button>
               <Button
                 size="lg"
