@@ -60,20 +60,21 @@ export function AppHeader() {
             )}
             
             {/* Logo/Brand */}
-            <div 
-              className="flex items-center gap-2 cursor-pointer"
+            <button
+              className="flex items-center gap-2 focus:outline-none"
               onClick={() => navigate('/')}
+              aria-label="Go to homepage"
             >
               <img 
                 src="/copper-reels-main.svg" 
                 alt="Copper Reels" 
-                className="h-12 w-auto"
+                className="h-12 w-auto cursor-pointer transition-opacity hover:opacity-90"
                 style={{ maxWidth: '240px' }}
               />
-            </div>
+            </button>
 
             {/* Navigation Links */}
-            <nav className="hidden md:flex items-center gap-1 ml-6">
+            <nav className="hidden md:flex items-center gap-2 ml-8">
               {navItems.map(item => (
                 <Button
                   key={item.path}

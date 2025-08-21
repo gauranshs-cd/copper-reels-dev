@@ -47,7 +47,7 @@ export default function Index() {
       color: 'from-[#29B6F6] to-[#1E88E5]'
     },
     {
-      icon: Image,
+      icon: Rocket,
       title: 'Publish & Grow',
       description: 'Get scripts, thumbnails, and editing if you need it',
       color: 'from-[#A4CCC4] to-[#4CAF84]'
@@ -87,7 +87,7 @@ export default function Index() {
             </h1>
             
             <p className="text-xl text-muted-foreground mb-4 max-w-2xl mx-auto">
-              Generate viral ideas, scripts, and thumbnails in minutes — then scale with our full-service editing when you're ready.
+              Generate viral ideas, scripts, and thumbnails in minutes, then scale with our full-service editing when you're ready.
             </p>
             
             <div className="inline-flex items-center gap-2 mb-8 px-4 py-2 bg-primary/10 rounded-full border border-primary/20">
@@ -223,78 +223,13 @@ export default function Index() {
             </p>
             <Button
               size="lg"
-              variant="secondary"
               onClick={() => navigate(user ? '/ideation' : '/auth')}
-              className="bg-white text-[#4CAF84] hover:bg-white/90 hover:shadow-glow-lg"
+              className="bg-white text-[#4CAF84] hover:bg-white/90 hover:shadow-glow-lg font-semibold"
             >
               <Sparkles className="w-5 h-5 mr-2" />
               Start Creating Now
             </Button>
           </motion.div>
-        </div>
-      </section>
-
-      {/* How It Works */}
-      <section className="py-20 bg-gradient-mesh">
-        <div className="container mx-auto px-4">
-          <motion.div
-            initial={{ opacity: 0 }}
-            whileInView={{ opacity: 1 }}
-            viewport={{ once: true }}
-            className="text-center mb-12"
-          >
-            <h2 className="text-4xl font-bold mb-4">
-              How It Works
-            </h2>
-            <p className="text-xl text-muted-foreground">
-              Four simple steps to YouTube success
-            </p>
-          </motion.div>
-
-          <div className="grid md:grid-cols-4 gap-8 max-w-6xl mx-auto">
-            {[
-              {
-                step: '1',
-                title: 'Set Your Foundation',
-                description: 'Define your niche, audience, and content pillars'
-              },
-              {
-                step: '2',
-                title: 'Generate Ideas',
-                description: 'AI creates viral video concepts tailored to your channel'
-              },
-              {
-                step: '3',
-                title: 'Create & Publish',
-                description: 'Get scripts, thumbnails, and everything you need'
-              },
-              {
-                step: '4',
-                title: 'Scale & Optimize',
-                description: 'Track performance and refine your strategy'
-              }
-            ].map((item, index) => (
-              <motion.div
-                key={item.step}
-                initial={{ opacity: 0, x: -20 }}
-                whileInView={{ opacity: 1, x: 0 }}
-                viewport={{ once: true }}
-                transition={{ delay: index * 0.2 }}
-                className="relative"
-              >
-                <div className="text-center">
-                  <div className="w-16 h-16 rounded-full bg-gradient-primary text-white text-2xl font-bold flex items-center justify-center mx-auto mb-4">
-                    {item.step}
-                  </div>
-                  <h3 className="text-xl font-semibold mb-2">{item.title}</h3>
-                  <p className="text-muted-foreground">{item.description}</p>
-                </div>
-                {index < 3 && (
-                  <div className="hidden md:block absolute top-8 left-[60%] w-[80%] h-0.5 bg-gradient-to-r from-[#4CAF84] to-[#29B6F6]" />
-                )}
-              </motion.div>
-            ))}
-          </div>
         </div>
       </section>
 

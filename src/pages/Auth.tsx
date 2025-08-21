@@ -1,7 +1,7 @@
 import { useState, useEffect } from 'react';
 import { motion } from 'framer-motion';
 import { useNavigate } from 'react-router-dom';
-import { Sparkles, Mail, Lock, User, ArrowRight } from 'lucide-react';
+import { Sparkles, Mail, Lock, User, ArrowRight, Eye, EyeOff } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Card } from '@/components/ui/card';
@@ -18,6 +18,8 @@ export default function Auth() {
     password: '',
     confirmPassword: ''
   });
+  const [showPassword, setShowPassword] = useState(false);
+  const [showConfirmPassword, setShowConfirmPassword] = useState(false);
 
   // Redirect if already authenticated
   useEffect(() => {
@@ -133,14 +135,22 @@ export default function Auth() {
               <div className="relative">
                 <Lock className="absolute left-3 top-1/2 transform -translate-y-1/2 w-4 h-4 text-muted-foreground" />
                 <Input
-                  type="password"
+                  type={showPassword ? "text" : "password"}
                   name="password"
                   placeholder="••••••••"
                   value={formData.password}
                   onChange={handleInputChange}
-                  className="pl-10"
+                  className="pl-10 pr-10"
                   required
                 />
+                <button
+                  type="button"
+                  onClick={() => setShowPassword(!showPassword)}
+                  className="absolute right-3 top-1/2 transform -translate-y-1/2 text-muted-foreground hover:text-foreground transition-colors"
+                  tabIndex={-1}
+                >
+                  {showPassword ? <EyeOff className="w-4 h-4" /> : <Eye className="w-4 h-4" />}
+                </button>
               </div>
             </div>
 
@@ -150,14 +160,22 @@ export default function Auth() {
                 <div className="relative">
                   <Lock className="absolute left-3 top-1/2 transform -translate-y-1/2 w-4 h-4 text-muted-foreground" />
                   <Input
-                    type="password"
+                    type={showConfirmPassword ? "text" : "password"}
                     name="confirmPassword"
                     placeholder="••••••••"
                     value={formData.confirmPassword}
                     onChange={handleInputChange}
-                    className="pl-10"
+                    className="pl-10 pr-10"
                     required
                   />
+                  <button
+                    type="button"
+                    onClick={() => setShowConfirmPassword(!showConfirmPassword)}
+                    className="absolute right-3 top-1/2 transform -translate-y-1/2 text-muted-foreground hover:text-foreground transition-colors"
+                    tabIndex={-1}
+                  >
+                    {showConfirmPassword ? <EyeOff className="w-4 h-4" /> : <Eye className="w-4 h-4" />}
+                  </button>
                 </div>
               </div>
             )}
