@@ -68,8 +68,8 @@ export function AppHeader() {
               <img 
                 src="/cr-logo-new.svg" 
                 alt="Copper Reels" 
-                className="h-12 w-auto cursor-pointer transition-opacity hover:opacity-90"
-                style={{ maxWidth: '240px' }}
+                className="h-10 w-auto cursor-pointer transition-opacity hover:opacity-90"
+                style={{ maxWidth: '200px' }}
               />
             </button>
 
