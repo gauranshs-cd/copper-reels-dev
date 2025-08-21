@@ -301,7 +301,7 @@ export default function Documentation() {
                     <p className="text-sm text-muted-foreground mb-2">{video.description}</p>
                     <div className="flex items-center justify-between">
                       <span className="text-sm text-primary">{video.duration}</span>
-                      <Button size="sm" variant="ghost">
+                      <Button size="sm" variant="ghost" onClick={() => window.open(`/tutorials/${video.title.toLowerCase().replace(/\s+/g, '-')}`, '_blank')}>
                         Watch Now
                         <ExternalLink className="w-3 h-3 ml-1" />
                       </Button>

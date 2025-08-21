@@ -35,6 +35,7 @@ import {
 } from 'lucide-react';
 import { useRef, useState, useEffect } from 'react';
 import { cn } from '@/lib/utils';
+import { useNavigate } from 'react-router-dom';
 
 // Import team photos
 import neonSign from '@/assets/team-photos/just the initial neon sign at first home office.jpeg';
@@ -120,6 +121,7 @@ const timelineEvents = [
 ];
 
 export default function About() {
+  const navigate = useNavigate();
   const containerRef = useRef<HTMLDivElement>(null);
   const { scrollYProgress } = useScroll({
     target: containerRef,
@@ -428,6 +430,7 @@ export default function About() {
                       <Button 
                         size="icon" 
                         className="absolute -bottom-2 -right-2 rounded-full bg-primary hover:bg-primary/90"
+                        onClick={() => window.open('https://www.youtube.com/watch?v=dQw4w9WgXcQ', '_blank')}
                       >
                         <PlayCircle className="w-5 h-5" />
                       </Button>
@@ -567,11 +570,11 @@ export default function About() {
               Join 1,200+ creators who've already discovered the Copper Reels difference
             </p>
             <div className="flex gap-4 justify-center">
-              <Button size="lg" className="group">
+              <Button size="lg" className="group" onClick={() => navigate('/auth')}>
                 Get Started
                 <ArrowRight className="w-4 h-4 ml-2 group-hover:translate-x-1 transition-transform" />
               </Button>
-              <Button size="lg" variant="outline">
+              <Button size="lg" variant="outline" onClick={() => window.open('https://calendly.com/arvindsarin/30min', '_blank')}>
                 Book a Call
               </Button>
             </div>

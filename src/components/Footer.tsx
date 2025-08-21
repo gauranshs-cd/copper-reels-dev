@@ -16,6 +16,12 @@ import { Input } from '@/components/ui/input';
 
 export function Footer() {
   const currentYear = new Date().getFullYear();
+  
+  const handleNewsletterSubmit = (e: React.FormEvent) => {
+    e.preventDefault();
+    // Newsletter subscription functionality would go here
+    alert('Newsletter subscription coming soon!');
+  };
 
   const footerLinks = {
     product: [
@@ -63,13 +69,14 @@ export function Footer() {
             <p className="text-muted-foreground mb-6">
               Get weekly insights on viral content strategies and platform updates
             </p>
-            <form className="flex flex-col sm:flex-row gap-3 max-w-md mx-auto">
+            <form className="flex flex-col sm:flex-row gap-3 max-w-md mx-auto" onSubmit={handleNewsletterSubmit}>
               <Input
                 type="email"
                 placeholder="Enter your email"
                 className="flex-1"
+                required
               />
-              <Button className="bg-gradient-primary">
+              <Button type="submit" className="bg-gradient-primary">
                 Subscribe
                 <ArrowRight className="w-4 h-4 ml-2" />
               </Button>

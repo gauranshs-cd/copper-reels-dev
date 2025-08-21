@@ -16,6 +16,7 @@ import {
   Tag
 } from 'lucide-react';
 import { useNavigate } from 'react-router-dom';
+import { useState } from 'react';
 
 const blogPosts = [
   {
@@ -88,6 +89,7 @@ const categories = [
 
 export default function Blog() {
   const navigate = useNavigate();
+  const [selectedCategory, setSelectedCategory] = useState('All');
 
   return (
     <div className="min-h-screen bg-gradient-mesh">
@@ -126,8 +128,9 @@ export default function Blog() {
                 transition={{ delay: index * 0.05 }}
               >
                 <Button
-                  variant={category.name === 'All' ? 'default' : 'outline'}
+                  variant={selectedCategory === category.name ? 'default' : 'outline'}
                   className="gap-2"
+                  onClick={() => setSelectedCategory(category.name)}
                 >
                   {category.name}
                   <Badge variant="secondary" className="ml-1">
@@ -183,7 +186,7 @@ export default function Blog() {
                       </Badge>
                     ))}
                   </div>
-                  <Button className="group-hover:gap-4 transition-all">
+                  <Button className="group-hover:gap-4 transition-all" onClick={() => navigate(`/blog/${post.id}`)}>
                     Read Article
                     <ArrowRight className="w-4 h-4 ml-2" />
                   </Button>
