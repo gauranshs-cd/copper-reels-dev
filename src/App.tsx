@@ -10,6 +10,7 @@ import { AdminButton } from "@/components/AdminButton";
 import { HistorySidebar } from "@/components/HistorySidebar";
 import { UserMenu } from "@/components/UserMenu";
 import { AppHeader } from "@/components/AppHeader";
+import { ScrollToTop } from "@/components/ScrollToTop";
 import { useState } from 'react';
 import { Button } from "@/components/ui/button";
 import { Clock } from 'lucide-react';
@@ -46,6 +47,7 @@ const App = () => {
           <Toaster />
           <Sonner />
           <BrowserRouter>
+            <ScrollToTop />
             <AuthProvider>
               <AdminButton />
               
