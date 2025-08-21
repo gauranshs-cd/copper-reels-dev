@@ -94,7 +94,7 @@ export function Footer() {
           {/* Brand Column */}
           <div className="lg:col-span-2">
             <img 
-              src="/copper-reels-main.svg" 
+              src="/cr-logo-white.svg" 
               alt="Copper Reels" 
               className="h-14 w-auto mb-4"
               style={{ maxWidth: '250px' }}

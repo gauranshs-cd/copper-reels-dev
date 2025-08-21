@@ -508,7 +508,7 @@ What's your main goal with this topic?`,
           <div className="flex items-center justify-between">
             <div className="flex items-center gap-3">
               <img 
-                src="/copper-reels-main.svg" 
+                src="/cr-logo-new.svg" 
                 alt="Copper Reels" 
                 className="h-10 w-auto"
                 style={{ maxWidth: '200px' }}
