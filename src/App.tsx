@@ -10,6 +10,7 @@ import { AdminButton } from "@/components/AdminButton";
 import { HistorySidebar } from "@/components/HistorySidebar";
 import { UserMenu } from "@/components/UserMenu";
 import { AppHeader } from "@/components/AppHeader";
+import { AppLayout } from "@/components/layout/AppLayout";
 import { ScrollToTop } from "@/components/ScrollToTop";
 import { useState } from 'react';
 import { Button } from "@/components/ui/button";
@@ -40,6 +41,8 @@ const queryClient = new QueryClient();
 
 const App = () => {
   const [historyOpen, setHistoryOpen] = useState(false);
+  const [useNewLayout, setUseNewLayout] = useState(true); // Feature flag for new layout
+  
   return (
     <QueryClientProvider client={queryClient}>
       <ThemeProvider defaultTheme="light" storageKey="copper-reels-theme">
@@ -51,53 +54,70 @@ const App = () => {
             <AuthProvider>
               <AdminButton />
               
-              {/* App Header with User Menu - show on all pages */}
-              <AppHeader />
+              {/* Conditionally render old header or new layout */}
+              {!useNewLayout && (
+                <>
+                  {/* Old Layout - App Header with User Menu */}
+                  <AppHeader />
+                  
+                  {/* History Button - Now positioned to avoid header overlap */}
+                  <Button
+                    onClick={() => setHistoryOpen(true)}
+                    className="fixed left-4 top-20 z-30"
+                    variant="outline"
+                    size="icon"
+                    aria-label="View history"
+                  >
+                    <Clock className="w-4 h-4" />
+                  </Button>
+                  
+                  {/* History Sidebar */}
+                  <HistorySidebar 
+                    isOpen={historyOpen}
+                    onClose={() => setHistoryOpen(false)}
+                    onSelectItem={(item) => {
+                      console.log('Selected history item:', item);
+                      // Handle navigation based on item type
+                      if (item.type === 'idea' && item.data?.idea) {
+                        // Navigate to ideation page with the selected idea
+                        window.location.href = '/ideation';
+                      } else if (item.type === 'script') {
+                        window.location.href = '/script-builder';
+                      } else if (item.type === 'foundation') {
+                        window.location.href = '/foundation';
+                      }
+                      setHistoryOpen(false);
+                    }}
+                  />
+                </>
+              )}
               
-              {/* History Button - Now positioned to avoid header overlap */}
-              <Button
-                onClick={() => setHistoryOpen(true)}
-                className="fixed left-4 top-20 z-30"
-                variant="outline"
-                size="icon"
-                aria-label="View history"
-              >
-                <Clock className="w-4 h-4" />
-              </Button>
-              
-              {/* History Sidebar */}
-              <HistorySidebar 
-                isOpen={historyOpen}
-                onClose={() => setHistoryOpen(false)}
-                onSelectItem={(item) => {
-                  console.log('Selected history item:', item);
-                  // Handle navigation based on item type
-                  if (item.type === 'idea' && item.data?.idea) {
-                    // Navigate to ideation page with the selected idea
-                    window.location.href = '/ideation';
-                  } else if (item.type === 'script') {
-                    window.location.href = '/script-builder';
-                  } else if (item.type === 'foundation') {
-                    window.location.href = '/foundation';
-                  }
-                  setHistoryOpen(false);
-                }}
-              />
-              
-              {/* Main content with padding for header */}
-              <div className="pt-16">
+              {/* Main content - conditionally wrapped */}
+              <div className={!useNewLayout ? "pt-16" : ""}>
                 <Routes>
                   <Route path="/" element={<Index />} />
                   <Route path="/auth" element={<Auth />} />
                   <Route path="/test" element={<Test />} />
                   <Route path="/chat" element={
                     <ProtectedRoute>
-                      <ChatInterface />
+                      {useNewLayout ? (
+                        <AppLayout>
+                          <ChatInterface />
+                        </AppLayout>
+                      ) : (
+                        <ChatInterface />
+                      )}
                     </ProtectedRoute>
                   } />
                   <Route path="/dashboard" element={
                     <ProtectedRoute>
-                      <Dashboard />
+                      {useNewLayout ? (
+                        <AppLayout>
+                          <Dashboard />
+                        </AppLayout>
+                      ) : (
+                        <Dashboard />
+                      )}
                     </ProtectedRoute>
                   } />
                   <Route path="/onboarding" element={
@@ -107,32 +127,68 @@ const App = () => {
                   } />
                 <Route path="/foundation" element={
                   <ProtectedRoute>
-                    <Foundation />
+                    {useNewLayout ? (
+                      <AppLayout>
+                        <Foundation />
+                      </AppLayout>
+                    ) : (
+                      <Foundation />
+                    )}
                   </ProtectedRoute>
                 } />
                 <Route path="/ideation" element={
                   <ProtectedRoute>
-                    <Ideation />
+                    {useNewLayout ? (
+                      <AppLayout>
+                        <Ideation />
+                      </AppLayout>
+                    ) : (
+                      <Ideation />
+                    )}
                   </ProtectedRoute>
                 } />
                 <Route path="/plan" element={
                   <ProtectedRoute>
-                    <VideoPlanning />
+                    {useNewLayout ? (
+                      <AppLayout>
+                        <VideoPlanning />
+                      </AppLayout>
+                    ) : (
+                      <VideoPlanning />
+                    )}
                   </ProtectedRoute>
                 } />
                 <Route path="/script-builder" element={
                   <ProtectedRoute>
-                    <ScriptBuilder />
+                    {useNewLayout ? (
+                      <AppLayout>
+                        <ScriptBuilder />
+                      </AppLayout>
+                    ) : (
+                      <ScriptBuilder />
+                    )}
                   </ProtectedRoute>
                 } />
                 <Route path="/pattern-bank" element={
                   <ProtectedRoute>
-                    <PatternBank />
+                    {useNewLayout ? (
+                      <AppLayout>
+                        <PatternBank />
+                      </AppLayout>
+                    ) : (
+                      <PatternBank />
+                    )}
                   </ProtectedRoute>
                 } />
                 <Route path="/settings" element={
                   <ProtectedRoute>
-                    <Settings />
+                    {useNewLayout ? (
+                      <AppLayout>
+                        <Settings />
+                      </AppLayout>
+                    ) : (
+                      <Settings />
+                    )}
                   </ProtectedRoute>
                 } />
                 <Route path="/services" element={<Services />} />
