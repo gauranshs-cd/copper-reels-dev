@@ -67,7 +67,7 @@ interface TeleprompterSettings {
 
 export default function ScriptBuilderEnhanced() {
   const navigate = useNavigate();
-  const { scriptData, selectedIdea } = useAppStore();
+  const { currentScript, selectedIdea } = useAppStore();
   
   const [activeTab, setActiveTab] = useState('table');
   const [scriptSections, setScriptSections] = useState<ScriptSection[]>([]);
@@ -108,13 +108,13 @@ export default function ScriptBuilderEnhanced() {
     }
     
     // Auto-generate script on mount if no saved data
-    if (scriptData && !scriptSections.length) {
+    if (currentScript && !scriptSections.length) {
       generateScript();
     }
-  }, [scriptData]);
+  }, [currentScript]);
 
   const generateScript = async () => {
-    if (!scriptData || !selectedIdea) {
+    if (!currentScript || !selectedIdea) {
       toast.error('Missing planning data');
       return;
     }
@@ -128,7 +128,7 @@ export default function ScriptBuilderEnhanced() {
           id: '1',
           brick: 'INTRO BRICK',
           time: '0:00-0:30',
-          scriptBeats: `Hook: "${scriptData.title?.text || selectedIdea.concept}"
+          scriptBeats: `Hook: "${currentScript.title?.text || selectedIdea.concept}"
 Problem: What viewers struggle with
 Value: What they'll learn today`,
           avatarDialogue: 'Is this really possible? Can I actually do this?',
@@ -158,7 +158,7 @@ The transformation possible`,
           id: '4',
           brick: 'MIDDLE BRICK 1',
           time: '1:30-3:30',
-          scriptBeats: `Core concept #1: ${scriptData.bricks?.[2]?.elements?.examples?.[0] || 'Key insight'}
+          scriptBeats: `Core concept #1: ${currentScript.bricks?.[2]?.elements?.examples?.[0] || 'Key insight'}
 Step-by-step breakdown
 Visual demonstration`,
           avatarDialogue: 'This makes sense, I can see how this works',
@@ -211,7 +211,7 @@ Call to action: Like, subscribe, watch next`,
           const generatedSections = await Promise.race([
             copperReelsGemini.generateVideoScriptTable({
               topic: selectedIdea.concept,
-              avatarProfile: scriptData.research?.[0]?.description || 'Target audience',
+              avatarProfile: currentScript.research?.[0]?.description || 'Target audience',
               targetAudience: selectedIdea.metadata?.targetAudience || 'Content creators',
               duration: 6
             }),
@@ -347,7 +347,7 @@ Call to action: Like, subscribe, watch next`,
     });
   };
 
-  if (!scriptData || !selectedIdea) {
+  if (!currentScript || !selectedIdea) {
     return (
       <div className="min-h-screen bg-gradient-subtle flex items-center justify-center">
         <div className="text-center space-y-4">
@@ -401,7 +401,7 @@ Call to action: Like, subscribe, watch next`,
             <Card className="p-4 bg-primary/5 border-primary/20">
               <div className="flex items-center justify-between">
                 <div>
-                  <h3 className="font-semibold">{scriptData.title?.text}</h3>
+                  <h3 className="font-semibold">{currentScript.title?.text}</h3>
                   <div className="flex gap-2 mt-2">
                     <Badge variant="outline">{selectedIdea.pillar}</Badge>
                     <Badge variant="secondary">
@@ -412,10 +412,10 @@ Call to action: Like, subscribe, watch next`,
                     </Badge>
                   </div>
                 </div>
-                {scriptData.thumbnail?.url && (
+                {currentScript.thumbnail?.url && (
                   <div className="aspect-video w-24 rounded overflow-hidden">
                     <img 
-                      src={scriptData.thumbnail.url} 
+                      src={currentScript.thumbnail.url} 
                       alt="Thumbnail"
                       className="w-full h-full object-cover"
                     />

@@ -101,8 +101,8 @@ export default function VideoPlanning() {
   const navigate = useNavigate();
   const { 
     selectedIdea, 
-    scriptData,
-    setScriptData,
+    currentScript,
+    setCurrentScript,
     setCurrentStep,
     setLoading 
   } = useAppStore();
@@ -284,7 +284,7 @@ export default function VideoPlanning() {
       const thumbnails: ThumbnailOption[] = [
         {
           id: 'thumb-1',
-          url: selectedIdea.thumbnailUrl || '/placeholder.jpg',
+          url: selectedIdea.thumbnail || '/placeholder.jpg',
           prompt: 'Original idea thumbnail',
           selected: true
         },
@@ -364,7 +364,7 @@ export default function VideoPlanning() {
       research: youtubeLinks
     };
     
-    setScriptData(planData);
+    setCurrentScript(planData);
     navigate('/script-builder');
   };
 
@@ -402,8 +402,8 @@ export default function VideoPlanning() {
             <Card className="mt-4 p-4 bg-primary/5 border-primary/20">
               <div className="flex items-start gap-4">
                 <div className="aspect-video w-32 bg-gradient-to-br from-primary/20 to-primary/10 rounded overflow-hidden">
-                  {selectedIdea.thumbnailUrl ? (
-                    <img src={selectedIdea.thumbnailUrl} alt={selectedIdea.concept} className="w-full h-full object-cover" />
+                  {selectedIdea.thumbnail ? (
+                    <img src={selectedIdea.thumbnail} alt={selectedIdea.concept} className="w-full h-full object-cover" />
                   ) : (
                     <div className="w-full h-full flex items-center justify-center">
                       <Video className="w-8 h-8 text-muted-foreground" />
@@ -415,7 +415,7 @@ export default function VideoPlanning() {
                   <p className="text-sm text-muted-foreground">{selectedIdea.angle}</p>
                   <div className="flex gap-2 mt-2">
                     <Badge variant="outline">{selectedIdea.pillar}</Badge>
-                    <Badge variant="secondary">Difficulty: {selectedIdea.difficulty}/5</Badge>
+                    <Badge variant="secondary">CTR: {selectedIdea.ctrScore}%</Badge>
                   </div>
                 </div>
               </div>
