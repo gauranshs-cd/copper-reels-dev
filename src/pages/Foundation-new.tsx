@@ -25,6 +25,7 @@ import { Badge } from '@/components/ui/badge';
 import { NavigationFlow } from '@/components/NavigationFlow';
 import { FloatingNextButton } from '@/components/FloatingNextButton';
 import { LoadingSpinner } from '@/components/ui/loading-spinner';
+import { FoundationModal } from '@/components/FoundationModal';
 import { useLayout } from '@/contexts/LayoutContext';
 import { useAuth } from '@/components/auth/AuthProvider';
 import { useAppStore } from '@/store/useAppStore';
@@ -64,6 +65,7 @@ export default function Foundation() {
   
   const [isGenerating, setIsGenerating] = useState(false);
   const [showSelector, setShowSelector] = useState(false);
+  const [showFoundationModal, setShowFoundationModal] = useState(false);
   const [previousFoundations, setPreviousFoundations] = useState<any[]>([]);
   const [demographicBlocks, setDemographicBlocks] = useState<SelectableBlock[]>([]);
   const [psychographicBlocks, setPsychographicBlocks] = useState<SelectableBlock[]>([]);
@@ -269,8 +271,48 @@ export default function Foundation() {
     return baseTopics[pillarName] || ['Topic 1', 'Topic 2', 'Topic 3', 'Topic 4'];
   };
 
+  const handleFoundationModalSubmit = async (data: { niche: string; audience: string; goals: string }) => {
+    // Save the foundation data from modal
+    const newFoundationData: FoundationData = {
+      avatar: {
+        demographics: data.audience,
+        psychographics: data.goals,
+        painPoints: '', // Will be generated later
+        goals: data.goals
+      },
+      viewerType: 'LEARNER', // Default, will be determined by AI
+      viewerTypeRationale: '',
+      pillars: []
+    };
+    
+    // Save to localStorage for persistence
+    localStorage.setItem('foundation_basic_data', JSON.stringify(data));
+    localStorage.setItem('foundation_data', JSON.stringify(newFoundationData));
+    
+    // Update store
+    setFoundationData(newFoundationData);
+    
+    // Close modal and generate full foundation
+    setShowFoundationModal(false);
+    
+    // Use the niche as the umbrella statement and generate foundation
+    await generateFoundation(data.niche);
+    
+    toast.success('Foundation data saved! Generating content pillars...');
+  };
+
   useEffect(() => {
     setCurrentStep('foundation');
+    
+    // Check if we have foundation data in localStorage or store
+    const savedFoundationData = localStorage.getItem('foundation_data');
+    const savedBasicData = localStorage.getItem('foundation_basic_data');
+    
+    if (!foundationData && !savedFoundationData && !savedBasicData && !umbrellaStatement) {
+      // No foundation data at all - show the modal
+      setShowFoundationModal(true);
+      return;
+    }
     
     // Load previous foundations
     const saved = localStorage.getItem('previous_foundations');
@@ -419,9 +461,26 @@ export default function Foundation() {
   }
 
   return (
-    <div className="min-h-screen bg-gradient-subtle pb-32">
-      <div className="container mx-auto px-4 py-6">
-        <motion.div
+    <>
+      {/* Foundation Modal with Overlay */}
+      {showFoundationModal && (
+        <div className="fixed inset-0 z-50">
+          {/* Grey overlay */}
+          <div className="absolute inset-0 bg-black/60 backdrop-blur-sm" />
+          {/* Modal */}
+          <FoundationModal 
+            open={showFoundationModal}
+            onSubmit={handleFoundationModalSubmit}
+          />
+        </div>
+      )}
+      
+      <div className={cn(
+        "min-h-screen bg-gradient-subtle pb-32",
+        showFoundationModal && "pointer-events-none opacity-50"
+      )}>
+        <div className="container mx-auto px-4 py-6">
+          <motion.div
           initial={{ opacity: 0, y: 20 }}
           animate={{ opacity: 1, y: 0 }}
           className="max-w-7xl mx-auto mt-8"
@@ -672,6 +731,7 @@ export default function Foundation() {
           nextPath="/ideation"
         />
       )}
-    </div>
+      </div>
+    </>
   );
 }
