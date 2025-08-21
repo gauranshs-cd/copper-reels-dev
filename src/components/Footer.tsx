@@ -18,28 +18,28 @@ export function Footer() {
 
   const footerLinks = {
     product: [
-      { name: 'Features', href: '#features' },
+      { name: 'Features', href: '/chat' },
       { name: 'Pricing', href: '/services' },
       { name: 'Pattern Bank', href: '/pattern-bank' },
-      { name: 'API Access', href: '#' },
+      { name: 'AI Studio', href: '/chat' },
     ],
     company: [
-      { name: 'About Us', href: '#' },
-      { name: 'Blog', href: '#' },
-      { name: 'Careers', href: '#' },
-      { name: 'Press Kit', href: '#' },
+      { name: 'About Us', href: '/about' },
+      { name: 'Blog', href: '/blog' },
+      { name: 'Careers', href: '/careers' },
+      { name: 'Contact', href: '/contact' },
     ],
     resources: [
-      { name: 'Documentation', href: '#' },
-      { name: 'YouTube Guide', href: '#' },
-      { name: 'Case Studies', href: '#' },
-      { name: 'Webinars', href: '#' },
+      { name: 'Documentation', href: '/docs' },
+      { name: 'YouTube Guide', href: '/guide' },
+      { name: 'Case Studies', href: '/case-studies' },
+      { name: 'Support', href: '/support' },
     ],
     legal: [
-      { name: 'Privacy Policy', href: '#' },
-      { name: 'Terms of Service', href: '#' },
-      { name: 'Cookie Policy', href: '#' },
-      { name: 'GDPR', href: '#' },
+      { name: 'Privacy Policy', href: '/privacy' },
+      { name: 'Terms of Service', href: '/terms' },
+      { name: 'Cookie Policy', href: '/cookies' },
+      { name: 'Compliance', href: '/compliance' },
     ],
   };
 
@@ -182,19 +182,19 @@ export function Footer() {
           <div className="flex items-center gap-3">
             <Mail className="w-4 h-4 text-muted-foreground" />
             <span className="text-sm text-muted-foreground">
-              hello@copperreels.com
+              arvind@copperdigital.com
             </span>
           </div>
           <div className="flex items-center gap-3">
             <Phone className="w-4 h-4 text-muted-foreground" />
             <span className="text-sm text-muted-foreground">
-              +1 (555) 123-4567
+              +1 (800) 829-4933
             </span>
           </div>
           <div className="flex items-center gap-3">
             <MapPin className="w-4 h-4 text-muted-foreground" />
             <span className="text-sm text-muted-foreground">
-              San Francisco, CA
+              4060 Spring Valley Rd, Suite 202, Farmers Branch, TX 75244
             </span>
           </div>
         </div>

@@ -80,17 +80,6 @@ export default function Index() {
             transition={{ duration: 0.6 }}
             className="text-center max-w-4xl mx-auto"
           >
-            {/* Logo */}
-            <motion.img
-              src="/copper-reels-main.svg"
-              alt="Copper Reels"
-              className="h-28 md:h-36 mx-auto mb-8 w-auto"
-              style={{ maxWidth: '600px' }}
-              initial={{ scale: 0.8, opacity: 0 }}
-              animate={{ scale: 1, opacity: 1 }}
-              transition={{ duration: 0.5 }}
-            />
-            
             <h1 className="text-5xl md:text-6xl font-bold mb-6">
               <span className="text-gradient">Transform Your</span>
               <br />
@@ -249,7 +238,7 @@ export default function Index() {
             className="text-center mb-12"
           >
             <h2 className="text-4xl font-bold mb-4">
-              How <span className="text-gradient">Copper Reels</span> Works
+              How It Works
             </h2>
             <p className="text-xl text-muted-foreground">
               Three simple steps to YouTube success

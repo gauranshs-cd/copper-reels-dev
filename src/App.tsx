@@ -27,6 +27,7 @@ import NotFound from "./pages/NotFound";
 import Test from "./pages/Test";
 import ChatInterface from "./pages/ChatInterface";
 import Dashboard from "./pages/Dashboard";
+import About from "./pages/About";
 
 const queryClient = new QueryClient();
 
@@ -127,6 +128,7 @@ const App = () => {
                   </ProtectedRoute>
                 } />
                 <Route path="/services" element={<Services />} />
+                <Route path="/about" element={<About />} />
                   {/* ADD ALL CUSTOM ROUTES ABOVE THE CATCH-ALL "*" ROUTE */}
                   <Route path="*" element={<NotFound />} />
                 </Routes>
