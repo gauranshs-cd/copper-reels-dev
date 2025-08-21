@@ -4,6 +4,7 @@ import { Button } from '@/components/ui/button';
 import { UserMenu } from '@/components/UserMenu';
 import { useAuth } from '@/components/auth/AuthProvider';
 import { cn } from '@/lib/utils';
+import { assets } from '@/config/assets';
 import { 
   Home, 
   Sparkles, 
@@ -66,7 +67,7 @@ export function AppHeader() {
               aria-label="Go to homepage"
             >
               <img 
-                src="/cr-logo-new.svg" 
+                src={assets.logos.primary} 
                 alt="Copper Reels" 
                 className="h-10 w-auto cursor-pointer transition-opacity hover:opacity-90"
                 style={{ maxWidth: '200px' }}

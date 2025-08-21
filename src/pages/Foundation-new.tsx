@@ -23,7 +23,9 @@ import { Button } from '@/components/ui/button';
 import { Card } from '@/components/ui/card';
 import { Badge } from '@/components/ui/badge';
 import { NavigationFlow } from '@/components/NavigationFlow';
+import { FloatingNextButton } from '@/components/FloatingNextButton';
 import { LoadingSpinner } from '@/components/ui/loading-spinner';
+import { useLayout } from '@/contexts/LayoutContext';
 import { useAppStore } from '@/store/useAppStore';
 import { copperReelsGemini } from '@/lib/gemini';
 import { sessionService } from '@/lib/supabase/session-service';
@@ -49,6 +51,7 @@ interface EnhancedPillar extends ContentPillar {
 
 export default function Foundation() {
   const navigate = useNavigate();
+  const { hasSidebar } = useLayout();
   const { 
     umbrellaStatement, 
     foundationData, 
@@ -651,12 +654,22 @@ export default function Foundation() {
         </motion.div>
       </div>
       
-      {/* Navigation Flow */}
+      {/* Navigation Flow - only show when sidebar is not present */}
       <NavigationFlow
         canProceed={enhancedPillars.some(p => p.selected)}
         nextLabel="Generate Ideas"
         onNext={proceedToIdeas}
       />
+      
+      {/* Floating Next Button - only show when sidebar is present */}
+      {hasSidebar && (
+        <FloatingNextButton
+          show={enhancedPillars.some(p => p.selected)}
+          onClick={proceedToIdeas}
+          label="Generate Ideas"
+          nextPath="/ideation"
+        />
+      )}
     </div>
   );
 }

@@ -24,7 +24,7 @@ export default function Auth() {
   // Redirect if already authenticated
   useEffect(() => {
     if (user) {
-      navigate('/onboarding');
+      navigate('/chat');
     }
   }, [user, navigate]);
 
@@ -49,8 +49,8 @@ export default function Auth() {
             toast.error(error.message || 'Failed to create account');
           }
         } else {
-          toast.success('Account created! Please check your email to verify your account.');
-          setIsSignUp(false);
+          toast.success('Account created! Welcome to Copper Reels!');
+          navigate('/chat');
         }
       } else {
         const { error } = await signIn(formData.email, formData.password);
@@ -63,7 +63,7 @@ export default function Auth() {
           }
         } else {
           toast.success('Welcome back!');
-          navigate('/onboarding');
+          navigate('/chat');
         }
       }
     } catch (error) {

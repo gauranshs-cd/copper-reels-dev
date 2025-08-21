@@ -35,6 +35,8 @@ import { Input } from '@/components/ui/input';
 import { Textarea } from '@/components/ui/textarea';
 import { Label } from '@/components/ui/label';
 import { NavigationFlow } from '@/components/NavigationFlow';
+import { FloatingNextButton } from '@/components/FloatingNextButton';
+import { useLayout } from '@/contexts/LayoutContext';
 import { LoadingSpinner } from '@/components/ui/loading-spinner';
 import { useAppStore } from '@/store/useAppStore';
 import { copperReelsGemini } from '@/lib/gemini';
@@ -99,6 +101,7 @@ interface ThumbnailOption {
 
 export default function VideoPlanning() {
   const navigate = useNavigate();
+  const { hasSidebar } = useLayout();
   const { 
     selectedIdea, 
     currentScript,
@@ -792,12 +795,22 @@ export default function VideoPlanning() {
         </motion.div>
       </div>
       
-      {/* Navigation Flow */}
+      {/* Navigation Flow - only show when sidebar is not present */}
       <NavigationFlow
         canProceed={selectedTitle !== null && selectedThumbnail !== null}
         nextLabel="Build Script"
         onNext={proceedToScript}
       />
+      
+      {/* Floating Next Button - only show when sidebar is present */}
+      {hasSidebar && (
+        <FloatingNextButton
+          show={selectedTitle !== null && selectedThumbnail !== null}
+          onClick={proceedToScript}
+          label="Build Script"
+          nextPath="/script-builder"
+        />
+      )}
     </div>
   );
 }

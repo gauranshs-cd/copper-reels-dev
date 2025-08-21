@@ -14,6 +14,8 @@ import { ScrollToTop } from "@/components/ScrollToTop";
 import { useState, useEffect } from 'react';
 import { Button } from "@/components/ui/button";
 import { Clock } from 'lucide-react';
+import { LayoutProvider } from "@/contexts/LayoutContext";
+import { MarketingRedirect } from "@/components/MarketingRedirect";
 import Index from "./pages/Index-new";
 import Auth from "./pages/Auth";
 import Onboarding from "./pages/Onboarding";
@@ -44,24 +46,36 @@ const AppContent = () => {
   const { user } = useAuth();
   const location = useLocation();
   
-  // Define which routes are protected/authenticated
-  const protectedRoutes = [
+  // Define which routes are protected/authenticated (app routes)
+  const appRoutes = [
     '/chat', '/dashboard', '/onboarding', '/foundation', 
-    '/ideation', '/plan', '/script-builder', '/pattern-bank', '/settings'
+    '/ideation', '/plan', '/script-builder', '/settings'
   ];
   
-  // Check if current route is protected
-  const isProtectedRoute = protectedRoutes.some(route => location.pathname.startsWith(route));
+  // Define public/marketing routes
+  const marketingRoutes = [
+    '/', '/services', '/about', '/documentation', '/blog', 
+    '/contact', '/careers', '/privacy', '/terms', '/pattern-bank'
+  ];
   
-  // Use sidebar layout only for authenticated users on protected routes
-  const useSidebarLayout = user && isProtectedRoute;
+  // Check if current route is an app route
+  const isAppRoute = appRoutes.some(route => location.pathname.startsWith(route));
+  
+  // Check if current route is a marketing route
+  const isMarketingRoute = marketingRoutes.some(route => location.pathname === route);
+  
+  // Use sidebar layout only for authenticated users on app routes
+  const useSidebarLayout = user && isAppRoute;
+  
+  // Show header only for non-authenticated users
+  const showHeader = !user;
   
   return (
-    <>
+    <LayoutProvider hasSidebar={useSidebarLayout}>
       <AdminButton />
       
-      {/* Show original header for non-authenticated or public pages */}
-      {!useSidebarLayout && <AppHeader />}
+      {/* Show header only for non-authenticated users on marketing pages */}
+      {showHeader && <AppHeader />}
       
       {/* History Button - Only show when using old layout */}
       {!useSidebarLayout && user && (
@@ -99,18 +113,50 @@ const AppContent = () => {
       {/* Main content with conditional wrapper */}
       <div className={!useSidebarLayout ? "pt-16" : ""}>
         <Routes>
-          {/* Public Routes - No sidebar */}
-          <Route path="/" element={<Index />} />
+          {/* Public Routes - Redirect logged-in users to app */}
+          <Route path="/" element={
+            <MarketingRedirect>
+              <Index />
+            </MarketingRedirect>
+          } />
           <Route path="/auth" element={<Auth />} />
           <Route path="/test" element={<Test />} />
-          <Route path="/services" element={<Services />} />
-          <Route path="/about" element={<About />} />
+          <Route path="/services" element={
+            <MarketingRedirect>
+              <Services />
+            </MarketingRedirect>
+          } />
+          <Route path="/about" element={
+            <MarketingRedirect>
+              <About />
+            </MarketingRedirect>
+          } />
           <Route path="/documentation" element={<Documentation />} />
-          <Route path="/blog" element={<Blog />} />
-          <Route path="/contact" element={<Contact />} />
-          <Route path="/careers" element={<Careers />} />
-          <Route path="/privacy" element={<Privacy />} />
-          <Route path="/terms" element={<Terms />} />
+          <Route path="/blog" element={
+            <MarketingRedirect>
+              <Blog />
+            </MarketingRedirect>
+          } />
+          <Route path="/contact" element={
+            <MarketingRedirect>
+              <Contact />
+            </MarketingRedirect>
+          } />
+          <Route path="/careers" element={
+            <MarketingRedirect>
+              <Careers />
+            </MarketingRedirect>
+          } />
+          <Route path="/privacy" element={
+            <MarketingRedirect>
+              <Privacy />
+            </MarketingRedirect>
+          } />
+          <Route path="/terms" element={
+            <MarketingRedirect>
+              <Terms />
+            </MarketingRedirect>
+          } />
           
           {/* Protected Routes - With sidebar when authenticated */}
           <Route path="/chat" element={
@@ -191,16 +237,11 @@ const AppContent = () => {
             </ProtectedRoute>
           } />
           
+          {/* Pattern Bank - Public page */}
           <Route path="/pattern-bank" element={
-            <ProtectedRoute>
-              {user ? (
-                <AppLayout>
-                  <PatternBank />
-                </AppLayout>
-              ) : (
-                <PatternBank />
-              )}
-            </ProtectedRoute>
+            <MarketingRedirect>
+              <PatternBank />
+            </MarketingRedirect>
           } />
           
           <Route path="/settings" element={
@@ -219,7 +260,7 @@ const AppContent = () => {
           <Route path="*" element={<NotFound />} />
         </Routes>
       </div>
-    </>
+    </LayoutProvider>
   );
 };
 

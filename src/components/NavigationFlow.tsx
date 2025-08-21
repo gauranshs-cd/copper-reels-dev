@@ -5,6 +5,7 @@ import { Button } from '@/components/ui/button';
 import { Progress } from '@/components/ui/progress';
 import { Badge } from '@/components/ui/badge';
 import { cn } from '@/lib/utils';
+import { useLayout } from '@/contexts/LayoutContext';
 
 const FLOW_STEPS = [
   { path: '/onboarding', label: 'Start', step: 1 },
@@ -31,6 +32,7 @@ export function NavigationFlow({
 }: NavigationFlowProps) {
   const navigate = useNavigate();
   const location = useLocation();
+  const { hasSidebar } = useLayout();
   
   const currentStepIndex = FLOW_STEPS.findIndex(s => s.path === location.pathname);
   const currentStep = FLOW_STEPS[currentStepIndex];
@@ -54,6 +56,11 @@ export function NavigationFlow({
       navigate(prevStep.path);
     }
   };
+
+  // Don't show NavigationFlow when sidebar is present
+  if (hasSidebar) {
+    return null;
+  }
 
   return (
     <motion.div

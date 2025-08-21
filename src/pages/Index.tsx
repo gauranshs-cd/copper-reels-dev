@@ -31,7 +31,7 @@ const Index = () => {
           className="mb-8"
         >
           <img 
-            src="/copper-logo.svg" 
+            src="/cr-logo-new.svg" 
             alt="Copper Reels" 
             className="h-24 mx-auto mb-6"
             style={{ maxWidth: '350px' }}

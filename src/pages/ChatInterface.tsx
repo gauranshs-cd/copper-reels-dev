@@ -42,6 +42,9 @@ import { VideoIdeaGenerator } from '@/components/VideoIdeaGenerator';
 import { ThumbnailGenerator } from '@/components/ThumbnailGenerator';
 import { FoundationBuilder } from '@/components/FoundationBuilder';
 import { TypingIndicator } from '@/components/TypingIndicator';
+import { AnimatedMessage } from '@/components/AnimatedMessage';
+import { FloatingNextButton } from '@/components/FloatingNextButton';
+import { useAuth } from '@/components/auth/AuthProvider';
 
 interface Message {
   id: string;
@@ -57,6 +60,7 @@ interface Message {
   component?: React.ReactNode;
   componentType?: 'script' | 'ideas' | 'thumbnail' | 'research' | 'foundation';
   isTyping?: boolean;
+  animated?: boolean;
 }
 
 interface QuickAction {
@@ -69,6 +73,7 @@ interface QuickAction {
 
 export default function ChatInterface() {
   const navigate = useNavigate();
+  const { user } = useAuth();
   const { setUmbrellaStatement, setSelectedIdea, setFoundationData } = useAppStore();
   const [messages, setMessages] = useState<Message[]>([]);
   const [input, setInput] = useState('');
@@ -76,6 +81,8 @@ export default function ChatInterface() {
   const [showPromptEditor, setShowPromptEditor] = useState(false);
   const [showSkyscraper, setShowSkyscraper] = useState(false);
   const [currentPrompt, setCurrentPrompt] = useState('');
+  const [hasCollectedInfo, setHasCollectedInfo] = useState(false);
+  const [userInfo, setUserInfo] = useState<{ niche?: string; audience?: string; goals?: string }>({});
   const messagesEndRef = useRef<HTMLDivElement>(null);
   const textareaRef = useRef<HTMLTextAreaElement>(null);
 
@@ -119,24 +126,49 @@ export default function ChatInterface() {
   ];
 
   useEffect(() => {
-    // Add welcome message
-    setMessages([
-      {
-        id: '1',
-        role: 'assistant',
-        content: `Welcome to Copper Reels! I'm your AI content strategist. 
+    // Add welcome message based on user status
+    const storedFoundation = localStorage.getItem('userFoundation');
+    const isNewUser = !storedFoundation;
+    
+    if (isNewUser) {
+      setMessages([
+        {
+          id: '1',
+          role: 'assistant',
+          content: `Hey there! Welcome to Copper Reels 👋
 
-I can help you:
-• Generate viral YouTube scripts (1400+ words)
-• Create compelling thumbnails and titles
-• Research top-performing content
-• Develop your channel strategy
+I'm your AI content strategist, and I'm here to help you create viral YouTube content that actually gets views.
 
-How can I help you grow your YouTube channel today?`,
-        timestamp: new Date(),
-        suggestions: starterPrompts
-      }
-    ]);
+Before we dive into creating amazing scripts and thumbnails, let me get to know you better...
+
+**Tell me, what do you do and who do you help?**
+
+For example:
+• "I help entrepreneurs build profitable online businesses"
+• "I teach people how to get fit without a gym"
+• "I help students improve their grades"`,
+          timestamp: new Date(),
+          suggestions: starterPrompts,
+          animated: true
+        }
+      ]);
+    } else {
+      setMessages([
+        {
+          id: '1',
+          role: 'assistant',
+          content: `Welcome back! Ready to create more amazing content? 
+
+What would you like to work on today?
+• Generate a viral YouTube script
+• Create thumbnail concepts
+• Research trending topics`,
+          timestamp: new Date(),
+          suggestions: []
+        }
+      ]);
+      setHasCollectedInfo(true);
+    }
   }, []);
 
   useEffect(() => {
@@ -172,18 +204,23 @@ How can I help you grow your YouTube channel today?`,
     setMessages(prev => [...prev, typingMessage]);
 
     try {
-      // Check for special commands
-      if (input.toLowerCase().includes('script')) {
-        await generateScript(input);
-      } else if (input.toLowerCase().includes('analyze') || input.toLowerCase().includes('research')) {
-        handleSkyscraperAnalysis(input);
-      } else if (input.toLowerCase().includes('idea') || input.toLowerCase().includes('brainstorm')) {
-        await generateIdeas(input);
-      } else if (input.toLowerCase().includes('thumbnail') || input.toLowerCase().includes('title')) {
-        await generateThumbnails(input);
+      // Check if we're in onboarding flow
+      if (!hasCollectedInfo) {
+        await handleOnboarding(input);
       } else {
-        // General conversation
-        await handleGeneralQuery(input);
+        // Check for special commands
+        if (input.toLowerCase().includes('script')) {
+          await generateScript(input);
+        } else if (input.toLowerCase().includes('analyze') || input.toLowerCase().includes('research')) {
+          handleSkyscraperAnalysis(input);
+        } else if (input.toLowerCase().includes('idea') || input.toLowerCase().includes('brainstorm')) {
+          await generateIdeas(input);
+        } else if (input.toLowerCase().includes('thumbnail') || input.toLowerCase().includes('title')) {
+          await generateThumbnails(input);
+        } else {
+          // General conversation
+          await handleGeneralQuery(input);
+        }
       }
     } catch (error) {
       console.error('Error processing message:', error);
@@ -372,6 +409,69 @@ Each concept uses proven psychological triggers and high-contrast visuals for ma
       false,
       ['Generate more concepts', 'Create the script', 'Test different angles']
     );
+  };
+
+  const handleOnboarding = async (input: string) => {
+    // Parse user input to extract their niche and audience
+    const lowerInput = input.toLowerCase();
+    
+    if (!userInfo.niche) {
+      // First response - extract niche and audience
+      setUserInfo({ niche: input });
+      
+      await new Promise(resolve => setTimeout(resolve, 1500)); // Simulate thinking
+      
+      addAssistantMessage(
+        `Great! So you ${input}. That's awesome! 
+
+Now, let's talk about your goals...
+
+**What's your main goal with YouTube?**
+
+For example:
+• Build a personal brand and become an authority
+• Generate leads for my business
+• Create a full-time income from YouTube
+• Share my knowledge and help people
+
+What matters most to you?`,
+        false,
+        []
+      );
+    } else if (!userInfo.goals) {
+      // Second response - extract goals
+      setUserInfo(prev => ({ ...prev, goals: input }));
+      
+      await new Promise(resolve => setTimeout(resolve, 1500));
+      
+      addAssistantMessage(
+        `Perfect! I now understand:
+✓ Who you help: ${userInfo.niche}
+✓ Your goals: ${input}
+
+Based on this, I can help you create content that resonates with your audience and achieves your goals.
+
+**Would you like me to:**
+1. Generate your first viral video script
+2. Create thumbnail concepts and titles
+3. Research what's working in your niche
+
+Or we can start by setting up your content foundation properly. What sounds good?`,
+        false,
+        ['Start with content foundation', 'Generate a script now', 'Show me trending topics']
+      );
+      
+      // Save foundation data
+      const foundationData = {
+        niche: userInfo.niche,
+        goals: input,
+        timestamp: new Date().toISOString()
+      };
+      
+      localStorage.setItem('userFoundation', JSON.stringify(foundationData));
+      setFoundationData(foundationData);
+      setHasCollectedInfo(true);
+    }
   };
 
   const handleGeneralQuery = async (prompt: string) => {
@@ -568,12 +668,6 @@ What's your main goal with this topic?`,
         <div className="container mx-auto px-4 py-4">
           <div className="flex items-center justify-between">
             <div className="flex items-center gap-3">
-              <img 
-                src="/cr-logo-new.svg" 
-                alt="Copper Reels" 
-                className="h-10 w-auto"
-                style={{ maxWidth: '200px' }}
-              />
               <Badge variant="secondary">
                 <Brain className="w-3 h-3 mr-1" />
                 AI Studio
@@ -656,6 +750,8 @@ What's your main goal with this topic?`,
                       <div className="prose prose-sm dark:prose-invert max-w-none">
                         {message.isTyping ? (
                           <TypingIndicator />
+                        ) : message.animated && message.role === 'assistant' ? (
+                          <AnimatedMessage text={message.content} speed={20} />
                         ) : (
                           message.content.split('\n').map((line, i) => (
                             <p key={i} className="mb-2 last:mb-0 text-[15px] leading-[1.7] font-['Inter',_system-ui,_-apple-system,_sans-serif]">

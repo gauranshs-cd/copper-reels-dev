@@ -24,7 +24,9 @@ import { Badge } from '@/components/ui/badge';
 import { Input } from '@/components/ui/input';
 import { Textarea } from '@/components/ui/textarea';
 import { NavigationFlow } from '@/components/NavigationFlow';
+import { FloatingNextButton } from '@/components/FloatingNextButton';
 import { LoadingSpinner } from '@/components/ui/loading-spinner';
+import { useLayout } from '@/contexts/LayoutContext';
 import { useAppStore } from '@/store/useAppStore';
 import { copperReelsGemini } from '@/lib/gemini';
 import { generateRealThumbnail } from '@/lib/thumbnail-generator';
@@ -69,6 +71,7 @@ interface QuestionPrompt {
 
 export default function IdeationEnhanced() {
   const navigate = useNavigate();
+  const { hasSidebar } = useLayout();
   const { 
     foundationData, 
     ideas, 
@@ -573,12 +576,22 @@ export default function IdeationEnhanced() {
         </motion.div>
       </div>
       
-      {/* Navigation Flow */}
+      {/* Navigation Flow - only show when sidebar is not present */}
       <NavigationFlow
         canProceed={ideasWithThumbnails.some(i => i.selected)}
         nextLabel="Plan Video"
         onNext={proceedToPlanning}
       />
+      
+      {/* Floating Next Button - only show when sidebar is present */}
+      {hasSidebar && (
+        <FloatingNextButton
+          show={ideasWithThumbnails.some(i => i.selected)}
+          onClick={proceedToPlanning}
+          label="Plan Video"
+          nextPath="/plan"
+        />
+      )}
     </div>
   );
 }
