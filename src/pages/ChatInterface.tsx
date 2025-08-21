@@ -26,7 +26,9 @@ import {
   Search,
   Zap,
   Brain,
-  Eye
+  Eye,
+  Edit3,
+  Download
 } from 'lucide-react';
 import { toast } from 'sonner';
 import { copperReelsGemini } from '@/lib/gemini';
@@ -39,6 +41,7 @@ import { BrickScriptEditor, ScriptBrick } from '@/components/BrickScriptEditor';
 import { VideoIdeaGenerator } from '@/components/VideoIdeaGenerator';
 import { ThumbnailGenerator } from '@/components/ThumbnailGenerator';
 import { FoundationBuilder } from '@/components/FoundationBuilder';
+import { TypingIndicator } from '@/components/TypingIndicator';
 
 interface Message {
   id: string;
@@ -53,6 +56,7 @@ interface Message {
   }>;
   component?: React.ReactNode;
   componentType?: 'script' | 'ideas' | 'thumbnail' | 'research' | 'foundation';
+  isTyping?: boolean;
 }
 
 interface QuickAction {
@@ -157,6 +161,16 @@ How can I help you grow your YouTube channel today?`,
     setInput('');
     setIsProcessing(true);
 
+    // Add typing indicator
+    const typingMessage: Message = {
+      id: 'typing-' + Date.now(),
+      role: 'assistant',
+      content: '',
+      timestamp: new Date(),
+      isTyping: true
+    };
+    setMessages(prev => [...prev, typingMessage]);
+
     try {
       // Check for special commands
       if (input.toLowerCase().includes('script')) {
@@ -175,6 +189,8 @@ How can I help you grow your YouTube channel today?`,
       console.error('Error processing message:', error);
       addAssistantMessage('I encountered an error. Please try again or rephrase your request.');
     } finally {
+      // Remove typing indicator
+      setMessages(prev => prev.filter(m => !m.isTyping));
       setIsProcessing(false);
     }
   };
@@ -466,6 +482,9 @@ What's your main goal with this topic?`,
     component?: React.ReactNode,
     componentType?: Message['componentType']
   ) => {
+    // Remove any typing indicators first
+    setMessages(prev => prev.filter(m => !m.isTyping));
+    
     const message: Message = {
       id: Date.now().toString(),
       role: 'assistant',
@@ -490,14 +509,56 @@ What's your main goal with this topic?`,
     }
   };
 
-  const handleSuggestionClick = (suggestion: string) => {
-    setInput(suggestion);
-    textareaRef.current?.focus();
+  const handleSuggestionClick = async (suggestion: string) => {
+    // Directly send the suggestion as a message
+    if (isProcessing) return;
+    
+    const userMessage: Message = {
+      id: Date.now().toString(),
+      role: 'user',
+      content: suggestion,
+      timestamp: new Date()
+    };
+
+    setMessages(prev => [...prev, userMessage]);
+    setIsProcessing(true);
+
+    // Add typing indicator
+    const typingMessage: Message = {
+      id: 'typing-' + Date.now(),
+      role: 'assistant',
+      content: '',
+      timestamp: new Date(),
+      isTyping: true
+    };
+    setMessages(prev => [...prev, typingMessage]);
+
+    try {
+      // Process based on suggestion content
+      if (suggestion.toLowerCase().includes('script')) {
+        await generateScript(suggestion);
+      } else if (suggestion.toLowerCase().includes('analyze') || suggestion.toLowerCase().includes('research')) {
+        handleSkyscraperAnalysis(suggestion);
+      } else if (suggestion.toLowerCase().includes('idea') || suggestion.toLowerCase().includes('brainstorm')) {
+        await generateIdeas(suggestion);
+      } else if (suggestion.toLowerCase().includes('thumbnail') || suggestion.toLowerCase().includes('title')) {
+        await generateThumbnails(suggestion);
+      } else {
+        await handleGeneralQuery(suggestion);
+      }
+    } catch (error) {
+      console.error('Error processing suggestion:', error);
+      addAssistantMessage('I encountered an error. Please try again.');
+    } finally {
+      // Remove typing indicator
+      setMessages(prev => prev.filter(m => !m.isTyping));
+      setIsProcessing(false);
+    }
   };
 
-  const handleQuickAction = (action: QuickAction) => {
-    setInput(action.prompt + ' ');
-    textareaRef.current?.focus();
+  const handleQuickAction = async (action: QuickAction) => {
+    // Directly send the action as a message
+    await handleSuggestionClick(action.prompt);
   };
 
   return (
@@ -581,23 +642,27 @@ What's your main goal with this topic?`,
                   }`}
                 >
                   {message.role === 'assistant' && (
-                    <div className="w-8 h-8 rounded-full bg-gradient-primary flex items-center justify-center shrink-0">
+                    <div className="w-9 h-9 rounded-full bg-gradient-to-br from-[#4CAF84] to-[#29B6F6] flex items-center justify-center shrink-0 shadow-sm">
                       <Bot className="w-5 h-5 text-white" />
                     </div>
                   )}
                   
                   <div className={`max-w-[80%] ${message.role === 'user' ? 'order-1' : ''}`}>
-                    <Card className={`p-4 ${
+                    <Card className={`p-4 transition-all ${
                       message.role === 'user' 
-                        ? 'bg-primary text-primary-foreground' 
-                        : 'bg-card'
+                        ? 'bg-muted/30 border-muted' 
+                        : 'bg-background/50 backdrop-blur-sm border-border/40 shadow-sm'
                     }`}>
                       <div className="prose prose-sm dark:prose-invert max-w-none">
-                        {message.content.split('\n').map((line, i) => (
-                          <p key={i} className="mb-2 last:mb-0">
-                            {line}
-                          </p>
-                        ))}
+                        {message.isTyping ? (
+                          <TypingIndicator />
+                        ) : (
+                          message.content.split('\n').map((line, i) => (
+                            <p key={i} className="mb-2 last:mb-0 text-[15px] leading-[1.7] font-['Inter',_system-ui,_-apple-system,_sans-serif]">
+                              {line}
+                            </p>
+                          ))
+                        )}
                       </div>
 
                       {message.suggestions && message.suggestions.length > 0 && (
@@ -654,8 +719,8 @@ What's your main goal with this topic?`,
                   </div>
 
                   {message.role === 'user' && (
-                    <div className="w-8 h-8 rounded-full bg-muted flex items-center justify-center shrink-0 order-2">
-                      <User className="w-5 h-5" />
+                    <div className="w-9 h-9 rounded-full bg-primary/10 border border-primary/20 flex items-center justify-center shrink-0 order-2">
+                      <User className="w-5 h-5 text-primary" />
                     </div>
                   )}
                 </motion.div>
@@ -682,7 +747,7 @@ What's your main goal with this topic?`,
                   }
                 }}
                 placeholder="Ask me anything about YouTube growth, scripts, thumbnails..."
-                className="min-h-[60px] pr-12 resize-none"
+                className="min-h-[60px] pr-12 resize-none font-['Inter',_system-ui,_-apple-system,_sans-serif] text-[15px]"
                 disabled={isProcessing}
               />
               <div className="absolute bottom-2 right-2 flex gap-1">
@@ -752,7 +817,6 @@ What's your main goal with this topic?`,
 
 // Add missing imports for Dialog
 import { Dialog, DialogContent } from '@/components/ui/dialog';
-import { Edit3, Download } from 'lucide-react';
 
 // Placeholder components - these would be the actual components
 const VideoIdeaGenerator = ({ onIdeasGenerated }: any) => (
