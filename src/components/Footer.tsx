@@ -86,10 +86,10 @@ export function Footer() {
           {/* Brand Column */}
           <div className="lg:col-span-2">
             <img 
-              src="/copper-reels-logo.svg" 
+              src="/copper-reels-main.svg" 
               alt="Copper Reels" 
-              className="h-10 w-auto mb-4"
-              style={{ maxWidth: '200px' }}
+              className="h-14 w-auto mb-4"
+              style={{ maxWidth: '250px' }}
             />
             <p className="text-sm text-muted-foreground mb-4">
               Empowering content creators with AI-driven tools to create viral YouTube content 

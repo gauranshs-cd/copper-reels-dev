@@ -32,6 +32,68 @@ export default function ScriptBuilder() {
   const [generationSteps, setGenerationSteps] = useState<any[]>([]);
   const [loadingError, setLoadingError] = useState<string | null>(null);
 
+  // Fallback template when API fails
+  const createFallbackBricks = (): ScriptBrick[] => {
+    const title = selectedIdea?.title || umbrellaStatement || 'Your Video';
+    return [
+      {
+        id: 'brick-1',
+        type: 'promise',
+        estimatedSec: 15,
+        narration: `In this video, I'm going to show you ${title}. By the end, you'll understand exactly how to apply this to get results.`,
+        onScreen: 'Host speaking to camera with text overlay',
+        callouts: ['Key Promise', 'What You'll Learn'],
+        broll: ['Title animation', 'Results preview'],
+        beats: ['Hook', 'Promise', 'Preview'],
+        isExpanded: true
+      },
+      {
+        id: 'brick-2',
+        type: 'intro',
+        estimatedSec: 30,
+        narration: `Let me start by sharing why this matters. Most people struggle with this because they don't understand the fundamentals.`,
+        onScreen: 'Problem visualization',
+        callouts: ['Common Mistakes', 'Why This Matters'],
+        broll: ['Examples of problems', 'Statistics graphics'],
+        beats: ['Problem', 'Agitation', 'Credibility'],
+        isExpanded: false
+      },
+      {
+        id: 'brick-3',
+        type: 'core',
+        estimatedSec: 180,
+        narration: `Here's the step-by-step process. First, you need to... Second, make sure you... Finally, implement...`,
+        onScreen: 'Step-by-step demonstration',
+        callouts: ['Step 1', 'Step 2', 'Step 3', 'Pro Tip'],
+        broll: ['Screen recording', 'Process visualization', 'Examples'],
+        beats: ['Teaching', 'Demonstration', 'Examples'],
+        isExpanded: false
+      },
+      {
+        id: 'brick-4',
+        type: 'examples',
+        estimatedSec: 120,
+        narration: `Let me show you some real examples of how this works in practice...`,
+        onScreen: 'Case studies and examples',
+        callouts: ['Example 1', 'Example 2', 'Results'],
+        broll: ['Before/after', 'Success stories', 'Data visualization'],
+        beats: ['Social proof', 'Results', 'Transformation'],
+        isExpanded: false
+      },
+      {
+        id: 'brick-5',
+        type: 'cta',
+        estimatedSec: 30,
+        narration: `Now it's your turn. Take what you've learned and apply it. If you found this valuable, subscribe for more content like this.`,
+        onScreen: 'Call to action with subscribe button',
+        callouts: ['Subscribe', 'Next Video', 'Comment Below'],
+        broll: ['End screen', 'Subscribe animation'],
+        beats: ['Recap', 'CTA', 'Next steps'],
+        isExpanded: false
+      }
+    ];
+  };
+
   useEffect(() => {
     // Try to restore from localStorage first
     const savedBricks = localStorage.getItem('copper_reels_script_bricks');
@@ -123,14 +185,22 @@ export default function ScriptBuilder() {
       const pillarContext = foundationData?.pillars ? 
         `Content pillars: ${foundationData.pillars.map(p => p.title).join(', ')}` : '';
       
-      const result = await copperReelsGemini.generateScriptAndStoryboard({
-        chosenTitle: selectedIdea?.title || umbrellaStatement || 'Your Video Title',
-        viewerType: foundationData?.viewerType || 'LEARNER',
-        avatarSummary: `${avatarSummary}. ${pillarContext}. ${userContext}`,
-        ideaConcept: selectedIdea?.description || umbrellaStatement || '',
-        selectedThumbBrief: {},
-        targetMinutes: 10
-      });
+      // Add timeout wrapper for API call
+      const timeoutPromise = new Promise((_, reject) => 
+        setTimeout(() => reject(new Error('Script generation timed out after 30 seconds')), 30000)
+      );
+      
+      const result = await Promise.race([
+        copperReelsGemini.generateScriptAndStoryboard({
+          chosenTitle: selectedIdea?.title || umbrellaStatement || 'Your Video Title',
+          viewerType: foundationData?.viewerType || 'LEARNER',
+          avatarSummary: `${avatarSummary}. ${pillarContext}. ${userContext}`,
+          ideaConcept: selectedIdea?.description || umbrellaStatement || '',
+          selectedThumbBrief: {},
+          targetMinutes: 10
+        }),
+        timeoutPromise
+      ]) as Awaited<ReturnType<typeof copperReelsGemini.generateScriptAndStoryboard>>;
 
       // Convert to ScriptBrick format
       const bricks: ScriptBrick[] = result.bricks.map((brick, index) => ({
@@ -163,12 +233,33 @@ export default function ScriptBuilder() {
       setGenerationStatus('Adding visual elements and B-roll suggestions...');
       setGenerationProgress(80);
       
-      // Also generate table format for alternative view
-      await generateTableFormat();
+      // Save bricks to localStorage immediately after generation
+      localStorage.setItem('copper_reels_script_bricks', JSON.stringify(bricks));
+      
+      // Try to generate table format but don't let it block completion
+      try {
+        // Generate table format in background - don't await
+        generateTableFormat().catch(err => {
+          console.warn('Table format generation failed (non-blocking):', err);
+        });
+      } catch (tableError) {
+        console.warn('Could not start table generation:', tableError);
+      }
+      
+      // Complete the generation regardless of table format
+      setGenerationSteps(prev => prev.map((s, i) => 
+        i <= 3 ? { ...s, status: 'completed' } : 
+        i === 4 ? { ...s, status: 'active' } : s
+      ));
+      setGenerationStatus('Finalizing your script...');
+      setGenerationProgress(90);
+      
+      // Small delay for visual feedback
+      await new Promise(resolve => setTimeout(resolve, 500));
       
       // Final progress
       setGenerationSteps(prev => prev.map(s => ({ ...s, status: 'completed' })));
-      setGenerationStatus('Finalizing your script...');
+      setGenerationStatus('Script generated successfully!');
       setGenerationProgress(100);
       
       setHasGenerated(true);
@@ -186,13 +277,26 @@ export default function ScriptBuilder() {
       
       // More specific error messages
       if (error instanceof Error) {
-        if (error.message.includes('quota')) {
+        if (error.message.includes('timeout')) {
+          // Use fallback template on timeout
+          toast.warning('Generation timed out. Using template structure...');
+          const fallbackBricks = createFallbackBricks();
+          setScriptBricks(fallbackBricks);
+          localStorage.setItem('copper_reels_script_bricks', JSON.stringify(fallbackBricks));
+          setHasGenerated(true);
+          setIsGenerating(false);
+          toast.success('Template script ready. You can customize it now.');
+          return;
+        } else if (error.message.includes('quota')) {
           setLoadingError('API quota exceeded. Please try again later.');
           toast.error('API quota exceeded. Please try again later.');
         } else if (error.message.includes('JSON')) {
-          toast.error('Error parsing AI response. Retrying with simpler format...');
-          // Retry with fallback
-          setTimeout(() => generateFullScript(), 2000);
+          toast.error('Error parsing AI response. Using template...');
+          const fallbackBricks = createFallbackBricks();
+          setScriptBricks(fallbackBricks);
+          localStorage.setItem('copper_reels_script_bricks', JSON.stringify(fallbackBricks));
+          setHasGenerated(true);
+          setIsGenerating(false);
           return;
         } else {
           setLoadingError(error.message);

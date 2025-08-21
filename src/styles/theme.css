@@ -1,20 +1,20 @@
 /* Copper Reels Brand Theme */
-/* Based on logo colors: Teal/Green to Blue gradient */
+/* Based on new logo colors: Blue to Green gradient */
 
 @layer base {
   :root {
-    /* Brand Colors from Logo */
-    --copper-teal: 164 204 196; /* #A4CCC4 - Light teal from logo */
-    --copper-green: 76 175 132; /* #4CAF84 - Green from logo */
-    --copper-blue: 41 182 246; /* #29B6F6 - Blue from logo */
-    --copper-dark-blue: 30 136 229; /* #1E88E5 - Darker blue */
-    --copper-gray: 97 97 97; /* #616161 - Gray text from logo */
+    /* Brand Colors from New Logo */
+    --copper-blue: 0 144 218; /* #0090DA - Primary blue from logo */
+    --copper-green: 164 206 78; /* #A4CE4E - Primary green from logo */
+    --copper-light-blue: 41 182 246; /* #29B6F6 - Light blue accent */
+    --copper-light-green: 188 220 120; /* #BCDC78 - Light green accent */
+    --copper-gray: 105 105 105; /* #696969 - Gray text from logo */
     --copper-dark: 66 66 66; /* #424242 - Dark gray */
     
     /* Gradient definitions */
-    --gradient-primary: linear-gradient(135deg, rgb(76 175 132), rgb(41 182 246));
-    --gradient-secondary: linear-gradient(135deg, rgb(164 204 196), rgb(76 175 132));
-    --gradient-accent: linear-gradient(135deg, rgb(41 182 246), rgb(30 136 229));
+    --gradient-primary: linear-gradient(135deg, rgb(0 144 218), rgb(164 206 78));
+    --gradient-secondary: linear-gradient(135deg, rgb(0 144 218), rgb(41 182 246));
+    --gradient-accent: linear-gradient(135deg, rgb(164 206 78), rgb(188 220 120));
     
     /* Light mode colors */
     --background: 0 0% 100%;
@@ -26,16 +26,16 @@
     --popover: 0 0% 100%;
     --popover-foreground: var(--copper-dark);
     
-    --primary: var(--copper-green);
+    --primary: var(--copper-blue);
     --primary-foreground: 0 0% 100%;
     
-    --secondary: var(--copper-teal);
-    --secondary-foreground: var(--copper-dark);
+    --secondary: var(--copper-green);
+    --secondary-foreground: 0 0% 100%;
     
     --muted: 210 20% 96%;
     --muted-foreground: var(--copper-gray);
     
-    --accent: var(--copper-blue);
+    --accent: var(--copper-light-blue);
     --accent-foreground: 0 0% 100%;
     
     --destructive: 0 84.2% 60.2%;
@@ -43,12 +43,12 @@
     
     --border: 214.3 20% 91%;
     --input: 214.3 20% 91%;
-    --ring: var(--copper-green);
+    --ring: var(--copper-blue);
     
     --radius: 0.75rem;
     
     /* Custom properties for gradients */
-    --gradient-text: linear-gradient(135deg, rgb(76 175 132), rgb(41 182 246));
+    --gradient-text: linear-gradient(135deg, rgb(0 144 218), rgb(164 206 78));
   }
   
   .dark {
@@ -61,16 +61,16 @@
     --popover: 240 10% 12%;
     --popover-foreground: 210 20% 98%;
     
-    --primary: var(--copper-blue);
+    --primary: var(--copper-green);
     --primary-foreground: 0 0% 100%;
     
-    --secondary: var(--copper-green);
+    --secondary: var(--copper-blue);
     --secondary-foreground: 0 0% 100%;
     
     --muted: 240 10% 20%;
     --muted-foreground: 210 20% 60%;
     
-    --accent: var(--copper-teal);
+    --accent: var(--copper-light-green);
     --accent-foreground: var(--copper-dark);
     
     --destructive: 0 62.8% 50%;
@@ -78,7 +78,7 @@
     
     --border: 240 10% 20%;
     --input: 240 10% 20%;
-    --ring: var(--copper-blue);
+    --ring: var(--copper-green);
   }
 }
 
@@ -105,21 +105,21 @@
 /* Enhanced shadows with brand colors */
 .shadow-glow {
   box-shadow: 
-    0 10px 40px -10px rgba(41, 182, 246, 0.3),
-    0 4px 20px -5px rgba(76, 175, 132, 0.2);
+    0 10px 40px -10px rgba(0, 144, 218, 0.3),
+    0 4px 20px -5px rgba(164, 206, 78, 0.2);
 }
 
 .shadow-glow-lg {
   box-shadow: 
-    0 20px 60px -15px rgba(41, 182, 246, 0.4),
-    0 10px 40px -10px rgba(76, 175, 132, 0.3);
+    0 20px 60px -15px rgba(0, 144, 218, 0.4),
+    0 10px 40px -10px rgba(164, 206, 78, 0.3);
 }
 
 /* Hover effects */
 .hover\:shadow-glow:hover {
   box-shadow: 
-    0 15px 50px -12px rgba(41, 182, 246, 0.4),
-    0 6px 30px -8px rgba(76, 175, 132, 0.3);
+    0 15px 50px -12px rgba(0, 144, 218, 0.4),
+    0 6px 30px -8px rgba(164, 206, 78, 0.3);
   transform: translateY(-2px);
   transition: all 0.3s ease;
 }
@@ -127,20 +127,20 @@
 /* Background patterns */
 .bg-gradient-mesh {
   background-image: 
-    radial-gradient(at 20% 80%, rgb(164 204 196 / 0.3) 0px, transparent 50%),
-    radial-gradient(at 80% 20%, rgb(41 182 246 / 0.3) 0px, transparent 50%),
-    radial-gradient(at 40% 40%, rgb(76 175 132 / 0.2) 0px, transparent 50%);
+    radial-gradient(at 20% 80%, rgb(164 206 78 / 0.3) 0px, transparent 50%),
+    radial-gradient(at 80% 20%, rgb(0 144 218 / 0.3) 0px, transparent 50%),
+    radial-gradient(at 40% 40%, rgb(164 206 78 / 0.2) 0px, transparent 50%);
 }
 
 .bg-gradient-radial {
   background: radial-gradient(
     ellipse at top left,
-    rgba(164, 204, 196, 0.15) 0%,
+    rgba(0, 144, 218, 0.15) 0%,
     transparent 50%
   ),
   radial-gradient(
     ellipse at bottom right,
-    rgba(41, 182, 246, 0.15) 0%,
+    rgba(164, 206, 78, 0.15) 0%,
     transparent 50%
   );
 }

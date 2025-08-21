@@ -82,10 +82,10 @@ export default function Index() {
           >
             {/* Logo */}
             <motion.img
-              src="/copper-reels-logo.svg"
+              src="/copper-reels-main.svg"
               alt="Copper Reels"
-              className="h-24 md:h-32 mx-auto mb-8 w-auto"
-              style={{ maxWidth: '500px' }}
+              className="h-28 md:h-36 mx-auto mb-8 w-auto"
+              style={{ maxWidth: '600px' }}
               initial={{ scale: 0.8, opacity: 0 }}
               animate={{ scale: 1, opacity: 1 }}
               transition={{ duration: 0.5 }}

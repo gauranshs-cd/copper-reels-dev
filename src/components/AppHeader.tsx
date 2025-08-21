@@ -64,10 +64,10 @@ export function AppHeader() {
               onClick={() => navigate('/')}
             >
               <img 
-                src="/copper-reels-logo.svg" 
+                src="/copper-reels-main.svg" 
                 alt="Copper Reels" 
-                className="h-10 w-auto"
-                style={{ maxWidth: '200px' }}
+                className="h-12 w-auto"
+                style={{ maxWidth: '240px' }}
               />
             </div>
 
