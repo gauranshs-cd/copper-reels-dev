@@ -87,6 +87,7 @@ export function Sidebar({ className }: SidebarProps) {
     { icon: MessageSquare, label: 'AI Studio', path: '/chat', badge: 'New' },
     { icon: Target, label: 'Foundation', path: '/foundation' },
     { icon: Lightbulb, label: 'Ideas', path: '/ideation' },
+    { icon: Video, label: 'Planning', path: '/plan' },
     { icon: FileText, label: 'Scripts', path: '/script-builder' },
     { icon: Palette, label: 'Pattern Bank', path: '/pattern-bank' },
   ];
@@ -101,6 +102,7 @@ export function Sidebar({ className }: SidebarProps) {
     { icon: Settings, label: 'Settings', path: '/settings' },
     { icon: CreditCard, label: 'Billing', path: '/billing', disabled: true },
     { icon: HelpCircle, label: 'Support', path: '/contact' },
+    { icon: BookOpen, label: 'Documentation', path: '/documentation' },
   ];
 
   const NavLink = ({ item }: { item: NavItem }) => {
