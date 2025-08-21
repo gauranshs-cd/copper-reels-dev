@@ -37,6 +37,7 @@ import { Label } from '@/components/ui/label';
 import { NavigationFlow } from '@/components/NavigationFlow';
 import { FloatingNextButton } from '@/components/FloatingNextButton';
 import { useLayout } from '@/contexts/LayoutContext';
+import { useAuth } from '@/components/auth/AuthProvider';
 import { LoadingSpinner } from '@/components/ui/loading-spinner';
 import { useAppStore } from '@/store/useAppStore';
 import { copperReelsGemini } from '@/lib/gemini';
@@ -102,6 +103,7 @@ interface ThumbnailOption {
 export default function VideoPlanning() {
   const navigate = useNavigate();
   const { hasSidebar } = useLayout();
+  const { user } = useAuth();
   const { 
     selectedIdea, 
     currentScript,
@@ -802,8 +804,8 @@ export default function VideoPlanning() {
         onNext={proceedToScript}
       />
       
-      {/* Floating Next Button - only show when sidebar is present */}
-      {hasSidebar && (
+      {/* Floating Next Button - show for authenticated users */}
+      {user && (
         <FloatingNextButton
           show={selectedTitle !== null && selectedThumbnail !== null}
           onClick={proceedToScript}

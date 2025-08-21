@@ -26,6 +26,7 @@ import { NavigationFlow } from '@/components/NavigationFlow';
 import { FloatingNextButton } from '@/components/FloatingNextButton';
 import { LoadingSpinner } from '@/components/ui/loading-spinner';
 import { useLayout } from '@/contexts/LayoutContext';
+import { useAuth } from '@/components/auth/AuthProvider';
 import { useAppStore } from '@/store/useAppStore';
 import { copperReelsGemini } from '@/lib/gemini';
 import { sessionService } from '@/lib/supabase/session-service';
@@ -52,6 +53,7 @@ interface EnhancedPillar extends ContentPillar {
 export default function Foundation() {
   const navigate = useNavigate();
   const { hasSidebar } = useLayout();
+  const { user } = useAuth();
   const { 
     umbrellaStatement, 
     foundationData, 
@@ -661,8 +663,8 @@ export default function Foundation() {
         onNext={proceedToIdeas}
       />
       
-      {/* Floating Next Button - only show when sidebar is present */}
-      {hasSidebar && (
+      {/* Floating Next Button - show for authenticated users */}
+      {user && (
         <FloatingNextButton
           show={enhancedPillars.some(p => p.selected)}
           onClick={proceedToIdeas}

@@ -27,6 +27,7 @@ import { NavigationFlow } from '@/components/NavigationFlow';
 import { FloatingNextButton } from '@/components/FloatingNextButton';
 import { LoadingSpinner } from '@/components/ui/loading-spinner';
 import { useLayout } from '@/contexts/LayoutContext';
+import { useAuth } from '@/components/auth/AuthProvider';
 import { useAppStore } from '@/store/useAppStore';
 import { copperReelsGemini } from '@/lib/gemini';
 import { generateRealThumbnail } from '@/lib/thumbnail-generator';
@@ -72,6 +73,7 @@ interface QuestionPrompt {
 export default function IdeationEnhanced() {
   const navigate = useNavigate();
   const { hasSidebar } = useLayout();
+  const { user } = useAuth();
   const { 
     foundationData, 
     ideas, 
@@ -583,8 +585,8 @@ export default function IdeationEnhanced() {
         onNext={proceedToPlanning}
       />
       
-      {/* Floating Next Button - only show when sidebar is present */}
-      {hasSidebar && (
+      {/* Floating Next Button - show for authenticated users */}
+      {user && (
         <FloatingNextButton
           show={ideasWithThumbnails.some(i => i.selected)}
           onClick={proceedToPlanning}

@@ -23,6 +23,7 @@ import {
 import { InlineEditingCTA, FloatingEditingCTA } from '@/components/VideoEditingUpsell';
 import { FloatingNextButton } from '@/components/FloatingNextButton';
 import { useLayout } from '@/contexts/LayoutContext';
+import { useAuth } from '@/components/auth/AuthProvider';
 import { Button } from '@/components/ui/button';
 import { Card } from '@/components/ui/card';
 import { Badge } from '@/components/ui/badge';
@@ -70,6 +71,7 @@ interface TeleprompterSettings {
 export default function ScriptBuilderEnhanced() {
   const navigate = useNavigate();
   const { hasSidebar } = useLayout();
+  const { user } = useAuth();
   const { currentScript, selectedIdea } = useAppStore();
   
   const [activeTab, setActiveTab] = useState('table');
@@ -734,8 +736,8 @@ Call to action: Like, subscribe, watch next`,
         <FloatingEditingCTA context="script" />
       )}
       
-      {/* Floating Next Button - only show when sidebar is present */}
-      {hasSidebar && scriptSections.length > 0 && (
+      {/* Floating Next Button - show for authenticated users */}
+      {user && scriptSections.length > 0 && (
         <FloatingNextButton
           show={true}
           onClick={() => navigate('/publish')}
