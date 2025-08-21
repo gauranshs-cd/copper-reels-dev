@@ -25,6 +25,8 @@ import Settings from "./pages/Settings";
 import Services from "./pages/Services";
 import NotFound from "./pages/NotFound";
 import Test from "./pages/Test";
+import ChatInterface from "./pages/ChatInterface";
+import Dashboard from "./pages/Dashboard";
 
 const queryClient = new QueryClient();
 
@@ -78,12 +80,22 @@ const App = () => {
                 <Routes>
                   <Route path="/" element={<Index />} />
                   <Route path="/auth" element={<Auth />} />
-                <Route path="/test" element={<Test />} />
-                <Route path="/onboarding" element={
-                  <ProtectedRoute>
-                    <Onboarding />
-                  </ProtectedRoute>
-                } />
+                  <Route path="/test" element={<Test />} />
+                  <Route path="/chat" element={
+                    <ProtectedRoute>
+                      <ChatInterface />
+                    </ProtectedRoute>
+                  } />
+                  <Route path="/dashboard" element={
+                    <ProtectedRoute>
+                      <Dashboard />
+                    </ProtectedRoute>
+                  } />
+                  <Route path="/onboarding" element={
+                    <ProtectedRoute>
+                      <Onboarding />
+                    </ProtectedRoute>
+                  } />
                 <Route path="/foundation" element={
                   <ProtectedRoute>
                     <Foundation />

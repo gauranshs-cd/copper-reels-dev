@@ -107,21 +107,21 @@ export default function Index() {
                 <>
                   <Button
                     size="lg"
-                    onClick={() => navigate('/ideation')}
+                    onClick={() => navigate('/chat')}
                     className="bg-gradient-primary text-white hover:shadow-glow group"
                   >
-                    <Sparkles className="w-5 h-5 mr-2" />
-                    Start Creating
+                    <MessageSquare className="w-5 h-5 mr-2" />
+                    Open AI Studio
                     <ArrowRight className="w-4 h-4 ml-2 group-hover:translate-x-1 transition-transform" />
                   </Button>
                   <Button
                     size="lg"
                     variant="outline"
-                    onClick={() => navigate('/foundation')}
+                    onClick={() => navigate('/dashboard')}
                     className="border-2"
                   >
                     <Zap className="w-5 h-5 mr-2" />
-                    Setup Foundation
+                    View Dashboard
                   </Button>
                 </>
               ) : (
