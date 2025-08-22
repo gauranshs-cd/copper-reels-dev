@@ -86,9 +86,11 @@ class TeamService {
   // Create a new team
   async createTeam(name: string, slug?: string): Promise<Team> {
     const { data: { user } } = await supabase.auth.getUser();
+    console.log('Creating team for user:', user?.id);
     if (!user) throw new Error('Not authenticated');
 
     const teamSlug = slug || this.generateSlug(name);
+    console.log('Team slug:', teamSlug);
 
     // Create team
     const { data: team, error: teamError } = await supabase
@@ -101,6 +103,7 @@ class TeamService {
       .select()
       .single();
 
+    console.log('Team creation result:', { team, error: teamError });
     if (teamError) throw teamError;
 
     // Add owner as team member
