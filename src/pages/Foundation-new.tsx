@@ -29,6 +29,7 @@ import { FoundationModal } from '@/components/FoundationModal';
 import { useLayout } from '@/contexts/LayoutContext';
 import { useAuth } from '@/components/auth/AuthProvider';
 import { useAppStore } from '@/store/useAppStore';
+import { useTeamStore } from '@/store/useTeamStore';
 import { copperReelsGemini } from '@/lib/gemini';
 import { sessionService } from '@/lib/supabase/session-service';
 import { supabase } from '@/integrations/supabase/client';

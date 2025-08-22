@@ -433,12 +433,35 @@ class TeamService {
   }
 
   private async sendInvitationEmail(email: string, token: string, teamId: string): Promise<void> {
-    // This would integrate with your email service
-    // For now, we'll just log it
-    console.log('Sending invitation email to:', email);
-    console.log('Invitation link:', `${window.location.origin}/invite/${token}`);
+    const inviteLink = `${window.location.origin}/invite/${token}`;
     
-    // TODO: Implement actual email sending via Supabase Edge Function or external service
+    // For development, just log it
+    console.log('Invitation link:', inviteLink);
+    
+    // For production, uncomment this to use Edge Function:
+    /*
+    const { data: team } = await supabase
+      .from('teams')
+      .select('name')
+      .eq('id', teamId)
+      .single();
+    
+    const { data: { user } } = await supabase.auth.getUser();
+    
+    const { error } = await supabase.functions.invoke('send-invite', {
+      body: {
+        email,
+        inviteLink,
+        teamName: team?.name || 'a team',
+        inviterName: user?.email?.split('@')[0] || 'A team member'
+      }
+    });
+    
+    if (error) {
+      console.error('Failed to send invitation email:', error);
+      throw new Error('Failed to send invitation email');
+    }
+    */
   }
 
   private async logActivity(teamId: string, action: string, details?: any): Promise<void> {
