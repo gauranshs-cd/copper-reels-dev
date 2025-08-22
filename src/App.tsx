@@ -40,7 +40,6 @@ import Terms from "./pages/Terms";
 import Analytics from "./pages/Analytics";
 import TeamSettings from "./pages/TeamSettings";
 import AcceptInvite from "./pages/AcceptInvite";
-import AIStudio from "./pages/AIStudio";
 
 const queryClient = new QueryClient();
 
@@ -165,18 +164,6 @@ const AppContent = () => {
           
           {/* Protected Routes - With sidebar when authenticated */}
           <Route path="/chat" element={
-            <ProtectedRoute>
-              <AIStudio />
-            </ProtectedRoute>
-          } />
-          
-          <Route path="/ai-studio" element={
-            <ProtectedRoute>
-              <AIStudio />
-            </ProtectedRoute>
-          } />
-          
-          <Route path="/chat-old" element={
             <ProtectedRoute>
               {user ? (
                 <AppLayout>
