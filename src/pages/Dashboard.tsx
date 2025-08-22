@@ -16,7 +16,6 @@ import {
   Search
 } from 'lucide-react';
 import { useAuth } from '@/components/auth/AuthProvider';
-import { Footer } from '@/components/Footer';
 
 export default function Dashboard() {
   const navigate = useNavigate();
@@ -137,8 +136,6 @@ export default function Dashboard() {
           </Button>
         </motion.div>
       </div>
-
-      <Footer />
     </div>
   );
 }
