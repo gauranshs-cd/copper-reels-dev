@@ -8,6 +8,7 @@ import { Separator } from '@/components/ui/separator';
 import { Badge } from '@/components/ui/badge';
 import { Progress } from '@/components/ui/progress';
 import { useAuth } from '@/components/auth/AuthProvider';
+import { TeamSwitcher } from '@/components/TeamSwitcher';
 import {
   Home,
   MessageSquare,
@@ -93,7 +94,7 @@ export function Sidebar({ className }: SidebarProps) {
   ];
 
   const teamNavigation: NavItem[] = [
-    { icon: Users, label: 'Team Members', path: '/team', count: 5, disabled: true },
+    { icon: Users, label: 'Team Settings', path: '/team-settings' },
     { icon: FolderOpen, label: 'Shared Projects', path: '/projects', disabled: true },
     { icon: BarChart3, label: 'Analytics', path: '/analytics', badge: 'New' },
   ];
@@ -168,34 +169,7 @@ export function Sidebar({ className }: SidebarProps) {
       {/* Team Selector */}
       {!collapsed && user && (
         <div className="p-4 border-b">
-          <DropdownMenu>
-            <DropdownMenuTrigger asChild>
-              <Button variant="ghost" className="w-full justify-start">
-                <div className="flex items-center gap-2 w-full">
-                  <Avatar className="w-7 h-7">
-                    <AvatarFallback>CR</AvatarFallback>
-                  </Avatar>
-                  <div className="flex-1 text-left">
-                    <p className="text-xs font-medium">Personal</p>
-                    <p className="text-xs text-muted-foreground">Free Plan</p>
-                  </div>
-                  <ChevronDown className="w-4 h-4" />
-                </div>
-              </Button>
-            </DropdownMenuTrigger>
-            <DropdownMenuContent align="start" className="w-56">
-              <DropdownMenuLabel>Switch Account</DropdownMenuLabel>
-              <DropdownMenuSeparator />
-              <DropdownMenuItem>
-                <UserCircle className="mr-2 h-4 w-4" />
-                Personal
-              </DropdownMenuItem>
-              <DropdownMenuItem disabled>
-                <Users className="mr-2 h-4 w-4" />
-                Create Team
-              </DropdownMenuItem>
-            </DropdownMenuContent>
-          </DropdownMenu>
+          <TeamSwitcher className="w-full" />
         </div>
       )}
 

@@ -38,6 +38,8 @@ import Careers from "./pages/Careers";
 import Privacy from "./pages/Privacy";
 import Terms from "./pages/Terms";
 import Analytics from "./pages/Analytics";
+import TeamSettings from "./pages/TeamSettings";
+import AcceptInvite from "./pages/AcceptInvite";
 
 const queryClient = new QueryClient();
 
@@ -50,7 +52,7 @@ const AppContent = () => {
   // Define which routes are protected/authenticated (app routes)
   const appRoutes = [
     '/chat', '/dashboard', '/onboarding', '/foundation', 
-    '/ideation', '/plan', '/script-builder', '/settings', '/analytics'
+    '/ideation', '/plan', '/script-builder', '/settings', '/analytics', '/team-settings'
   ];
   
   // Define public/marketing routes
@@ -121,6 +123,7 @@ const AppContent = () => {
             </MarketingRedirect>
           } />
           <Route path="/auth" element={<Auth />} />
+          <Route path="/invite/:token" element={<AcceptInvite />} />
           <Route path="/test" element={<Test />} />
           <Route path="/services" element={
             <MarketingRedirect>
@@ -265,6 +268,18 @@ const AppContent = () => {
                 </AppLayout>
               ) : (
                 <Analytics />
+              )}
+            </ProtectedRoute>
+          } />
+          
+          <Route path="/team-settings" element={
+            <ProtectedRoute>
+              {user ? (
+                <AppLayout>
+                  <TeamSettings />
+                </AppLayout>
+              ) : (
+                <TeamSettings />
               )}
             </ProtectedRoute>
           } />
