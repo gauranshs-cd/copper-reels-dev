@@ -66,8 +66,9 @@ export function TeamSwitcher({ className }: { className?: string }) {
       toast.success('Team created successfully');
       setNewTeamName('');
       setShowCreateDialog(false);
-    } catch (error) {
-      toast.error('Failed to create team');
+    } catch (error: any) {
+      console.error('Team creation error:', error);
+      toast.error(error.message || 'Failed to create team');
     } finally {
       setCreating(false);
     }

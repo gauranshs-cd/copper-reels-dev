@@ -67,7 +67,8 @@ export interface SharedContent {
 class TeamService {
   // Get current user's teams
   async getUserTeams(): Promise<Team[]> {
-    const { data: { user } } = await supabase.auth.getUser();
+    const { data: { user }, error: authError } = await supabase.auth.getUser();
+    console.log('getUserTeams - auth check:', { user: user?.id, authError });
     if (!user) throw new Error('Not authenticated');
 
     const { data, error } = await supabase
@@ -79,6 +80,7 @@ class TeamService {
       .eq('team_members.user_id', user.id)
       .eq('team_members.status', 'active');
 
+    console.log('getUserTeams result:', { data, error });
     if (error) throw error;
     return data || [];
   }
