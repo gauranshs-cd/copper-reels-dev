@@ -37,6 +37,7 @@ import Contact from "./pages/Contact";
 import Careers from "./pages/Careers";
 import Privacy from "./pages/Privacy";
 import Terms from "./pages/Terms";
+import Analytics from "./pages/Analytics";
 
 const queryClient = new QueryClient();
 
@@ -49,7 +50,7 @@ const AppContent = () => {
   // Define which routes are protected/authenticated (app routes)
   const appRoutes = [
     '/chat', '/dashboard', '/onboarding', '/foundation', 
-    '/ideation', '/plan', '/script-builder', '/settings'
+    '/ideation', '/plan', '/script-builder', '/settings', '/analytics'
   ];
   
   // Define public/marketing routes
@@ -252,6 +253,18 @@ const AppContent = () => {
                 </AppLayout>
               ) : (
                 <Settings />
+              )}
+            </ProtectedRoute>
+          } />
+          
+          <Route path="/analytics" element={
+            <ProtectedRoute>
+              {user ? (
+                <AppLayout>
+                  <Analytics />
+                </AppLayout>
+              ) : (
+                <Analytics />
               )}
             </ProtectedRoute>
           } />

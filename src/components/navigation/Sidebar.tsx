@@ -95,7 +95,7 @@ export function Sidebar({ className }: SidebarProps) {
   const teamNavigation: NavItem[] = [
     { icon: Users, label: 'Team Members', path: '/team', count: 5, disabled: true },
     { icon: FolderOpen, label: 'Shared Projects', path: '/projects', disabled: true },
-    { icon: BarChart3, label: 'Analytics', path: '/analytics' },
+    { icon: BarChart3, label: 'Analytics', path: '/analytics', badge: 'New' },
   ];
 
   const settingsNavigation: NavItem[] = [

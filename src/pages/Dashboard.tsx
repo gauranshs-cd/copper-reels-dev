@@ -13,7 +13,8 @@ import {
   MessageSquare,
   Target,
   Settings,
-  Search
+  Search,
+  BarChart3
 } from 'lucide-react';
 import { useAuth } from '@/components/auth/AuthProvider';
 
@@ -64,6 +65,14 @@ export default function Dashboard() {
       icon: TrendingUp,
       route: '/pattern-bank',
       color: 'from-yellow-500 to-orange-500'
+    },
+    {
+      title: 'Analytics',
+      description: 'Track your content performance',
+      icon: BarChart3,
+      route: '/analytics',
+      color: 'from-pink-500 to-rose-500',
+      badge: 'NEW'
     }
   ];
 
