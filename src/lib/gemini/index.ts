@@ -403,6 +403,22 @@ Make it specific, actionable, and psychologically targeted to the avatar.`;
   }
 
   // 6. Script & Storyboard Generator
+  async generateContent(prompt: string): Promise<string> {
+    try {
+      console.log('General content generation for:', prompt.substring(0, 100) + '...');
+      
+      const systemPrompt = `You are a helpful AI assistant specializing in YouTube content creation. 
+Provide clear, actionable advice and creative ideas. Be concise and practical.`;
+      
+      const result = await this.model.generateContent(`${systemPrompt}\n\nUser: ${prompt}`);
+      const response = await result.response;
+      return response.text();
+    } catch (error) {
+      console.error('Content generation error:', error);
+      throw new Error('Failed to generate content. Please try again.');
+    }
+  }
+
   async generateScriptAndStoryboard(params: {
     chosenTitle: string;
     viewerType: string;
