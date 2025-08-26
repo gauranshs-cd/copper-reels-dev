@@ -9,10 +9,10 @@ const apiKey = import.meta.env.VITE_GEMINI_API_KEY || '';
 console.log('Initializing Gemini with key:', apiKey ? `Key exists (${apiKey.substring(0, 10)}...)` : 'No key found');
 
 if (!apiKey) {
-  console.error('CRITICAL: No Gemini API key found! Please set VITE_GEMINI_API_KEY in .env file');
+  console.warn('No Gemini API key found. Foundation generation will use fallback data.');
 }
 
-const genAI = new GoogleGenerativeAI(apiKey);
+const genAI = apiKey ? new GoogleGenerativeAI(apiKey) : null;
 
 // Re-define schemas here to avoid circular dependencies
 export const FoundationSchema = z.object({
@@ -117,7 +117,7 @@ export type VideoScriptRow = z.infer<typeof VideoScriptRowSchema>;
 
 // Bot service class using Gemini
 export class CopperReelsGemini {
-  private model = genAI.getGenerativeModel({ model: 'gemini-1.5-flash' });
+  private model = genAI ? genAI.getGenerativeModel({ model: 'gemini-1.5-flash' }) : null;
   
   private getCustomPrompt(promptType: string): string | null {
     // Check localStorage for custom prompts
@@ -217,6 +217,11 @@ export class CopperReelsGemini {
     contentHints?: string;
     constraints?: string;
   }) {
+    // If no API key, throw specific error for fallback handling
+    if (!genAI) {
+      throw new Error('API key not configured');
+    }
+    
     const systemPrompt = prompts.POSITIONING_BOT_SYSTEM;
     const userPrompt = prompts.buildPositioningUserPrompt(params);
     
@@ -234,28 +239,83 @@ export class CopperReelsGemini {
     keyword?: string;
     styleGuide?: any;
   }) {
-    // Import pattern bank data
-    const { getViralTitlePatterns, getPowerWords } = await import('@/lib/pattern-bank');
+    // If no API key, provide fallback ideas
+    if (!genAI) {
+      return this.generateFallbackIdeas(params);
+    }
     
-    // Enhance params with pattern bank data
-    const enhancedParams = {
-      ...params,
-      patternBank: {
-        viralTitles: getViralTitlePatterns(),
-        powerWords: getPowerWords(),
-        ...params.patternBank
+    try {
+      // Import pattern bank data
+      const { getViralTitlePatterns, getPowerWords } = await import('@/lib/pattern-bank');
+      
+      // Enhance params with pattern bank data
+      const enhancedParams = {
+        ...params,
+        patternBank: {
+          viralTitles: getViralTitlePatterns(),
+          powerWords: getPowerWords(),
+          ...params.patternBank
+        }
+      };
+      
+      // Modify system prompt to generate only 3 high-quality ideas
+      const modifiedSystemPrompt = prompts.IDEA_GENERATOR_SYSTEM + '\n\nIMPORTANT: Generate exactly 3 high-quality, diverse video ideas. Focus on quality over quantity.';
+      const userPrompt = prompts.buildIdeaGeneratorUserPrompt(enhancedParams);
+      
+      const result = await this.callGemini(modifiedSystemPrompt, userPrompt, 'IDEA_GENERATOR');
+      const ideas = z.object({ ideas: z.array(IdeaSchema) }).parse(result).ideas;
+      
+      // Ensure we return exactly 3 ideas
+      return ideas.slice(0, 3);
+    } catch (error: any) {
+      console.error('Idea generation failed:', error);
+      // Fall back to generated ideas on any error
+      return this.generateFallbackIdeas(params);
+    }
+  }
+  
+  private generateFallbackIdeas(params: {
+    umbrella: string;
+    viewerType: string;
+    avatarSummary: string;
+    pillars: any[];
+    keyword?: string;
+  }) {
+    const topic = params.keyword || params.umbrella || 'your niche';
+    const pillarNames = params.pillars?.map(p => p.title || p.name)?.slice(0, 3) || ['Getting Started', 'Advanced Tips', 'Common Mistakes'];
+    
+    return [
+      {
+        concept: `The Hidden Truth About ${topic} Nobody Talks About`,
+        pillar: pillarNames[0],
+        angle: 'Reveal insider secrets and uncommon knowledge',
+        whyItWillClick: 'Creates curiosity gap and positions you as an insider with exclusive knowledge',
+        thumbnailHint: 'Shocked expression, question marks, contrast between hidden vs revealed',
+        difficulty: 3,
+        stage: 'new',
+        notes: 'Generated using fallback system'
+      },
+      {
+        concept: `${topic} Mistakes That Cost Me $10,000 (Learn From My Failures)`,
+        pillar: pillarNames[1],
+        angle: 'Share expensive mistakes to help others avoid them',
+        whyItWillClick: 'Social proof through vulnerability, specific dollar amount creates credibility',
+        thumbnailHint: 'Before/after, money symbols, regretful expression',
+        difficulty: 4,
+        stage: 'stuck',
+        notes: 'Generated using fallback system'
+      },
+      {
+        concept: `How I Mastered ${topic} in 30 Days (Complete System Revealed)`,
+        pillar: pillarNames[2],
+        angle: 'Document transformation journey with actionable system',
+        whyItWillClick: 'Specific timeframe creates urgency, promises complete system',
+        thumbnailHint: 'Progress timeline, before/after transformation, system diagram',
+        difficulty: 2,
+        stage: 'leveling_up',
+        notes: 'Generated using fallback system'
       }
-    };
-    
-    // Modify system prompt to generate only 3 high-quality ideas
-    const modifiedSystemPrompt = prompts.IDEA_GENERATOR_SYSTEM + '\n\nIMPORTANT: Generate exactly 3 high-quality, diverse video ideas. Focus on quality over quantity.';
-    const userPrompt = prompts.buildIdeaGeneratorUserPrompt(enhancedParams);
-    
-    const result = await this.callGemini(modifiedSystemPrompt, userPrompt, 'IDEA_GENERATOR');
-    const ideas = z.object({ ideas: z.array(IdeaSchema) }).parse(result).ideas;
-    
-    // Ensure we return exactly 3 ideas
-    return ideas.slice(0, 3);
+    ];
   }
 
   // 3. Generate Video Script Table (NEW - Based on your example)

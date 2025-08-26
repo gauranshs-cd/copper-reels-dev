@@ -34,7 +34,6 @@ export default function Ideation() {
     selectedIdea, 
     setSelectedIdea, 
     setCurrentStep,
-    isLoading,
     setLoading 
   } = useAppStore();
   
@@ -135,7 +134,8 @@ export default function Ideation() {
     idea.pillar.toLowerCase().includes(searchTerm.toLowerCase())
   );
 
-  if (isLoading) {
+  // Show a full-page loader only while this page is actively generating ideas
+  if (isGenerating) {
     return (
       <div className="min-h-screen bg-gradient-subtle flex items-center justify-center px-4">
         <motion.div

@@ -5,7 +5,7 @@ import { Textarea } from '@/components/ui/textarea';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
-import { Sparkles, Target, Users, ArrowRight } from 'lucide-react';
+import { Sparkles, Target, Users, ArrowRight, X } from 'lucide-react';
 import { cn } from '@/lib/utils';
 
 interface FoundationModalProps {
@@ -51,7 +51,7 @@ export function FoundationModal({ open, onClose, onSubmit }: FoundationModalProp
   };
 
   return (
-    <Dialog open={open} onOpenChange={() => {}}>
+    <Dialog open={open} onOpenChange={(isOpen) => { if (!isOpen) onClose?.(); }}>
       <DialogContent className="sm:max-w-[600px] p-0 overflow-hidden" hideCloseButton>
         <div className="relative">
           {/* Header */}
@@ -65,6 +65,15 @@ export function FoundationModal({ open, onClose, onSubmit }: FoundationModalProp
                 Tell us about your YouTube channel to get personalized content strategies
               </DialogDescription>
             </DialogHeader>
+            {/* Close (X) button */}
+            <button
+              type="button"
+              aria-label="Close"
+              onClick={() => onClose?.()}
+              className="absolute right-4 top-4 inline-flex items-center justify-center rounded-md p-2 hover:bg-muted focus:outline-none focus:ring-2 focus:ring-primary"
+            >
+              <X className="w-4 h-4" />
+            </button>
             
             {/* Progress Steps */}
             <div className="flex items-center gap-2 mt-4">
@@ -185,8 +194,7 @@ export function FoundationModal({ open, onClose, onSubmit }: FoundationModalProp
           <div className="flex items-center justify-between p-6 border-t bg-muted/30">
             <Button
               variant="ghost"
-              onClick={() => step > 1 ? setStep(step - 1) : null}
-              disabled={step === 1}
+              onClick={() => { if (step > 1) { setStep(step - 1); } else { onClose?.(); } }}
             >
               Back
             </Button>

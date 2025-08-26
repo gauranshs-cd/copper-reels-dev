@@ -160,7 +160,10 @@ export default function Foundation() {
       // Generate more content pillars with topics
       const pillarsWithTopics: EnhancedPillar[] = [
         ...foundation.pillars.map((pillar, index) => ({
-          ...pillar,
+          id: `pillar-${index}`,
+          title: pillar.name,
+          description: pillar.summary,
+          color: `bg-${['blue', 'green', 'purple', 'orange', 'red'][index % 5]}-500`,
           selected: index === 0, // Select first by default
           topics: generateTopicsForPillar(pillar.name, statementToUse)
         })),
@@ -234,7 +237,8 @@ export default function Foundation() {
         created: new Date().toISOString()
       });
       localStorage.setItem('previous_foundations', JSON.stringify(saved));
-      
+      // Add a new line here
+      navigate('/ideation');
       toast.success('Foundation generated successfully!');
       setIsGenerating(false);
       setLoading(false);
@@ -245,8 +249,83 @@ export default function Foundation() {
       // More specific error messages
       if (errorMessage.includes('quota') || errorMessage.includes('429')) {
         toast.error('API quota exceeded. Please try again later or contact support.');
-      } else if (errorMessage.includes('API key')) {
-        toast.error('API key issue. Please contact support.');
+      } else if (errorMessage.includes('API key') || errorMessage.includes('not configured')) {
+        toast.error('API configuration issue. Using fallback data for now.');
+        // Provide fallback foundation data
+        const fallbackData: FoundationData = {
+          avatar: {
+            demographics: 'Adults aged 25-45, primarily in English-speaking countries',
+            psychographics: 'Goal-oriented individuals seeking improvement and growth',
+            painPoints: 'Struggling with implementation and consistency in their goals',
+            goals: 'Achieve meaningful progress and build sustainable habits'
+          },
+          viewerType: 'LEARNER',
+          viewerTypeRationale: 'Based on your statement, your audience consists of learners who want practical guidance and actionable advice.',
+          pillars: [
+            {
+              id: 'pillar-1',
+              title: 'Getting Started',
+              description: 'Foundation concepts and first steps',
+              color: 'bg-blue-500'
+            },
+            {
+              id: 'pillar-2', 
+              title: 'Advanced Strategies',
+              description: 'Deep-dive techniques and optimization',
+              color: 'bg-green-500'
+            },
+            {
+              id: 'pillar-3',
+              title: 'Common Mistakes',
+              description: 'Pitfalls to avoid and troubleshooting',
+              color: 'bg-red-500'
+            }
+          ]
+        };
+        setFoundationData(fallbackData);
+        setEnhancedHeading(`${statementToUse} - Building Your YouTube Empire`);
+        
+        // Set enhanced pillars for the UI
+        const fallbackPillars: EnhancedPillar[] = fallbackData.pillars.map((pillar, index) => ({
+          ...pillar,
+          selected: index === 0,
+          topics: generateTopicsForPillar(pillar.title, statementToUse)
+        }));
+        setEnhancedPillars(fallbackPillars);
+        
+        // Set basic demographic blocks
+        setDemographicBlocks([
+          {
+            id: 'age',
+            label: 'Age Range', 
+            value: 'Adults aged 25-45',
+            selected: true,
+            icon: Users,
+            color: 'bg-blue-500'
+          }
+        ]);
+        
+        setPsychographicBlocks([
+          {
+            id: 'goal-1',
+            label: 'Goal',
+            value: 'Achieve meaningful progress',
+            selected: true,
+            icon: Brain,
+            color: 'bg-indigo-500'
+          }
+        ]);
+        
+        setPainPointBlocks([
+          {
+            id: 'pain-1',
+            label: 'Pain Point',
+            value: 'Struggling with implementation and consistency',
+            selected: true,
+            icon: AlertCircle,
+            color: 'bg-red-500'
+          }
+        ]);
       } else if (errorMessage.includes('network') || errorMessage.includes('fetch')) {
         toast.error('Network error. Please check your connection and try again.');
       } else {
@@ -260,7 +339,7 @@ export default function Foundation() {
 
   const generateTopicsForPillar = (pillarName: string, statement: string): string[] => {
     // Generate relevant topics based on pillar and statement
-    const baseTopics = {
+    const baseTopics: Record<string, string[]> = {
       'Getting Started': ['First steps', 'Beginner mistakes', 'Essential tools', 'Quick wins'],
       'Advanced Strategies': ['Pro techniques', 'Scaling methods', 'Optimization', 'Advanced tools'],
       'Mindset': ['Overcoming fears', 'Building confidence', 'Success habits', 'Mental models'],
@@ -452,10 +531,16 @@ export default function Foundation() {
           <p className="text-muted-foreground max-w-md">
             Define your channel's core identity and content strategy
           </p>
-          <Button onClick={() => navigate('/onboarding')} className="bg-gradient-primary">
-            <ArrowRight className="w-4 h-4 mr-2" />
-            Start Setup
-          </Button>
+          <div className="flex gap-3 justify-center">
+            <Button onClick={() => setShowFoundationModal(true)} className="bg-gradient-primary">
+              <Plus className="w-4 h-4 mr-2" />
+              Create Foundation
+            </Button>
+            <Button onClick={() => navigate('/onboarding')} variant="outline">
+              <ArrowRight className="w-4 h-4 mr-2" />
+              Full Setup
+            </Button>
+          </div>
         </div>
       </div>
     );
@@ -471,6 +556,7 @@ export default function Foundation() {
           {/* Modal */}
           <FoundationModal 
             open={showFoundationModal}
+            onClose={() => setShowFoundationModal(false)}
             onSubmit={handleFoundationModalSubmit}
           />
         </div>
@@ -507,7 +593,7 @@ export default function Foundation() {
               initial={{ opacity: 0, y: 20 }}
               animate={{ opacity: 1, y: 0 }}
               transition={{ delay: 0.3 }}
-              className="flex justify-center gap-4"
+              className="flex justify-center gap-4 flex-wrap"
             >
               <Button
                 variant="outline"
@@ -525,6 +611,13 @@ export default function Foundation() {
                     Regenerate Foundation
                   </>
                 )}
+              </Button>
+              <Button
+                variant="outline"
+                onClick={() => setShowFoundationModal(true)}
+              >
+                <Plus className="w-4 h-4 mr-2" />
+                New Foundation
               </Button>
               {previousFoundations.length > 0 && (
                 <Button
