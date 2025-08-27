@@ -28,6 +28,7 @@ export default function Foundation() {
   } = useAppStore();
   
   const [isGenerating, setIsGenerating] = useState(false);
+  const [lastGeneratedAt, setLastGeneratedAt] = useState<Date | null>(null);
 
   const generateFoundation = async () => {
     if (!umbrellaStatement) return;
@@ -69,6 +70,7 @@ export default function Foundation() {
       };
       
       setFoundationData(transformedData);
+      setLastGeneratedAt(new Date());
       
       // Save to history
       historyService.addItem({
@@ -102,7 +104,7 @@ export default function Foundation() {
         }
       }
       
-      toast.success('Foundation generated successfully!');
+      toast.success('Foundation regenerated successfully! New data is now displayed.');
       setIsGenerating(false);
       setLoading(false);
     } catch (error) {
@@ -135,7 +137,12 @@ export default function Foundation() {
   useEffect(() => {
     setCurrentStep('foundation');
     
-    // Generate foundation data if not exists
+    // Clear any existing foundation data when component mounts to prevent showing old data
+    if (foundationData && !umbrellaStatement) {
+      setFoundationData(null);
+    }
+    
+    // Generate foundation data if not exists and we have umbrella statement
     if (!foundationData && umbrellaStatement) {
       generateFoundation();
     }
@@ -201,6 +208,18 @@ export default function Foundation() {
             >
               Based on your statement: <em>"{umbrellaStatement}"</em>
             </motion.p>
+            {lastGeneratedAt && (
+              <motion.div
+                initial={{ opacity: 0, scale: 0.8 }}
+                animate={{ opacity: 1, scale: 1 }}
+                transition={{ delay: 0.25 }}
+                className="flex items-center justify-center mb-4"
+              >
+                <Badge variant="secondary" className="bg-green-100 text-green-800 border-green-200">
+                  ✨ Recently Updated - {lastGeneratedAt.toLocaleTimeString()}
+                </Badge>
+              </motion.div>
+            )}
             <motion.div
               initial={{ opacity: 0, y: 20 }}
               animate={{ opacity: 1, y: 0 }}
@@ -227,9 +246,12 @@ export default function Foundation() {
             </motion.div>
           </div>
 
+          {/* Foundation Content - Only show if user has generated foundation or if there's an umbrella statement */}
+          {foundationData && umbrellaStatement && (
           <div className="grid lg:grid-cols-2 gap-8 mb-12">
             {/* Audience Avatar */}
             <motion.div
+              key={`avatar-${lastGeneratedAt?.getTime() || 'initial'}`}
               initial={{ opacity: 0, x: -20 }}
               animate={{ opacity: 1, x: 0 }}
               transition={{ delay: 0.3 }}
@@ -246,7 +268,7 @@ export default function Foundation() {
                   <div>
                     <h3 className="font-semibold text-sm text-muted-foreground uppercase tracking-wide mb-2">Demographics</h3>
                     <EditableField
-                      value={foundationData.avatar.demographics}
+                      value={foundationData?.avatar.demographics || ''}
                       onSave={(value) => updateAvatar('demographics', value)}
                       multiline
                       className="text-sm"
@@ -256,7 +278,7 @@ export default function Foundation() {
                   <div>
                     <h3 className="font-semibold text-sm text-muted-foreground uppercase tracking-wide mb-2">Psychographics</h3>
                     <EditableField
-                      value={foundationData.avatar.psychographics}
+                      value={foundationData?.avatar.psychographics || ''}
                       onSave={(value) => updateAvatar('psychographics', value)}
                       multiline
                       className="text-sm"
@@ -266,7 +288,7 @@ export default function Foundation() {
                   <div>
                     <h3 className="font-semibold text-sm text-muted-foreground uppercase tracking-wide mb-2">Pain Points</h3>
                     <EditableField
-                      value={foundationData.avatar.painPoints}
+                      value={foundationData?.avatar.painPoints || ''}
                       onSave={(value) => updateAvatar('painPoints', value)}
                       multiline
                       className="text-sm"
@@ -276,7 +298,7 @@ export default function Foundation() {
                   <div>
                     <h3 className="font-semibold text-sm text-muted-foreground uppercase tracking-wide mb-2">Goals</h3>
                     <EditableField
-                      value={foundationData.avatar.goals}
+                      value={foundationData?.avatar.goals || ''}
                       onSave={(value) => updateAvatar('goals', value)}
                       multiline
                       className="text-sm"
@@ -288,6 +310,7 @@ export default function Foundation() {
 
             {/* Viewer Type */}
             <motion.div
+              key={`viewer-${lastGeneratedAt?.getTime() || 'initial'}`}
               initial={{ opacity: 0, x: 20 }}
               animate={{ opacity: 1, x: 0 }}
               transition={{ delay: 0.4 }}
@@ -307,12 +330,12 @@ export default function Foundation() {
                       variant="secondary" 
                       className="px-4 py-2 text-lg font-semibold bg-primary/10 text-primary"
                     >
-                      {foundationData.viewerType}
+                      {foundationData?.viewerType || 'Loading...'}
                     </Badge>
                   </div>
                   
                   <p className="text-muted-foreground leading-relaxed">
-                    {foundationData.viewerTypeRationale}
+                    {foundationData?.viewerTypeRationale || ''}
                   </p>
                 </div>
               </Card>
@@ -321,6 +344,7 @@ export default function Foundation() {
 
           {/* Content Pillars */}
           <motion.div
+            key={`pillars-${lastGeneratedAt?.getTime() || 'initial'}`}
             initial={{ opacity: 0, y: 20 }}
             animate={{ opacity: 1, y: 0 }}
             transition={{ delay: 0.5 }}
@@ -335,7 +359,7 @@ export default function Foundation() {
               </div>
               
               <div className="grid md:grid-cols-2 lg:grid-cols-3 gap-4">
-                {foundationData.pillars.map((pillar, index) => (
+                {foundationData?.pillars?.map((pillar, index) => (
                   <motion.div
                     key={pillar.id}
                     initial={{ opacity: 0, y: 20 }}
@@ -360,6 +384,7 @@ export default function Foundation() {
               </div>
             </Card>
           </motion.div>
+          )}
 
         </motion.div>
       </div>

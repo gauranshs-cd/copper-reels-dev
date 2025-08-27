@@ -61,7 +61,8 @@ export default function Foundation() {
     foundationData, 
     setFoundationData, 
     setCurrentStep,
-    setLoading 
+    setLoading,
+    resetStore
   } = useAppStore();
   
   const [isGenerating, setIsGenerating] = useState(false);
@@ -237,9 +238,8 @@ export default function Foundation() {
         created: new Date().toISOString()
       });
       localStorage.setItem('previous_foundations', JSON.stringify(saved));
-      // Add a new line here
-      navigate('/ideation');
-      toast.success('Foundation generated successfully!');
+      
+      toast.success('Foundation regenerated successfully! Review your updated foundation below.');
       setIsGenerating(false);
       setLoading(false);
     } catch (error: any) {
@@ -383,6 +383,49 @@ export default function Foundation() {
 
   useEffect(() => {
     setCurrentStep('foundation');
+    
+    console.log('Foundation useEffect - umbrellaStatement:', umbrellaStatement);
+    console.log('Foundation useEffect - foundationData exists:', !!foundationData);
+    
+    // Check if user came from onboarding or accessed foundation directly
+    const cameFromOnboarding = sessionStorage.getItem('came_from_onboarding');
+    console.log('Came from onboarding:', cameFromOnboarding);
+    
+    // Force clear all foundation-related data if:
+    // 1. No umbrella statement OR umbrella is empty string
+    // 2. OR user accessed foundation page directly (not from onboarding flow)
+    if (!umbrellaStatement || umbrellaStatement.trim() === '' || !cameFromOnboarding) {
+      console.log('Clearing all foundation data - invalid access or no umbrella statement');
+      
+      // Reset the entire Zustand store
+      resetStore();
+      
+      // Clear all localStorage items including Zustand persistence
+      localStorage.removeItem('copper-reels-storage');
+      localStorage.removeItem('foundation_data');
+      localStorage.removeItem('foundation_basic_data');
+      localStorage.removeItem('previous_foundations');
+      
+      // Clear session storage flag
+      sessionStorage.removeItem('came_from_onboarding');
+      
+      // Clear local state
+      setEnhancedPillars([]);
+      setDemographicBlocks([]);
+      setPsychographicBlocks([]);
+      setPainPointBlocks([]);
+      setEnhancedHeading('');
+      setShowFoundationModal(true);
+      return;
+    }
+    
+    // Clear the session flag since we've used it
+    sessionStorage.removeItem('came_from_onboarding');
+    
+    // Clear any existing foundation data when component mounts to prevent showing old data
+    if (foundationData && !umbrellaStatement) {
+      setFoundationData(null);
+    }
     
     // Check if we have foundation data in localStorage or store
     const savedFoundationData = localStorage.getItem('foundation_data');
@@ -532,7 +575,7 @@ export default function Foundation() {
             Define your channel's core identity and content strategy
           </p>
           <div className="flex gap-3 justify-center">
-            <Button onClick={() => setShowFoundationModal(true)} className="bg-gradient-primary">
+            <Button onClick={() => navigate('/onboarding')} className="bg-gradient-primary">
               <Plus className="w-4 h-4 mr-2" />
               Create Foundation
             </Button>

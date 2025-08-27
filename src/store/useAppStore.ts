@@ -66,6 +66,7 @@ interface AppState {
   // Data
   umbrellaStatement: string;
   foundationData: FoundationData | null;
+  ideas: any[] | null;
   selectedIdea: IdeaCard | null;
   videoPlan: VideoPlan | null;
   
@@ -85,6 +86,7 @@ interface AppState {
   setCurrentStep: (step: AppState['currentStep']) => void;
   setUmbrellaStatement: (statement: string) => void;
   setFoundationData: (data: FoundationData) => void;
+  setIdeas: (ideas: any[]) => void;
   setSelectedIdea: (idea: IdeaCard) => void;
   setVideoPlan: (plan: VideoPlan) => void;
   setLoading: (loading: boolean, message?: string) => void;
@@ -105,6 +107,7 @@ export const useAppStore = create<AppState>()(
       currentStep: 'onboarding',
       umbrellaStatement: '',
       foundationData: null,
+      ideas: null,
       selectedIdea: null,
       videoPlan: null,
       currentIdea: null,
@@ -118,6 +121,7 @@ export const useAppStore = create<AppState>()(
       setCurrentStep: (step) => set({ currentStep: step }),
       setUmbrellaStatement: (statement) => set({ umbrellaStatement: statement }),
       setFoundationData: (data) => set({ foundationData: data }),
+      setIdeas: (ideas) => set({ ideas: ideas }),
       setSelectedIdea: (idea) => set({ selectedIdea: idea }),
       setVideoPlan: (plan) => set({ videoPlan: plan }),
       setLoading: (loading, message = '') => set({ isLoading: loading, loadingMessage: message }),
@@ -134,6 +138,7 @@ export const useAppStore = create<AppState>()(
         currentStep: 'onboarding',
         umbrellaStatement: '',
         foundationData: null,
+        ideas: null,
         selectedIdea: null,
         videoPlan: null,
         currentIdea: null,
@@ -149,6 +154,7 @@ export const useAppStore = create<AppState>()(
       partialize: (state) => ({
         umbrellaStatement: state.umbrellaStatement,
         foundationData: state.foundationData,
+        ideas: state.ideas,
         selectedIdea: state.selectedIdea,
         videoPlan: state.videoPlan,
         currentIdea: state.currentIdea,

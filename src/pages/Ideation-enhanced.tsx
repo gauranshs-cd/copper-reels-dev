@@ -95,6 +95,14 @@ export default function IdeationEnhanced() {
   useEffect(() => {
     setCurrentStep('ideation');
     
+    // Force clear all cached ideas data to prevent showing irrelevant content
+    setIdeasWithThumbnails([]);
+    setIdeas([]);
+    
+    // Clear any persisted ideas from localStorage
+    localStorage.removeItem('ideas_data');
+    localStorage.removeItem('cached_ideas');
+    
     // Check for missing information
     if (foundationData) {
       const missing = [];
@@ -120,9 +128,12 @@ export default function IdeationEnhanced() {
       }
     }
     
-    // Generate ideas if not exists
-    if (foundationData && !ideas?.length) {
-      generateIdeas();
+    // Always generate fresh ideas when foundation data exists
+    if (foundationData) {
+      // Small delay to ensure state is cleared before generating
+      setTimeout(() => {
+        generateIdeas();
+      }, 100);
     }
   }, [foundationData]);
 
@@ -210,12 +221,14 @@ export default function IdeationEnhanced() {
       setIdeasWithThumbnails(ideasWithThumbs);
       setIdeas(generatedIdeas);
       setGeneratingThumbnails(false);
+      setIsGenerating(false);
+      setLoading(false);
       
       toast.success('Ideas generated successfully!');
     } catch (error) {
       console.error('Failed to generate ideas:', error);
       toast.error('Failed to generate ideas. Please try again.');
-    } finally {
+      setGeneratingThumbnails(false);
       setIsGenerating(false);
       setLoading(false);
     }

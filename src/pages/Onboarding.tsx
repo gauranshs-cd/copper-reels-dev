@@ -46,6 +46,10 @@ export default function Onboarding() {
     await new Promise(resolve => setTimeout(resolve, 2000));
 
     setLoading(false);
+    
+    // Set flag to indicate user came from onboarding
+    sessionStorage.setItem('came_from_onboarding', 'true');
+    
     navigate('/foundation');
   };
 

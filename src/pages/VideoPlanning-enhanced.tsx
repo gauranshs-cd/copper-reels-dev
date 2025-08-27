@@ -42,6 +42,7 @@ import { LoadingSpinner } from '@/components/ui/loading-spinner';
 import { useAppStore } from '@/store/useAppStore';
 import { copperReelsGemini } from '@/lib/gemini';
 import { toast } from 'sonner';
+import { scraperManager } from '@/utils/scraperManager';
 import { cn } from '@/lib/utils';
 import {
   Tabs,
@@ -67,6 +68,7 @@ interface YouTubeVideo {
   duration?: string;
   publishedAt?: string;
   description?: string;
+  transcript?: string;
 }
 
 interface ScriptBrick {
@@ -231,22 +233,67 @@ export default function VideoPlanning() {
         return;
       }
       
-      // Simulate fetching video data (in production, use YouTube API)
-      const videoData: YouTubeVideo = {
-        id: videoId,
-        url: newLink,
-        title: 'Sample Video Title - How to Do X in 2024',
-        channel: 'Channel Name',
-        views: '1.2M views',
-        thumbnail: `https://img.youtube.com/vi/${videoId}/maxresdefault.jpg`,
-        duration: '10:24',
-        publishedAt: '2 weeks ago',
-        description: 'This is a sample description of the video content...'
-      };
+      // Auto-start scraper API if not running
+      const apiReady = await scraperManager.ensureApiRunning();
       
-      setYoutubeLinks(prev => [...prev, videoData]);
-      setNewLink('');
-      toast.success('Video added to research');
+      if (!apiReady) {
+        toast.error('Failed to start YouTube scraper API');
+        return;
+      }
+      
+      // Use the YouTube scraper API to get real video data
+      try {
+        const response = await fetch('http://localhost:3001/api/analyze-video', {
+          method: 'POST',
+          headers: {
+            'Content-Type': 'application/json',
+          },
+          body: JSON.stringify({ url: newLink })
+        });
+        
+        if (response.ok) {
+          const realData = await response.json();
+          
+          const videoData: YouTubeVideo = {
+            id: videoId,
+            url: newLink,
+            title: realData.title || `Video ${videoId}`,
+            channel: realData.channel || 'Unknown Channel',
+            views: realData.views || 'N/A',
+            thumbnail: `https://img.youtube.com/vi/${videoId}/maxresdefault.jpg`,
+            duration: realData.duration || 'N/A',
+            publishedAt: realData.publishedAt || 'Unknown',
+            description: realData.description || 'No description available',
+            transcript: realData.transcript || 'Transcript not available'
+          };
+          
+          setYoutubeLinks(prev => [...prev, videoData]);
+          setNewLink('');
+          toast.success('Video analyzed and added to research');
+        } else {
+          throw new Error('API request failed');
+        }
+      } catch (apiError) {
+        console.log('YouTube API error:', apiError);
+        
+        // Fallback: Basic video data
+        const videoData: YouTubeVideo = {
+          id: videoId,
+          url: newLink,
+          title: `YouTube Video ${videoId}`,
+          channel: 'Unknown Channel',
+          views: 'N/A',
+          thumbnail: `https://img.youtube.com/vi/${videoId}/maxresdefault.jpg`,
+          duration: 'N/A',
+          publishedAt: 'Unknown',
+          description: 'Unable to fetch video details.',
+          transcript: 'Transcript not available'
+        };
+        
+        setYoutubeLinks(prev => [...prev, videoData]);
+        setNewLink('');
+        toast.warning('Video added with limited data.');
+      }
     } catch (error) {
       console.error('Failed to fetch video:', error);
       toast.error('Failed to fetch video information');
@@ -285,24 +332,39 @@ export default function VideoPlanning() {
       setTitleOptions(titles);
       setSelectedTitle(titles[0]);
       
-      // Generate thumbnail options
+      // Generate thumbnail options with unique URLs for regeneration
+      const timestamp = Date.now();
+      const randomSeed = Math.floor(Math.random() * 1000);
+      
       const thumbnails: ThumbnailOption[] = [
         {
-          id: 'thumb-1',
+          id: `thumb-1-${timestamp}`,
           url: selectedIdea.thumbnail || '/placeholder.jpg',
           prompt: 'Original idea thumbnail',
           selected: true
         },
         {
-          id: 'thumb-2',
-          url: `https://source.unsplash.com/1280x720/?${selectedIdea.concept}`,
+          id: `thumb-2-${timestamp}`,
+          url: `https://source.unsplash.com/1280x720/?${selectedIdea.concept}&sig=${randomSeed}`,
           prompt: 'Alternative style 1',
           selected: false
         },
         {
-          id: 'thumb-3',
-          url: `https://source.unsplash.com/1280x720/?technology,${selectedIdea.pillar}`,
+          id: `thumb-3-${timestamp}`,
+          url: `https://source.unsplash.com/1280x720/?technology,${selectedIdea.pillar}&sig=${randomSeed + 1}`,
           prompt: 'Alternative style 2',
+          selected: false
+        },
+        {
+          id: `thumb-4-${timestamp}`,
+          url: `https://source.unsplash.com/1280x720/?creative,${selectedIdea.concept}&sig=${randomSeed + 2}`,
+          prompt: 'Creative variation',
+          selected: false
+        },
+        {
+          id: `thumb-5-${timestamp}`,
+          url: `https://source.unsplash.com/1280x720/?modern,${selectedIdea.pillar}&sig=${randomSeed + 3}`,
+          prompt: 'Modern style',
           selected: false
         }
       ];
@@ -515,6 +577,16 @@ export default function VideoPlanning() {
                           </div>
                           {video.description && (
                             <p className="text-sm mt-2 line-clamp-2">{video.description}</p>
+                          )}
+                          {video.transcript && video.transcript !== "Transcript not available" && (
+                            <details className="mt-2">
+                              <summary className="text-xs text-muted-foreground cursor-pointer hover:text-foreground">
+                                View Transcript
+                              </summary>
+                              <div className="mt-2 p-2 bg-muted/30 rounded text-xs max-h-32 overflow-y-auto">
+                                {video.transcript}
+                              </div>
+                            </details>
                           )}
                         </div>
                         <Button
