@@ -146,7 +146,7 @@ export default function PatternBank() {
               analyzed, categorized, and ready to use
             </p>
             <div className="flex gap-4 justify-center">
-              <Button size="lg" onClick={() => navigate('/auth')}>
+              <Button size="lg" onClick={() => navigate('/login')}>
                 Unlock Pattern Bank
                 <ArrowRight className="w-4 h-4 ml-2" />
               </Button>
@@ -280,7 +280,7 @@ export default function PatternBank() {
                     </div>
                   </div>
                   <p className="text-lg font-medium mb-2">{pattern.pattern}</p>
-                  <Button size="sm" variant="outline" onClick={() => navigate('/auth')}>
+                  <Button size="sm" variant="outline" onClick={() => navigate('/login')}>
                     See Full Analysis
                     <Lock className="w-3 h-3 ml-2" />
                   </Button>
@@ -336,7 +336,7 @@ export default function PatternBank() {
               Join creators who are using data-driven patterns to consistently create viral content
             </p>
             <div className="flex gap-4 justify-center">
-              <Button size="lg" onClick={() => navigate('/auth')}>
+              <Button size="lg" onClick={() => navigate('/login')}>
                 Start 30-Day Free Trial
                 <ArrowRight className="w-4 h-4 ml-2" />
               </Button>

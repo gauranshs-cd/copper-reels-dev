@@ -109,10 +109,10 @@ export function AppHeader() {
               <UserMenu />
             ) : (
               <div className="flex items-center gap-2">
-                <Button variant="ghost" onClick={() => navigate('/auth')}>
+                <Button variant="ghost" onClick={() => navigate('/login')}>
                   Sign In
                 </Button>
-                <Button onClick={() => navigate('/auth')}>
+                <Button onClick={() => navigate('/login')}>
                   Get Started
                 </Button>
               </div>

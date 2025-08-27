@@ -570,7 +570,7 @@ export default function About() {
               Join 1,200+ creators who've already discovered the Copper Reels difference
             </p>
             <div className="flex gap-4 justify-center">
-              <Button size="lg" className="group" onClick={() => navigate('/auth')}>
+              <Button size="lg" onClick={() => navigate('/login')}>
                 Get Started
                 <ArrowRight className="w-4 h-4 ml-2 group-hover:translate-x-1 transition-transform" />
               </Button>

@@ -77,7 +77,7 @@ const Index = () => {
           className="flex flex-col sm:flex-row items-center justify-center gap-4"
         >
           <Button
-            onClick={() => navigate('/auth')}
+            onClick={() => navigate('/login')}
             size="lg"
             className="h-16 px-8 text-lg font-semibold rounded-xl bg-gradient-primary hover:shadow-glow transition-all duration-300"
           >
@@ -86,7 +86,7 @@ const Index = () => {
           </Button>
           
           <Button
-            onClick={() => navigate('/auth')}
+            onClick={() => navigate('/login')}
             variant="outline"
             size="lg"
             className="h-16 px-8 text-lg font-semibold rounded-xl"

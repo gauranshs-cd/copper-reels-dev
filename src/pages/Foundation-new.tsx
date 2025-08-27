@@ -17,7 +17,8 @@ import {
   AlertCircle,
   ChevronDown,
   FileText,
-  Bookmark
+  Bookmark,
+  X
 } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { Card } from '@/components/ui/card';
@@ -496,13 +497,29 @@ export default function Foundation() {
   // Show foundation selector
   if (showSelector && previousFoundations.length > 0) {
     return (
-      <div className="min-h-screen bg-gradient-subtle flex items-center justify-center p-4">
+      <div 
+        className="min-h-screen bg-gradient-subtle flex items-center justify-center p-4"
+        onClick={(e) => {
+          if (e.target === e.currentTarget) {
+            setShowSelector(false);
+          }
+        }}
+      >
         <motion.div
           initial={{ opacity: 0, scale: 0.95 }}
           animate={{ opacity: 1, scale: 1 }}
           className="max-w-2xl w-full"
         >
-          <Card className="p-6 shadow-xl">
+          <Card className="p-6 shadow-xl relative">
+            {/* Close (X) button */}
+            <button
+              type="button"
+              aria-label="Close"
+              onClick={() => setShowSelector(false)}
+              className="absolute right-4 top-4 inline-flex items-center justify-center rounded-md p-2 hover:bg-muted focus:outline-none focus:ring-2 focus:ring-primary"
+            >
+              <X className="w-4 h-4" />
+            </button>
             <h2 className="text-2xl font-bold mb-4">Select Foundation</h2>
             <p className="text-muted-foreground mb-6">
               Choose an existing foundation or create a new one

@@ -325,20 +325,53 @@ export class CopperReelsGemini {
     targetAudience: string;
     duration?: number;
   }): Promise<VideoScriptRow[]> {
+    // Import the YTGS prompts for full script generation
+    const ytgsPrompts = await import('../openai/ytgs-prompts');
+    
     const prompt = `
-You are creating a video script for YouTube content. Generate a structured script table with psychological triggers.
+${ytgsPrompts.MASTER_SCRIPT_GENERATOR}
 
 Topic: ${params.topic}
 Avatar Profile: ${params.avatarProfile}
 Target Audience: ${params.targetAudience}
 Duration: ${params.duration || 10} minutes
 
-Create a video script table with these exact columns:
-- BRICK (section name like INTRO BRICK, MIDDLE BRICK 1, etc.)
-- TIME (timestamp range like 0:00-0:30)
-- SCRIPT BEATS (the actual script content, key points to cover)
-- AVATAR'S INTERNAL DIALOGUE (what the viewer is thinking)
-- PSYCHOLOGICAL TRIGGER (the psychological principle being used)
+Generate a complete, detailed video script following the YTGS methodology above. Each brick must contain:
+
+INTRO BRICK:
+- Specific hook with numbers/statistics
+- Personal introduction with credibility
+- Clear problem statement
+- Value promise tied to duration
+- Social proof example
+- Transition question
+
+MAIN POINT SECTIONS (based on duration):
+- Section Header with descriptive name
+- Opening Statement explaining importance
+- Detailed Story following EXACT format: "Let me tell you about [Name], [description]. [Problem details]. [Name] didn't [common approach]. [He/She] [innovative action]. [Process]. [Timeframe], [results]. [Impact]."
+- Analysis explaining why it worked
+- Application Instructions: "So how do YOU..." with 3-5 specific steps
+- Transition to next point
+
+EXAMPLE BRICK:
+- Complete story with all required elements
+- Specific person, problem, solution, process, results
+- Measurable outcomes and timeframes
+
+APPLICATION BRICK:
+- "So how do YOU apply this starting today?"
+- Step 1: [Specific action] - Do this: [detailed instruction]. For example, if you're [scenario], you would [specific example]. This takes about [time].
+- Step 2: [Next step] - Once you've done step 1, [next action]. You'll know it's working when [indicator]. Most people see [result] within [timeframe].
+- Step 3: [Advanced step] - After [time], take it to the next level by [action]. This is where [benefit] kicks in.
+- Include [B-ROLL] and [ON-SCREEN] cues
+
+OUTRO BRICK:
+- Summary statement with main theme
+- Action recap: "First... Second... Third..."
+- Implementation challenge
+- Service mention
+- Final CTA
 
 Return ONLY a JSON object with this structure:
 {
@@ -347,21 +380,14 @@ Return ONLY a JSON object with this structure:
       "id": "unique-id",
       "brick": "INTRO BRICK",
       "time": "0:00-0:30",
-      "scriptBeats": "Main hook and opening statement...",
+      "scriptBeats": "Complete detailed script content with actual words to say...",
       "avatarDialogue": "What the viewer is thinking...",
       "psychologicalTrigger": "Mirror Neuron Activation"
     }
   ]
 }
 
-Include at least:
-- INTRO BRICK
-- PROBLEM AGITATION
-- STAKES SETUP
-- 2-3 MIDDLE BRICKS
-- APPLICATION sections
-- END BRICK
-
+CRITICAL: scriptBeats must contain the ACTUAL WORDS to say, not just descriptions of what to cover. Include specific examples, numbers, and actionable steps.
 Make it specific, actionable, and psychologically targeted to the avatar.`;
 
     const result = await this.model.generateContent(prompt);

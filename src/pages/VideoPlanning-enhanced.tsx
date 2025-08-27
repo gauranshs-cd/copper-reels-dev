@@ -124,6 +124,7 @@ export default function VideoPlanning() {
   const [generatingContent, setGeneratingContent] = useState(false);
   const [selectedTitle, setSelectedTitle] = useState<TitleOption | null>(null);
   const [selectedThumbnail, setSelectedThumbnail] = useState<ThumbnailOption | null>(null);
+  const [targetDuration, setTargetDuration] = useState<number>(5); // in minutes
 
   useEffect(() => {
     setCurrentStep('plan');
@@ -428,11 +429,20 @@ export default function VideoPlanning() {
       title: selectedTitle,
       thumbnail: selectedThumbnail,
       bricks: scriptBricks.filter(b => b.selected),
-      research: youtubeLinks
+      research: youtubeLinks,
+      targetDuration: targetDuration
     };
     
     setCurrentScript(planData);
     navigate('/script-builder');
+  };
+
+  const adjustScriptBricksForDuration = (targetDuration: number) => {
+    const totalDuration = scriptBricks.reduce((acc, brick) => acc + brick.duration, 0);
+    const ratio = targetDuration / totalDuration;
+    setScriptBricks(prev => 
+      prev.map(brick => ({ ...brick, duration: Math.floor(brick.duration * ratio) }))
+    );
   };
 
   if (!selectedIdea) {
@@ -562,7 +572,7 @@ export default function VideoPlanning() {
                           )}
                         </div>
                         <div className="flex-1 min-w-0">
-                          <h4 className="font-semibold line-clamp-1">{video.title}</h4>
+                          <h4 className="font-semibold">{video.title}</h4>
                           <p className="text-sm text-muted-foreground">{video.channel}</p>
                           <div className="flex items-center gap-4 mt-2 text-xs text-muted-foreground">
                             <span className="flex items-center gap-1">
@@ -854,11 +864,20 @@ export default function VideoPlanning() {
                 </p>
               </div>
               <div>
-                <Label className="text-sm text-muted-foreground">Video Length</Label>
-                <p className="mt-1 font-medium">
-                  {Math.floor(scriptBricks.filter(b => b.selected).reduce((acc, b) => acc + b.duration, 0) / 60)}:
-                  {(scriptBricks.filter(b => b.selected).reduce((acc, b) => acc + b.duration, 0) % 60).toString().padStart(2, '0')}
-                </p>
+                <Label className="text-sm text-muted-foreground">Target Video Length</Label>
+                <select 
+                  value={targetDuration} 
+                  onChange={(e) => {
+                    const newDuration = parseInt(e.target.value);
+                    setTargetDuration(newDuration);
+                    adjustScriptBricksForDuration(newDuration);
+                  }}
+                  className="mt-1 w-full px-3 py-2 border border-input bg-background rounded-md text-sm"
+                >
+                  <option value={5}>5 minutes</option>
+                  <option value={10}>10 minutes</option>
+                  <option value={20}>20 minutes</option>
+                </select>
               </div>
               <div>
                 <Label className="text-sm text-muted-foreground">Research Videos</Label>

@@ -52,7 +52,7 @@ export function FoundationModal({ open, onClose, onSubmit }: FoundationModalProp
 
   return (
     <Dialog open={open} onOpenChange={(isOpen) => { if (!isOpen) onClose?.(); }}>
-      <DialogContent className="sm:max-w-[600px] p-0 overflow-hidden" hideCloseButton>
+      <DialogContent className="sm:max-w-[600px] p-0 overflow-hidden" hideCloseButton onPointerDownOutside={() => onClose?.()}>
         <div className="relative">
           {/* Header */}
           <div className="bg-gradient-to-r from-primary/10 to-purple-600/10 p-6 border-b">

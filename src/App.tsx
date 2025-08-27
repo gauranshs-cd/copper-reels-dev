@@ -122,7 +122,7 @@ const AppContent = () => {
               <Index />
             </MarketingRedirect>
           } />
-          <Route path="/auth" element={<Auth />} />
+          <Route path="/login" element={<Auth />} />
           <Route path="/invite/:token" element={<AcceptInvite />} />
           <Route path="/test" element={<Test />} />
           <Route path="/services" element={
