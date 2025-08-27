@@ -92,29 +92,37 @@ export default function ScriptBuilderEnhanced() {
   const scrollIntervalRef = useRef<NodeJS.Timeout | null>(null);
 
   useEffect(() => {
-    // Try to restore from localStorage first
-    const savedSections = localStorage.getItem('copper_reels_script_sections');
-    if (savedSections && !scriptSections.length) {
-      try {
-        const parsed = JSON.parse(savedSections);
-        if (parsed && parsed.length > 0) {
-          setScriptSections(parsed);
-          // Generate full script from saved sections
-          const script = parsed.map((section: ScriptSection) => 
-            `[${section.time}] ${section.brick}\n\n${section.scriptBeats}\n\n`
-          ).join('\n---\n\n');
-          setFullScript(script);
-          toast.info('Restored your previous script');
-          return;
-        }
-      } catch (e) {
-        console.error('Failed to restore saved sections:', e);
-      }
+    // When currentScript changes (coming from planning page), always generate new script
+    if (currentScript) {
+      // Clear any existing script sections to force regeneration
+      setScriptSections([]);
+      setFullScript('');
+      // Clear localStorage to prevent restoration of old script
+      localStorage.removeItem('copper_reels_script_sections');
+      // Generate new script immediately
+      generateScript();
+      return;
     }
     
-    // Auto-generate script on mount if no saved data
-    if (currentScript && !scriptSections.length) {
-      generateScript();
+    // Only try to restore from localStorage if no currentScript (direct page access)
+    if (!currentScript) {
+      const savedSections = localStorage.getItem('copper_reels_script_sections');
+      if (savedSections && !scriptSections.length) {
+        try {
+          const parsed = JSON.parse(savedSections);
+          if (parsed && parsed.length > 0) {
+            setScriptSections(parsed);
+            // Generate full script from saved sections
+            const script = parsed.map((section: ScriptSection) => 
+              `[${section.time}] ${section.brick}\n\n${section.scriptBeats}\n\n`
+            ).join('\n---\n\n');
+            setFullScript(script);
+            toast.info('Restored your previous script');
+          }
+        } catch (e) {
+          console.error('Failed to restore saved sections:', e);
+        }
+      }
     }
   }, [currentScript]);
 
@@ -127,78 +135,128 @@ export default function ScriptBuilderEnhanced() {
     setIsGenerating(true);
     
     try {
-      // Generate script table
+      // Generate script table based on target duration and title promise
+      const targetDuration = currentScript.targetDuration || 5;
+      const titleText = currentScript.title?.text || selectedIdea.concept;
+      
+      // Calculate timing based on duration
+      const introDuration = Math.floor(targetDuration * 0.15); // 15% for intro
+      const outroDuration = Math.floor(targetDuration * 0.1);  // 10% for outro
+      const mainContentDuration = targetDuration - introDuration - outroDuration;
+      
+      // Determine number of main points from title or default based on duration
+      const numMainPoints = targetDuration <= 5 ? 3 : targetDuration <= 10 ? 5 : targetDuration <= 20 ? 8 : 12;
+      const pointDuration = Math.floor(mainContentDuration / numMainPoints);
+      
       const sections: ScriptSection[] = [
         {
           id: '1',
-          brick: 'INTRO BRICK',
-          time: '0:00-0:30',
-          scriptBeats: `Hook: "${currentScript.title?.text || selectedIdea.concept}"
-Problem: What viewers struggle with
-Value: What they'll learn today`,
-          avatarDialogue: 'Is this really possible? Can I actually do this?',
-          psychologicalTrigger: 'Mirror Neuron Activation - Pattern Interrupt'
+          brick: 'Intro Brick (0-30s)',
+          time: `0:00-0:${introDuration.toString().padStart(2, '0')}`,
+          scriptBeats: `HOOK: Start with a shocking statistic or counterintuitive statement about "${titleText}". Make it specific and surprising.
+
+PERSONAL INTRODUCTION: "I'm [Your Name], and I've helped [specific number] people [specific achievement]. I've [credibility statement with numbers/results]."
+
+PROBLEM STATEMENT: "But here's what most people don't realize about ${titleText}... [specific problem that viewers face]. This is costing you [specific consequence]."
+
+VALUE PROMISE: "In the next ${targetDuration} minutes, I'm going to show you exactly [specific transformation they'll achieve]. By the end, you'll know [3 specific things they'll learn]."
+
+SOCIAL PROOF: "Just last week, [specific person] used this exact approach and [specific result in specific timeframe]."
+
+TRANSITION QUESTION: "So what's the first thing you need to know about ${titleText}?"`,
+          avatarDialogue: 'This person knows what they\'re talking about, I need to pay attention',
+          psychologicalTrigger: 'Authority + Curiosity Gap'
         },
         {
           id: '2',
-          brick: 'PROBLEM AGITATION',
-          time: '0:30-1:00',
-          scriptBeats: `Most people fail because...
-The hidden cost of not solving this
-Why traditional methods don't work`,
-          avatarDialogue: "That's exactly my problem! I've been struggling with this",
+          brick: 'Problem Agitation (30-60s)',
+          time: `0:${introDuration.toString().padStart(2, '0')}-1:00`,
+          scriptBeats: `BIG IDEA: "The biggest mistake people make with ${titleText} is [specific common mistake]. I see this everywhere."
+
+AMPLIFY THE PROBLEM: "When you [describe the mistake], what actually happens is [specific negative consequence]. This leads to [bigger problem]."
+
+COST OF INACTION: "If you keep doing this, in 6 months you'll still be [specific frustrating situation]. Meanwhile, others who fix this will be [specific better outcome]."
+
+WHY CURRENT SOLUTIONS FAIL: "You've probably tried [common solution 1] and [common solution 2]. But here's why they don't work: [specific reason with evidence]."
+
+TRANSITION: "So what should you do instead? Let me show you..."`,
+          avatarDialogue: 'That\'s exactly my problem! I\'ve been struggling with this',
           psychologicalTrigger: 'Pain Point Amplification'
         },
         {
           id: '3',
-          brick: 'STAKES SETUP',
-          time: '1:00-1:30',
-          scriptBeats: `What's at stake if you don't fix this
-The opportunity cost
-The transformation possible`,
-          avatarDialogue: 'I need to solve this now, the cost is too high',
-          psychologicalTrigger: 'Loss Aversion + FOMO'
+          brick: 'Middle Brick 1 (60-180s)',
+          time: `1:00-3:00`,
+          scriptBeats: `SECTION HEADER: "The [Descriptive Name] Method - Point #1"
+
+OPENING STATEMENT: "This is the foundation everything else builds on. Without this, nothing else works."
+
+DETAILED STORY: "Let me tell you about Sarah, a marketing manager at a tech startup. Sarah was struggling with [specific problem]. She didn't just try harder with the same approach. She discovered [innovative solution]. Here's exactly what she did: [step-by-step process]. Within 3 weeks, she saw [specific measurable results]. This transformed her entire [area of impact]."
+
+ANALYSIS: "Why did this work when everything else failed? Three reasons: [reason 1 with explanation], [reason 2 with explanation], and [reason 3 with explanation]."
+
+APPLICATION INSTRUCTIONS: "So how do YOU apply this? Step 1: [specific action with concrete example]. Step 2: [next action with measurable outcome]. Step 3: [advanced step with timeline]. Most people see results within [specific timeframe]."
+
+TRANSITION: "But here's what Sarah discovered next that doubled her results..."`,
+          avatarDialogue: 'This makes perfect sense, I can apply this immediately',
+          psychologicalTrigger: 'Story + Authority + Implementation'
         },
         {
           id: '4',
-          brick: 'MIDDLE BRICK 1',
-          time: '1:30-3:30',
-          scriptBeats: `Core concept #1: ${currentScript.bricks?.[2]?.elements?.examples?.[0] || 'Key insight'}
-Step-by-step breakdown
-Visual demonstration`,
-          avatarDialogue: 'This makes sense, I can see how this works',
-          psychologicalTrigger: 'Cognitive Ease + Authority'
+          brick: 'Example Brick (180-240s)',
+          time: `3:00-4:00`,
+          scriptBeats: `DETAILED STORY FORMAT: "Let me tell you about Marcus, a freelance designer who was barely making ends meet. Marcus was losing clients because his proposals looked amateur and took forever to create. Marcus didn't just work harder or copy templates online. He developed a systematic approach using [specific method]. First, he [specific action]. Then he [next action]. Finally, he [final action]. Within 2 months, his proposal acceptance rate went from 20% to 85%. This single change increased his income by $40,000 that year."
+
+STORY BREAKDOWN:
+- Specific person: Marcus, freelance designer
+- Clear problem: Amateur proposals, slow creation, losing clients  
+- What he DIDN'T do: Work harder, copy templates
+- What he DID do: Systematic approach with [method]
+- Step-by-step process: [3 specific actions]
+- Exact timeframe: 2 months
+- Measurable results: 20% to 85% acceptance rate
+- Broader impact: $40,000 income increase
+
+This proves that [key principle] works even when [challenging circumstances].`,
+          avatarDialogue: 'If they can do it, so can I - this is a real person with real results',
+          psychologicalTrigger: 'Social Proof + Possibility + Specificity'
         },
         {
           id: '5',
-          brick: 'EXAMPLE BRICK',
-          time: '3:30-4:30',
-          scriptBeats: `Real-world case study
-Before and after comparison
-Specific metrics and results`,
-          avatarDialogue: 'If they can do it, so can I',
-          psychologicalTrigger: 'Social Proof + Possibility'
+          brick: 'Application Brick (240-300s)',
+          time: `4:00-5:00`,
+          scriptBeats: `APPLICATION INSTRUCTIONS: "So how do YOU apply this starting today?
+
+Step 1: [Specific action with concrete example] - Do this: [detailed instruction]. For example, if you're [scenario], you would [specific example]. This takes about [time estimate].
+
+Step 2: [Next step with measurable outcome] - Once you've done step 1, [next action]. You'll know it's working when [specific indicator]. Most people see [specific result] within [timeframe].
+
+Step 3: [Advanced implementation] - After [timeframe], take it to the next level by [advanced action]. This is where [specific benefit] really kicks in.
+
+Step 4: [Optimization step] - Track [specific metric] and adjust [specific element] based on [specific criteria].
+
+Step 5: [Scale/maintenance step] - Once you're getting consistent [results], [scaling action] to [bigger outcome].
+
+[B-ROLL: Show examples of each step being implemented]
+[ON-SCREEN: Display key metrics and timelines for each step]"`,
+          avatarDialogue: 'I know exactly what to do next, this is actionable',
+          psychologicalTrigger: 'Implementation Intention + Self-Efficacy'
         },
         {
           id: '6',
-          brick: 'APPLICATION',
-          time: '4:30-5:30',
-          scriptBeats: `How to apply this today:
-Step 1: Quick win action
-Step 2: Build momentum
-Step 3: Scale up`,
-          avatarDialogue: 'I know exactly what to do next',
-          psychologicalTrigger: 'Implementation Intention'
-        },
-        {
-          id: '7',
-          brick: 'END BRICK',
-          time: '5:30-6:00',
-          scriptBeats: `Quick recap of key points
-Clear next action
-Call to action: Like, subscribe, watch next`,
-          avatarDialogue: 'This was valuable, I want more',
-          psychologicalTrigger: 'Commitment + Reciprocity'
+          brick: 'Outro Brick (300-330s)',
+          time: `5:00-5:30`,
+          scriptBeats: `SUMMARY STATEMENT: "So remember, ${titleText} comes down to [main theme recap]. It's not about [common misconception], it's about [key insight]."
+
+ACTION RECAP: "First, you [action 1 summary]. Second, you [action 2 summary]. Third, you [action 3 summary]. Do these three things and you'll see [specific outcome] within [timeframe]."
+
+IMPLEMENTATION CHALLENGE: "Here's what I want you to do right now - pause this video and [specific immediate action]. Don't wait. The people who take action immediately are the ones who get results."
+
+SERVICE MENTION: "If you want me to personally help you implement this system, I work with [specific type of people] to [specific outcome]. Link in the description."
+
+FINAL CTA: "If this helped you understand ${titleText} better, smash that like button. Subscribe for more [content type] like this. And watch this video next where I show you [related topic] - it's the perfect follow-up to what we just covered."`,
+          avatarDialogue: 'This was valuable, I want more content like this',
+          psychologicalTrigger: 'Commitment + Reciprocity + Authority'
         }
       ];
       
@@ -218,7 +276,7 @@ Call to action: Like, subscribe, watch next`,
               topic: selectedIdea.concept,
               avatarProfile: currentScript.research?.[0]?.description || 'Target audience',
               targetAudience: selectedIdea.metadata?.targetAudience || 'Content creators',
-              duration: 6
+              duration: currentScript.targetDuration || 6
             }),
             timeoutPromise
           ]) as Awaited<ReturnType<typeof copperReelsGemini.generateVideoScriptTable>>;
@@ -413,7 +471,7 @@ Call to action: Like, subscribe, watch next`,
                       {scriptSections.length} sections
                     </Badge>
                     <Badge>
-                      ~{Math.ceil(scriptSections.length * 0.85)} min
+                      Target: {currentScript.targetDuration || 5} min
                     </Badge>
                   </div>
                 </div>

@@ -51,7 +51,7 @@ export default function Services() {
 
   const handleCheckout = (packageType: string) => {
     if (packageType === 'ai-platform') {
-      navigate('/auth');
+      navigate('/login');
     } else {
       window.open('https://calendly.com/arvindsarin/30min', '_blank');
     }

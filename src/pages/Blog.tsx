@@ -253,7 +253,7 @@ export default function Blog() {
               Join creators getting exclusive insights and strategies we don't share anywhere else
             </p>
             <div className="flex gap-4 justify-center">
-              <Button size="lg" onClick={() => navigate('/auth')}>
+              <Button size="lg" onClick={() => navigate('/login')}>
                 Start Free Trial
                 <ArrowRight className="w-4 h-4 ml-2" />
               </Button>
