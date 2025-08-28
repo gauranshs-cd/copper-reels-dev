@@ -59,6 +59,46 @@ export interface VideoPlan {
   teleprompterMode: boolean;
 }
 
+// Blog Post Interfaces
+export interface BlogKeyword {
+  term: string;
+  searchVolume: number;
+  difficulty: number;
+  cpc?: number;
+  trend?: 'rising' | 'stable' | 'declining';
+  selected?: boolean;
+}
+
+export interface BlogMetadata {
+  metaTitle: string;
+  metaDescription: string;
+  slug: string;
+  tags: string[];
+  category?: string;
+}
+
+export interface BlogSEO {
+  score: number;
+  keywordDensity: number;
+  readabilityScore: number;
+  wordCount: number;
+  headingsStructure: boolean;
+  internalLinks: number;
+  externalLinks: number;
+}
+
+export interface BlogPost {
+  id?: string;
+  title: string;
+  content: string;
+  keywords: BlogKeyword[];
+  metadata: BlogMetadata;
+  seo: BlogSEO;
+  status: 'draft' | 'optimizing' | 'review' | 'approved' | 'published';
+  createdAt?: Date;
+  updatedAt?: Date;
+}
+
 interface AppState {
   // Navigation
   currentStep: 'onboarding' | 'foundation' | 'ideation' | 'plan';
@@ -82,6 +122,12 @@ interface AppState {
   // Admin Features
   customPrompts: Record<string, string>;
   
+  // Blog Post State
+  currentBlogPost: BlogPost | null;
+  blogPosts: BlogPost[];
+  blogKeywords: BlogKeyword[];
+  selectedBlogKeyword: BlogKeyword | null;
+  
   // Actions
   setCurrentStep: (step: AppState['currentStep']) => void;
   setUmbrellaStatement: (statement: string) => void;
@@ -96,6 +142,14 @@ interface AppState {
   setCurrentIdea: (idea: any) => void;
   setCurrentScript: (script: any) => void;
   setCurrentThumbnail: (thumbnail: any) => void;
+  
+  // Blog Post Actions
+  setCurrentBlogPost: (post: BlogPost | null) => void;
+  setBlogPosts: (posts: BlogPost[]) => void;
+  addBlogPost: (post: BlogPost) => void;
+  updateBlogPost: (id: string, updates: Partial<BlogPost>) => void;
+  setBlogKeywords: (keywords: BlogKeyword[]) => void;
+  setSelectedBlogKeyword: (keyword: BlogKeyword | null) => void;
   
   resetStore: () => void;
 }
@@ -116,6 +170,10 @@ export const useAppStore = create<AppState>()(
       isLoading: false,
       loadingMessage: '',
       customPrompts: {},
+      currentBlogPost: null,
+      blogPosts: [],
+      blogKeywords: [],
+      selectedBlogKeyword: null,
       
       // Actions
       setCurrentStep: (step) => set({ currentStep: step }),
@@ -134,6 +192,23 @@ export const useAppStore = create<AppState>()(
       setCurrentScript: (script) => set({ currentScript: script }),
       setCurrentThumbnail: (thumbnail) => set({ currentThumbnail: thumbnail }),
       
+      // Blog Post Actions
+      setCurrentBlogPost: (post) => set({ currentBlogPost: post }),
+      setBlogPosts: (posts) => set({ blogPosts: posts }),
+      addBlogPost: (post) => set((state) => ({ 
+        blogPosts: [...state.blogPosts, post] 
+      })),
+      updateBlogPost: (id, updates) => set((state) => ({
+        blogPosts: state.blogPosts.map(post => 
+          post.id === id ? { ...post, ...updates } : post
+        ),
+        currentBlogPost: state.currentBlogPost?.id === id 
+          ? { ...state.currentBlogPost, ...updates }
+          : state.currentBlogPost
+      })),
+      setBlogKeywords: (keywords) => set({ blogKeywords: keywords }),
+      setSelectedBlogKeyword: (keyword) => set({ selectedBlogKeyword: keyword }),
+      
       resetStore: () => set({
         currentStep: 'onboarding',
         umbrellaStatement: '',
@@ -146,7 +221,11 @@ export const useAppStore = create<AppState>()(
         currentThumbnail: null,
         isLoading: false,
         loadingMessage: '',
-        customPrompts: {}
+        customPrompts: {},
+        currentBlogPost: null,
+        blogPosts: [],
+        blogKeywords: [],
+        selectedBlogKeyword: null
       })
     }),
     {

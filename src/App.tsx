@@ -40,6 +40,7 @@ import Terms from "./pages/Terms";
 import Analytics from "./pages/Analytics";
 import TeamSettings from "./pages/TeamSettings";
 import AcceptInvite from "./pages/AcceptInvite";
+import BlogWriter from "./pages/BlogWriter";
 
 const queryClient = new QueryClient();
 
@@ -52,7 +53,7 @@ const AppContent = () => {
   // Define which routes are protected/authenticated (app routes)
   const appRoutes = [
     '/chat', '/dashboard', '/onboarding', '/foundation', 
-    '/ideation', '/plan', '/script-builder', '/settings', '/analytics', '/team-settings'
+    '/ideation', '/plan', '/script-builder', '/blog-writer', '/settings', '/analytics', '/team-settings'
   ];
   
   // Define public/marketing routes
@@ -237,6 +238,18 @@ const AppContent = () => {
                 </AppLayout>
               ) : (
                 <ScriptBuilder />
+              )}
+            </ProtectedRoute>
+          } />
+          
+          <Route path="/blog-writer" element={
+            <ProtectedRoute>
+              {user ? (
+                <AppLayout>
+                  <BlogWriter />
+                </AppLayout>
+              ) : (
+                <BlogWriter />
               )}
             </ProtectedRoute>
           } />

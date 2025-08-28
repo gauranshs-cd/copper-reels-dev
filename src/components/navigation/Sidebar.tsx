@@ -33,7 +33,8 @@ import {
   Mail,
   LogOut,
   UserCircle,
-  ChevronDown
+  ChevronDown,
+  PenTool
 } from 'lucide-react';
 import {
   DropdownMenu,
@@ -90,6 +91,7 @@ export function Sidebar({ className }: SidebarProps) {
     { icon: Lightbulb, label: 'Ideas', path: '/ideation' },
     { icon: Video, label: 'Planning', path: '/plan' },
     { icon: FileText, label: 'Scripts', path: '/script-builder' },
+    { icon: PenTool, label: 'Blog Post Writer', path: '/blog-writer', badge: 'New' },
     { icon: Palette, label: 'Pattern Bank', path: '/pattern-bank' },
   ];
 
