@@ -68,7 +68,6 @@ interface YouTubeVideo {
   duration?: string;
   publishedAt?: string;
   description?: string;
-  transcript?: string;
 }
 
 interface ScriptBrick {
@@ -234,15 +233,7 @@ export default function VideoPlanning() {
         return;
       }
       
-      // Auto-start scraper API if not running
-      const apiReady = await scraperManager.ensureApiRunning();
-      
-      if (!apiReady) {
-        toast.error('Failed to start YouTube scraper API');
-        return;
-      }
-      
-      // Use the YouTube scraper API to get real video data
+      // Use YouTube scraper API
       try {
         const response = await fetch('http://localhost:3001/api/analyze-video', {
           method: 'POST',
@@ -261,11 +252,10 @@ export default function VideoPlanning() {
             title: realData.title || `Video ${videoId}`,
             channel: realData.channel || 'Unknown Channel',
             views: realData.views || 'N/A',
-            thumbnail: `https://img.youtube.com/vi/${videoId}/maxresdefault.jpg`,
+            thumbnail: realData.thumbnail_url || `https://img.youtube.com/vi/${videoId}/maxresdefault.jpg`,
             duration: realData.duration || 'N/A',
             publishedAt: realData.publishedAt || 'Unknown',
-            description: realData.description || 'No description available',
-            transcript: realData.transcript || 'Transcript not available'
+            description: realData.description || 'No description available'
           };
           
           setYoutubeLinks(prev => [...prev, videoData]);
@@ -275,7 +265,7 @@ export default function VideoPlanning() {
           throw new Error('API request failed');
         }
       } catch (apiError) {
-        console.log('YouTube API error:', apiError);
+        console.log('YouTube scraper error:', apiError);
         
         // Fallback: Basic video data
         const videoData: YouTubeVideo = {
@@ -287,8 +277,7 @@ export default function VideoPlanning() {
           thumbnail: `https://img.youtube.com/vi/${videoId}/maxresdefault.jpg`,
           duration: 'N/A',
           publishedAt: 'Unknown',
-          description: 'Unable to fetch video details.',
-          transcript: 'Transcript not available'
+          description: 'Unable to fetch video details.'
         };
         
         setYoutubeLinks(prev => [...prev, videoData]);
@@ -585,18 +574,8 @@ export default function VideoPlanning() {
                             </span>
                             <span>{video.publishedAt}</span>
                           </div>
-                          {video.description && (
+                          {video.description && video.description !== "No description available" && (
                             <p className="text-sm mt-2 line-clamp-2">{video.description}</p>
-                          )}
-                          {video.transcript && video.transcript !== "Transcript not available" && (
-                            <details className="mt-2">
-                              <summary className="text-xs text-muted-foreground cursor-pointer hover:text-foreground">
-                                View Transcript
-                              </summary>
-                              <div className="mt-2 p-2 bg-muted/30 rounded text-xs max-h-32 overflow-y-auto">
-                                {video.transcript}
-                              </div>
-                            </details>
                           )}
                         </div>
                         <Button

@@ -125,7 +125,8 @@ export async function generateRealThumbnail(options: ThumbnailOptions): Promise<
     */
 
     // Option 4: Use Picsum for demo/placeholder (always works)
-    const seed = options.prompt.split('').reduce((a, b) => {
+    const promptText = options.prompt || 'default';
+    const seed = promptText.split('').reduce((a, b) => {
       return a + b.charCodeAt(0);
     }, 0);
     

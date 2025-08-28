@@ -143,7 +143,7 @@ export function Sidebar({ className }: SidebarProps) {
   };
 
   const SidebarContent = () => (
-    <>
+    <div className="flex flex-col h-full">
       {/* Logo/Brand */}
       <div className="p-4 border-b">
         <div className="flex items-center justify-between">
@@ -177,52 +177,52 @@ export function Sidebar({ className }: SidebarProps) {
 
       {/* Navigation */}
       <ScrollArea className="flex-1 px-3 py-4">
-        <div className="space-y-6">
-          {/* Main Navigation */}
-          <div>
-            {!collapsed && (
-              <h3 className="mb-2 px-3 text-xs font-semibold text-muted-foreground uppercase">
-                Workspace
-              </h3>
-            )}
-            <nav className="space-y-1">
-              {mainNavigation.map((item) => (
-                <NavLink key={item.path} item={item} />
-              ))}
-            </nav>
-          </div>
-
-          {/* Team Navigation */}
-          {user && (
+          <div className="space-y-6">
+            {/* Main Navigation */}
             <div>
               {!collapsed && (
                 <h3 className="mb-2 px-3 text-xs font-semibold text-muted-foreground uppercase">
-                  Team
+                  Workspace
                 </h3>
               )}
               <nav className="space-y-1">
-                {teamNavigation.map((item) => (
+                {mainNavigation.map((item) => (
                   <NavLink key={item.path} item={item} />
                 ))}
               </nav>
             </div>
-          )}
 
-          {/* Settings Navigation */}
-          <div>
-            {!collapsed && (
-              <h3 className="mb-2 px-3 text-xs font-semibold text-muted-foreground uppercase">
-                Settings
-              </h3>
+            {/* Team Navigation */}
+            {user && (
+              <div>
+                {!collapsed && (
+                  <h3 className="mb-2 px-3 text-xs font-semibold text-muted-foreground uppercase">
+                    Team
+                  </h3>
+                )}
+                <nav className="space-y-1">
+                  {teamNavigation.map((item) => (
+                    <NavLink key={item.path} item={item} />
+                  ))}
+                </nav>
+              </div>
             )}
-            <nav className="space-y-1">
-              {settingsNavigation.map((item) => (
-                <NavLink key={item.path} item={item} />
-              ))}
-            </nav>
+
+            {/* Settings Navigation */}
+            <div>
+              {!collapsed && (
+                <h3 className="mb-2 px-3 text-xs font-semibold text-muted-foreground uppercase">
+                  Settings
+                </h3>
+              )}
+              <nav className="space-y-1">
+                {settingsNavigation.map((item) => (
+                  <NavLink key={item.path} item={item} />
+                ))}
+              </nav>
+            </div>
           </div>
-        </div>
-      </ScrollArea>
+        </ScrollArea>
 
       {/* Footer */}
       <div className="border-t p-4 space-y-4">
@@ -266,7 +266,7 @@ export function Sidebar({ className }: SidebarProps) {
                 Billing
               </DropdownMenuItem>
               <DropdownMenuSeparator />
-              <DropdownMenuItem onClick={signOut}>
+              <DropdownMenuItem onClick={() => { signOut(); navigate('/'); }}>
                 <LogOut className="mr-2 h-4 w-4" />
                 Sign Out
               </DropdownMenuItem>
@@ -274,7 +274,7 @@ export function Sidebar({ className }: SidebarProps) {
           </DropdownMenu>
         ) : (
           <Button 
-            onClick={() => navigate('/auth')}
+            onClick={() => navigate('/')}
             className={cn("w-full", collapsed && "px-2")}
             size={collapsed ? "icon" : "sm"}
           >
@@ -282,7 +282,7 @@ export function Sidebar({ className }: SidebarProps) {
           </Button>
         )}
       </div>
-    </>
+    </div>
   );
 
   return (

@@ -91,6 +91,8 @@ export default function IdeationEnhanced() {
   const [answers, setAnswers] = useState<Record<string, string>>({});
   const [generatingThumbnails, setGeneratingThumbnails] = useState(false);
   const [missingInfo, setMissingInfo] = useState<string[]>([]);
+  const [contextInput, setContextInput] = useState('');
+  const [addedContexts, setAddedContexts] = useState<string[]>([]);
 
   useEffect(() => {
     setCurrentStep('ideation');
@@ -151,6 +153,21 @@ export default function IdeationEnhanced() {
     return found;
   };
 
+  const addContext = () => {
+    if (contextInput.trim()) {
+      setAddedContexts(prev => [...prev, contextInput.trim()]);
+      setContextInput('');
+      // Regenerate ideas with new context
+      generateIdeas();
+    }
+  };
+
+  const removeContext = (index: number) => {
+    setAddedContexts(prev => prev.filter((_, i) => i !== index));
+    // Regenerate ideas without removed context
+    generateIdeas();
+  };
+
   const generateIdeas = async (additionalContext?: string) => {
     if (!foundationData) return;
     
@@ -162,13 +179,21 @@ export default function IdeationEnhanced() {
       const selectedDemographics = foundationData.avatar.demographics;
       const selectedPillars = foundationData.pillars.filter((p: any) => p.selected);
       
-      // Build context with answers to questions
+      // Build context with answers to questions and added contexts
       let context = additionalContext || '';
       if (Object.keys(answers).length > 0) {
         context += '\nAdditional context:\n';
         for (const [key, value] of Object.entries(answers)) {
           context += `${key}: ${value}\n`;
         }
+      }
+      
+      // Add user-provided contexts
+      if (addedContexts.length > 0) {
+        context += '\nUser Context:\n';
+        addedContexts.forEach(ctx => {
+          context += `- ${ctx}\n`;
+        });
       }
       
       const generatedIdeas = await copperReelsGemini.generateIdeas({
@@ -184,11 +209,27 @@ export default function IdeationEnhanced() {
       const ideasWithThumbs: IdeaWithThumbnail[] = await Promise.all(
         generatedIdeas.map(async (idea, index) => {
           try {
+            // Enhanced thumbnail prompt using successful format structure
+            const demographics = foundationData.avatar?.demographics || '';
+            const psychographics = foundationData.avatar?.psychographics || '';
+            const painPoints = foundationData.avatar?.painPoints || '';
+            const goals = foundationData.avatar?.goals || '';
+            
+            // Create structured prompt similar to successful example
+            const structuredPrompt = `${idea.concept}
+
+${idea.whyItWillClick}
+
+Addresses key pain points: ${painPoints}. Provides actionable value for ${demographics} audience.
+
+${idea.pillar.toLowerCase().replace(/\s+/g, '')}${idea.concept.toLowerCase().replace(/[^a-z0-9]/g, '').substring(0, 20)}`;
+            
+            const enhancedPrompt = structuredPrompt;
+            
             const thumbnailUrl = await generateRealThumbnail({
-              title: idea.concept,
-              topic: idea.pillar,
-              style: 'viral',
-              brandColors: ['#4CAF84', '#29B6F6']
+              prompt: enhancedPrompt,
+              style: 'photorealistic',
+              aspectRatio: '16:9'
             });
             
             return {
@@ -260,13 +301,33 @@ export default function IdeationEnhanced() {
     setIdeasWithThumbnails(prev => 
       prev.map(i => ({ ...i, selected: i.id === idea.id }))
     );
-    setSelectedIdea(idea);
+    // Transform to IdeaCard format for the store
+    const ideaCard = {
+      id: idea.id,
+      title: idea.concept,
+      thumbnail: idea.thumbnailUrl || '/api/placeholder/300/200',
+      pillar: idea.pillar,
+      pillarColor: 'bg-blue-500',
+      ctrScore: Math.round(idea.difficulty * 2),
+      description: idea.whyItWillClick
+    };
+    setSelectedIdea(ideaCard);
   };
 
   const proceedToPlanning = () => {
     const selected = ideasWithThumbnails.find(i => i.selected);
     if (selected) {
-      setSelectedIdea(selected);
+      // Transform to IdeaCard format for the store
+      const ideaCard = {
+        id: selected.id,
+        title: selected.concept,
+        thumbnail: selected.thumbnailUrl || '/api/placeholder/300/200',
+        pillar: selected.pillar,
+        pillarColor: 'bg-blue-500',
+        ctrScore: Math.round(selected.difficulty * 2),
+        description: selected.whyItWillClick
+      };
+      setSelectedIdea(ideaCard);
       navigate('/plan');
     }
   };
@@ -569,17 +630,38 @@ export default function IdeationEnhanced() {
                   <Input
                     placeholder="E.g., trending topics, specific angles, competitor videos..."
                     className="flex-1"
+                    value={contextInput}
+                    onChange={(e) => setContextInput(e.target.value)}
                     onKeyDown={(e) => {
                       if (e.key === 'Enter') {
-                        generateIdeas(e.currentTarget.value);
-                        e.currentTarget.value = '';
+                        addContext();
                       }
                     }}
                   />
-                  <Button variant="outline">
+                  <Button variant="outline" onClick={addContext}>
                     Add Context
                   </Button>
                 </div>
+                
+                {/* Display added contexts */}
+                {addedContexts.length > 0 && (
+                  <div className="mt-4 space-y-2">
+                    <p className="text-sm font-medium text-muted-foreground">Added Context:</p>
+                    {addedContexts.map((context, index) => (
+                      <div key={index} className="flex items-center justify-between bg-muted/50 rounded-lg p-3">
+                        <span className="text-sm">{context}</span>
+                        <Button
+                          variant="ghost"
+                          size="sm"
+                          onClick={() => removeContext(index)}
+                          className="h-6 w-6 p-0 hover:bg-destructive hover:text-destructive-foreground"
+                        >
+                          ×
+                        </Button>
+                      </div>
+                    ))}
+                  </div>
+                )}
               </Card>
               
               {/* Video Editing Upsell */}

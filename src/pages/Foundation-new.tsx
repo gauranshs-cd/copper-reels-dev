@@ -76,6 +76,14 @@ export default function Foundation() {
   const [enhancedPillars, setEnhancedPillars] = useState<EnhancedPillar[]>([]);
   const [enhancedHeading, setEnhancedHeading] = useState('');
 
+  // Custom input states
+  const [showDemographicInput, setShowDemographicInput] = useState(false);
+  const [showPsychographicInput, setShowPsychographicInput] = useState(false);
+  const [showPainPointInput, setShowPainPointInput] = useState(false);
+  const [newDemographic, setNewDemographic] = useState('');
+  const [newPsychographic, setNewPsychographic] = useState('');
+  const [newPainPoint, setNewPainPoint] = useState('');
+
   const generateFoundation = async (useUmbrella?: string) => {
     const statementToUse = useUmbrella || umbrellaStatement;
     if (!statementToUse) return;
@@ -465,9 +473,59 @@ export default function Foundation() {
   }, []);
 
   const toggleBlock = (blocks: SelectableBlock[], setBlocks: any, id: string) => {
-    setBlocks(blocks.map(b => 
-      b.id === id ? { ...b, selected: !b.selected } : b
+    setBlocks(blocks.map(block => 
+      block.id === id ? { ...block, selected: !block.selected } : block
     ));
+  };
+
+  // Add custom block functions
+  const addCustomDemographic = () => {
+    if (newDemographic.trim()) {
+      const newBlock: SelectableBlock = {
+        id: `custom-demo-${Date.now()}`,
+        label: newDemographic.trim(),
+        value: newDemographic.trim(),
+        selected: true,
+        color: 'blue'
+      };
+      setDemographicBlocks([...demographicBlocks, newBlock]);
+      setNewDemographic('');
+      setShowDemographicInput(false);
+    }
+  };
+
+  const addCustomPsychographic = () => {
+    if (newPsychographic.trim()) {
+      const newBlock: SelectableBlock = {
+        id: `custom-psycho-${Date.now()}`,
+        label: newPsychographic.trim(),
+        value: newPsychographic.trim(),
+        selected: true,
+        color: 'green'
+      };
+      setPsychographicBlocks([...psychographicBlocks, newBlock]);
+      setNewPsychographic('');
+      setShowPsychographicInput(false);
+    }
+  };
+
+  const addCustomPainPoint = () => {
+    if (newPainPoint.trim()) {
+      const newBlock: SelectableBlock = {
+        id: `custom-pain-${Date.now()}`,
+        label: newPainPoint.trim(),
+        value: newPainPoint.trim(),
+        selected: true,
+        color: 'red'
+      };
+      setPainPointBlocks([...painPointBlocks, newBlock]);
+      setNewPainPoint('');
+      setShowPainPointInput(false);
+    }
+  };
+
+  const removeCustomBlock = (blocks: SelectableBlock[], setBlocks: any, id: string) => {
+    setBlocks(blocks.filter(block => block.id !== id));
   };
 
   const togglePillar = (id: string) => {
@@ -696,11 +754,23 @@ export default function Foundation() {
             {/* Demographics */}
             <Card className="p-6 shadow-elegant">
               <div className="flex items-center gap-2 mb-6">
-                <Users className="w-5 h-5 text-primary" />
-                <h2 className="text-xl font-bold">Demographics</h2>
-                <Badge variant="outline" className="ml-auto">
-                  {demographicBlocks.filter(b => b.selected).length} selected
-                </Badge>
+                <div className="flex items-center justify-between mb-4">
+                  <h2 className="text-xl font-bold">Demographics</h2>
+                  <div className="flex items-center gap-2">
+                    <Button
+                      variant="ghost"
+                      size="sm"
+                      onClick={() => setShowDemographicInput(!showDemographicInput)}
+                      className="text-xs"
+                    >
+                      <Plus className="w-3 h-3 mr-1" />
+                      Add Custom
+                    </Button>
+                    <Badge variant="outline">
+                      {demographicBlocks.filter(b => b.selected).length} selected
+                    </Badge>
+                  </div>
+                </div>
               </div>
               <div className="flex flex-wrap gap-2">
                 {demographicBlocks.map(block => (
@@ -722,17 +792,49 @@ export default function Foundation() {
                     </div>
                   </motion.div>
                 ))}
+                {showDemographicInput && (
+                  <div className="flex items-center gap-2">
+                    <input
+                      type="text"
+                      value={newDemographic}
+                      onChange={(e) => setNewDemographic(e.target.value)}
+                      placeholder="Enter custom demographic"
+                      className="px-4 py-2 rounded-lg border-2 border-muted focus:border-primary focus:ring-2 focus:ring-primary"
+                    />
+                    <Button
+                      variant="ghost"
+                      size="sm"
+                      onClick={addCustomDemographic}
+                      className="text-xs"
+                    >
+                      <Plus className="w-3 h-3 mr-1" />
+                      Add
+                    </Button>
+                  </div>
+                )}
               </div>
             </Card>
 
             {/* Psychographics */}
             <Card className="p-6 shadow-elegant">
               <div className="flex items-center gap-2 mb-6">
-                <Brain className="w-5 h-5 text-primary" />
-                <h2 className="text-xl font-bold">Psychographics & Goals</h2>
-                <Badge variant="outline" className="ml-auto">
-                  {psychographicBlocks.filter(b => b.selected).length} selected
-                </Badge>
+                <div className="flex items-center justify-between mb-4">
+                  <h2 className="text-xl font-bold">Psychographics</h2>
+                  <div className="flex items-center gap-2">
+                    <Button
+                      variant="ghost"
+                      size="sm"
+                      onClick={() => setShowPsychographicInput(!showPsychographicInput)}
+                      className="text-xs"
+                    >
+                      <Plus className="w-3 h-3 mr-1" />
+                      Add Custom
+                    </Button>
+                    <Badge variant="outline">
+                      {psychographicBlocks.filter(b => b.selected).length} selected
+                    </Badge>
+                  </div>
+                </div>
               </div>
               <div className="flex flex-wrap gap-2">
                 {psychographicBlocks.map(block => (

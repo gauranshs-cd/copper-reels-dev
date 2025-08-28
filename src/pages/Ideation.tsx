@@ -88,13 +88,39 @@ export default function Ideation() {
         description: idea.whyItWillClick
       }));
       
-      // Generate thumbnail briefs for each idea
+      // Generate thumbnail briefs for each idea with enhanced context
       for (const idea of newIdeas) {
         try {
+          // Build enhanced context from foundation data (all are strings in the current structure)
+          const demographics = foundationData.avatar?.demographics || '';
+          const psychographics = foundationData.avatar?.psychographics || '';
+          const painPoints = foundationData.avatar?.painPoints || '';
+          const goals = foundationData.avatar?.goals || '';
+          
+          // Get selected content pillar for this idea
+          const selectedPillar = foundationData.pillars?.find(p => p.title === idea.pillar);
+          const pillarDescription = selectedPillar?.description || '';
+          
+          // Create enhanced prompt context for more relevant thumbnails
+          const enhancedContext = `
+            Target Audience: ${demographics}
+            Psychographics: ${psychographics}
+            Pain Points: ${painPoints}
+            Goals: ${goals}
+            Content Pillar: ${idea.pillar} - ${pillarDescription}
+            Video Concept: ${idea.description}
+          `.trim();
+          
           const thumbnailBrief = await copperReelsGemini.generateThumbnailBriefs({
             titleText: idea.title,
-            ideaConcept: idea.description
+            ideaConcept: `${idea.description}\n\nContext for thumbnail design: ${enhancedContext}`,
+            patternBank: {
+              audienceType: foundationData.viewerType,
+              contentPillar: idea.pillar,
+              targetDemo: demographics
+            }
           });
+          
           if (thumbnailBrief && thumbnailBrief.length > 0) {
             setThumbnailBriefs(prev => new Map(prev).set(idea.id, thumbnailBrief[0]));
           }

@@ -1,11 +1,13 @@
 import { useEffect, useState } from 'react';
 import { motion } from 'framer-motion';
 import { useNavigate } from 'react-router-dom';
-import { ArrowLeft, ArrowRight, Users, Eye, Lightbulb, RefreshCw, Sparkles } from 'lucide-react';
+import { ArrowLeft, ArrowRight, Users, Eye, Lightbulb, RefreshCw, Sparkles, Plus, X, AlertTriangle } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { Card } from '@/components/ui/card';
 import { Badge } from '@/components/ui/badge';
 import { EditableField } from '@/components/ui/editable-field';
+import { Input } from '@/components/ui/input';
+import { Textarea } from '@/components/ui/textarea';
 import { NavigationFlow } from '@/components/NavigationFlow';
 import { GenerationStatus } from '@/components/GenerationStatus';
 import { LoadingSpinner } from '@/components/ui/loading-spinner';
@@ -30,6 +32,55 @@ export default function Foundation() {
   const [isGenerating, setIsGenerating] = useState(false);
   const [lastGeneratedAt, setLastGeneratedAt] = useState<Date | null>(null);
 
+  // Custom input states with selection tracking
+  const [customDemographics, setCustomDemographics] = useState<{text: string, selected: boolean}[]>([]);
+  const [customPsychographics, setCustomPsychographics] = useState<{text: string, selected: boolean}[]>([]);
+  const [customPainPoints, setCustomPainPoints] = useState<{text: string, selected: boolean}[]>([]);
+  const [customGoals, setCustomGoals] = useState<{text: string, selected: boolean}[]>([]);
+  const [customPillarTopics, setCustomPillarTopics] = useState<{[key: string]: {text: string, selected: boolean}[]}>({});
+  
+  // Input field states
+  const [newDemographic, setNewDemographic] = useState('');
+  const [newPsychographic, setNewPsychographic] = useState('');
+  const [newPainPoint, setNewPainPoint] = useState('');
+  const [newGoal, setNewGoal] = useState('');
+  const [newPillarTopic, setNewPillarTopic] = useState<{[key: string]: string}>({});
+  
+  // Section expansion states
+  const [showDemographicsInput, setShowDemographicsInput] = useState(false);
+  const [showPsychographicsInput, setShowPsychographicsInput] = useState(false);
+  const [showPainPointsInput, setShowPainPointsInput] = useState(false);
+  const [showGoalsInput, setShowGoalsInput] = useState(false);
+  const [showPillarInputs, setShowPillarInputs] = useState<Record<string, boolean>>({});
+  
+  // Custom pillar topic handlers
+  const addCustomPillarTopic = (pillarId: string) => {
+    const topicText = newPillarTopic[pillarId]?.trim();
+    if (topicText) {
+      setCustomPillarTopics(prev => ({
+        ...prev,
+        [pillarId]: [...(prev[pillarId] || []), { text: topicText, selected: true }]
+      }));
+      setNewPillarTopic(prev => ({ ...prev, [pillarId]: '' }));
+    }
+  };
+  
+  const removeCustomPillarTopic = (pillarId: string, index: number) => {
+    setCustomPillarTopics(prev => ({
+      ...prev,
+      [pillarId]: prev[pillarId]?.filter((_, i) => i !== index) || []
+    }));
+  };
+  
+  const togglePillarTopicSelection = (pillarId: string, index: number) => {
+    setCustomPillarTopics(prev => ({
+      ...prev,
+      [pillarId]: prev[pillarId]?.map((topic, i) => 
+        i === index ? { ...topic, selected: !topic.selected } : topic
+      ) || []
+    }));
+  };
+
   const generateFoundation = async () => {
     if (!umbrellaStatement) return;
     
@@ -43,6 +94,7 @@ export default function Foundation() {
       // Generate foundation using Gemini
       const startTime = Date.now();
       console.log('Calling Gemini API...');
+      const customData = getSelectedCustomData();
       const foundation = await copperReelsGemini.generateFoundation({
         umbrella: umbrellaStatement
       });
@@ -87,13 +139,13 @@ export default function Foundation() {
           // Create or get session
           let session = await sessionService.getActiveSession(user.id);
           if (!session) {
-            session = await sessionService.createSession(user.id);
+            session = await sessionService.createSession(user.id) as any;
           }
           
           // Log the generation
           await sessionService.logGeneration({
             sessionId: session.id,
-            botType: 'positioning',
+            botType: 'positioning' as const,
             success: true,
             durationMs: duration,
             requestPayload: { umbrella: umbrellaStatement },
@@ -162,6 +214,90 @@ export default function Foundation() {
       pillar.id === id ? { ...pillar, [field]: value } : pillar
     );
     setFoundationData({ ...foundationData, pillars: updatedPillars });
+  };
+
+  // Custom input handlers with selection support
+  const addCustomDemographic = () => {
+    if (newDemographic.trim()) {
+      setCustomDemographics([...customDemographics, { text: newDemographic.trim(), selected: true }]);
+      setNewDemographic('');
+    }
+  };
+
+  const removeCustomDemographic = (index: number) => {
+    setCustomDemographics(customDemographics.filter((_, i) => i !== index));
+  };
+
+  const toggleDemographicSelection = (index: number) => {
+    setCustomDemographics(customDemographics.map((item, i) => 
+      i === index ? { ...item, selected: !item.selected } : item
+    ));
+  };
+
+  const addCustomPsychographic = () => {
+    if (newPsychographic.trim()) {
+      setCustomPsychographics([...customPsychographics, { text: newPsychographic.trim(), selected: true }]);
+      setNewPsychographic('');
+    }
+  };
+
+  const removeCustomPsychographic = (index: number) => {
+    setCustomPsychographics(customPsychographics.filter((_, i) => i !== index));
+  };
+
+  const togglePsychographicSelection = (index: number) => {
+    setCustomPsychographics(customPsychographics.map((item, i) => 
+      i === index ? { ...item, selected: !item.selected } : item
+    ));
+  };
+
+  const addCustomPainPoint = () => {
+    if (newPainPoint.trim()) {
+      setCustomPainPoints([...customPainPoints, { text: newPainPoint.trim(), selected: true }]);
+      setNewPainPoint('');
+    }
+  };
+
+  const removeCustomPainPoint = (index: number) => {
+    setCustomPainPoints(customPainPoints.filter((_, i) => i !== index));
+  };
+
+  const togglePainPointSelection = (index: number) => {
+    setCustomPainPoints(customPainPoints.map((item, i) => 
+      i === index ? { ...item, selected: !item.selected } : item
+    ));
+  };
+
+  const addCustomGoal = () => {
+    if (newGoal.trim()) {
+      setCustomGoals([...customGoals, { text: newGoal.trim(), selected: true }]);
+      setNewGoal('');
+    }
+  };
+
+  const removeCustomGoal = (index: number) => {
+    setCustomGoals(customGoals.filter((_, i) => i !== index));
+  };
+
+  const toggleGoalSelection = (index: number) => {
+    setCustomGoals(customGoals.map((item, i) => 
+      i === index ? { ...item, selected: !item.selected } : item
+    ));
+  };
+
+
+  // Get selected custom data for LLM
+  const getSelectedCustomData = () => {
+    return {
+      demographics: customDemographics.filter(item => item.selected).map(item => item.text),
+      psychographics: customPsychographics.filter(item => item.selected).map(item => item.text),
+      painPoints: customPainPoints.filter(item => item.selected).map(item => item.text),
+      goals: customGoals.filter(item => item.selected).map(item => item.text),
+      pillarTopics: Object.entries(customPillarTopics).reduce((acc, [pillarId, topics]) => {
+        acc[pillarId] = topics.filter(item => item.selected).map(item => item.text);
+        return acc;
+      }, {} as {[key: string]: string[]})
+    };
   };
 
   // Don't show error if we have umbrellaStatement (coming from onboarding)
@@ -248,7 +384,7 @@ export default function Foundation() {
 
           {/* Foundation Content - Only show if user has generated foundation or if there's an umbrella statement */}
           {foundationData && umbrellaStatement && (
-          <div className="grid lg:grid-cols-2 gap-8 mb-12">
+            <div className="grid lg:grid-cols-2 gap-8 mb-12">
             {/* Audience Avatar */}
             <motion.div
               key={`avatar-${lastGeneratedAt?.getTime() || 'initial'}`}
@@ -266,43 +402,289 @@ export default function Foundation() {
                 
                 <div className="space-y-6">
                   <div>
-                    <h3 className="font-semibold text-sm text-muted-foreground uppercase tracking-wide mb-2">Demographics</h3>
+                    <div className="flex items-center justify-between mb-2">
+                      <div className="flex items-center gap-2">
+                        <Users className="w-4 h-4 text-primary" />
+                        <h3 className="font-semibold text-sm text-muted-foreground uppercase tracking-wide">Demographics</h3>
+                      </div>
+                      <Button
+                        variant="ghost"
+                        size="sm"
+                        onClick={() => setShowDemographicsInput(!showDemographicsInput)}
+                        className="text-xs h-6 px-2"
+                      >
+                        <Plus className="w-3 h-3 mr-1" />
+                        Add Custom
+                      </Button>
+                    </div>
                     <EditableField
                       value={foundationData?.avatar.demographics || ''}
                       onSave={(value) => updateAvatar('demographics', value)}
                       multiline
                       className="text-sm"
                     />
+                    
+                    {/* Custom Demographics Display */}
+                    {customDemographics.length > 0 && (
+                      <div className="mt-3 flex flex-wrap gap-2">
+                        {customDemographics.map((demo, index) => (
+                          <Badge
+                            key={index}
+                            variant={demo.selected ? "default" : "outline"}
+                            className={`text-xs flex items-center gap-1 cursor-pointer transition-all ${
+                              demo.selected ? 'bg-blue-100 text-blue-800 border-blue-200' : 'opacity-60'
+                            }`}
+                            onClick={() => toggleDemographicSelection(index)}
+                          >
+                            {demo.text}
+                            <X
+                              className="w-3 h-3 cursor-pointer hover:text-red-500"
+                              onClick={(e) => {
+                                e.stopPropagation();
+                                removeCustomDemographic(index);
+                              }}
+                            />
+                          </Badge>
+                        ))}
+                      </div>
+                    )}
+                    
+                    {/* Custom Demographics Input */}
+                    {showDemographicsInput && (
+                      <div className="mt-4 p-4 bg-gray-50 rounded-lg border space-y-2">
+                        <div className="flex gap-2">
+                          <Input
+                            placeholder="Add custom demographic (e.g., Age 25-35, Location: US)"
+                            value={newDemographic}
+                            onChange={(e) => setNewDemographic(e.target.value)}
+                            onKeyPress={(e) => e.key === 'Enter' && addCustomDemographic()}
+                            className="text-sm"
+                          />
+                          <Button
+                            size="sm"
+                            onClick={addCustomDemographic}
+                            disabled={!newDemographic.trim()}
+                          >
+                            <Plus className="w-4 h-4" />
+                          </Button>
+                        </div>
+                        <p className="text-xs text-muted-foreground">Click on added items to select/deselect them for AI generation</p>
+                      </div>
+                    )}
                   </div>
                   
                   <div>
-                    <h3 className="font-semibold text-sm text-muted-foreground uppercase tracking-wide mb-2">Psychographics</h3>
+                    <div className="flex items-center justify-between mb-2">
+                      <div className="flex items-center gap-2">
+                        <Eye className="w-4 h-4 text-primary" />
+                        <h3 className="font-semibold text-sm text-muted-foreground uppercase tracking-wide">Psychographics</h3>
+                      </div>
+                      <Button
+                        variant="ghost"
+                        size="sm"
+                        onClick={() => setShowPsychographicsInput(!showPsychographicsInput)}
+                        className="text-xs h-6 px-2"
+                      >
+                        <Plus className="w-3 h-3 mr-1" />
+                        Add Custom
+                      </Button>
+                    </div>
                     <EditableField
                       value={foundationData?.avatar.psychographics || ''}
                       onSave={(value) => updateAvatar('psychographics', value)}
                       multiline
                       className="text-sm"
                     />
+                    
+                    {/* Custom Psychographics Display */}
+                    {customPsychographics.length > 0 && (
+                      <div className="mt-3 flex flex-wrap gap-2">
+                        {customPsychographics.map((psycho, index) => (
+                          <Badge
+                            key={index}
+                            variant={psycho.selected ? "default" : "outline"}
+                            className={`text-xs flex items-center gap-1 cursor-pointer transition-all ${
+                              psycho.selected ? 'bg-green-100 text-green-800 border-green-200' : 'opacity-60'
+                            }`}
+                            onClick={() => togglePsychographicSelection(index)}
+                          >
+                            {psycho.text}
+                            <X
+                              className="w-3 h-3 cursor-pointer hover:text-red-500"
+                              onClick={(e) => {
+                                e.stopPropagation();
+                                removeCustomPsychographic(index);
+                              }}
+                            />
+                          </Badge>
+                        ))}
+                      </div>
+                    )}
+                    
+                    {/* Custom Psychographics Input */}
+                    {showPsychographicsInput && (
+                      <div className="mt-4 p-4 bg-gray-50 rounded-lg border space-y-2">
+                        <div className="flex gap-2">
+                          <Input
+                            placeholder="Add custom psychographic (e.g., Values innovation, Tech-savvy)"
+                            value={newPsychographic}
+                            onChange={(e) => setNewPsychographic(e.target.value)}
+                            onKeyPress={(e) => e.key === 'Enter' && addCustomPsychographic()}
+                            className="text-sm"
+                          />
+                          <Button
+                            size="sm"
+                            onClick={addCustomPsychographic}
+                            disabled={!newPsychographic.trim()}
+                          >
+                            <Plus className="w-4 h-4" />
+                          </Button>
+                        </div>
+                        <p className="text-xs text-muted-foreground">Click on added items to select/deselect them for AI generation</p>
+                      </div>
+                    )}
                   </div>
                   
                   <div>
-                    <h3 className="font-semibold text-sm text-muted-foreground uppercase tracking-wide mb-2">Pain Points</h3>
+                    <div className="flex items-center justify-between mb-2">
+                      <div className="flex items-center gap-2">
+                        <AlertTriangle className="w-4 h-4 text-primary" />
+                        <h3 className="font-semibold text-sm text-muted-foreground uppercase tracking-wide">Pain Points</h3>
+                      </div>
+                      <Button
+                        variant="ghost"
+                        size="sm"
+                        onClick={() => setShowPainPointsInput(!showPainPointsInput)}
+                        className="text-xs h-6 px-2"
+                      >
+                        <Plus className="w-3 h-3 mr-1" />
+                        Add Custom
+                      </Button>
+                    </div>
                     <EditableField
                       value={foundationData?.avatar.painPoints || ''}
                       onSave={(value) => updateAvatar('painPoints', value)}
                       multiline
                       className="text-sm"
                     />
+                    
+                    {/* Custom Pain Points Display */}
+                    {customPainPoints.length > 0 && (
+                      <div className="mt-3 space-y-2">
+                        {customPainPoints.map((pain, index) => (
+                          <div
+                            key={index}
+                            className={`rounded-lg p-3 text-sm flex justify-between items-start cursor-pointer transition-all ${
+                              pain.selected 
+                                ? 'bg-red-50 border border-red-200 text-red-800' 
+                                : 'bg-gray-50 border border-gray-200 text-gray-600 opacity-60'
+                            }`}
+                            onClick={() => togglePainPointSelection(index)}
+                          >
+                            <span>{pain.text}</span>
+                            <X
+                              className="w-4 h-4 cursor-pointer hover:text-red-600 text-red-500 flex-shrink-0 ml-2"
+                              onClick={(e) => {
+                                e.stopPropagation();
+                                removeCustomPainPoint(index);
+                              }}
+                            />
+                          </div>
+                        ))}
+                      </div>
+                    )}
+                    
+                    {/* Custom Pain Points Input */}
+                    {showPainPointsInput && (
+                      <div className="mt-4 p-4 bg-gray-50 rounded-lg border space-y-2">
+                        <div className="flex gap-2">
+                          <Textarea
+                            placeholder="Add specific pain point (e.g., Struggling with time management)"
+                            value={newPainPoint}
+                            onChange={(e) => setNewPainPoint(e.target.value)}
+                            className="text-sm min-h-[60px]"
+                          />
+                          <Button
+                            size="sm"
+                            onClick={addCustomPainPoint}
+                            disabled={!newPainPoint.trim()}
+                            className="self-start"
+                          >
+                            <Plus className="w-4 h-4" />
+                          </Button>
+                        </div>
+                        <p className="text-xs text-muted-foreground">Click on added items to select/deselect them for AI generation</p>
+                      </div>
+                    )}
                   </div>
                   
                   <div>
-                    <h3 className="font-semibold text-sm text-muted-foreground uppercase tracking-wide mb-2">Goals</h3>
+                    <div className="flex items-center justify-between mb-2">
+                      <h3 className="font-semibold text-sm text-muted-foreground uppercase tracking-wide">Goals</h3>
+                      <Button
+                        variant="ghost"
+                        size="sm"
+                        onClick={() => setShowGoalsInput(!showGoalsInput)}
+                        className="text-xs h-6 px-2"
+                      >
+                        <Plus className="w-3 h-3 mr-1" />
+                        Add Custom
+                      </Button>
+                    </div>
                     <EditableField
                       value={foundationData?.avatar.goals || ''}
                       onSave={(value) => updateAvatar('goals', value)}
                       multiline
                       className="text-sm"
                     />
+                    
+                    {/* Custom Goals Display */}
+                    {customGoals.length > 0 && (
+                      <div className="mt-3 space-y-2">
+                        {customGoals.map((goal, index) => (
+                          <div
+                            key={index}
+                            className={`rounded-lg p-3 text-sm flex justify-between items-start cursor-pointer transition-all ${
+                              goal.selected 
+                                ? 'bg-green-50 border border-green-200 text-green-800' 
+                                : 'bg-gray-50 border border-gray-200 text-gray-600 opacity-60'
+                            }`}
+                            onClick={() => toggleGoalSelection(index)}
+                          >
+                            <span>{goal.text}</span>
+                            <X
+                              className="w-4 h-4 cursor-pointer hover:text-red-600 text-red-500 flex-shrink-0 ml-2"
+                              onClick={(e) => {
+                                e.stopPropagation();
+                                removeCustomGoal(index);
+                              }}
+                            />
+                          </div>
+                        ))}
+                      </div>
+                    )}
+                    
+                    {/* Custom Goals Input */}
+                    {showGoalsInput && (
+                      <div className="mt-4 p-4 bg-gray-50 rounded-lg border space-y-2">
+                        <div className="flex gap-2">
+                          <Textarea
+                            placeholder="Add specific goal (e.g., Increase brand awareness by 50%)"
+                            value={newGoal}
+                            onChange={(e) => setNewGoal(e.target.value)}
+                            className="text-sm min-h-[60px]"
+                          />
+                          <Button
+                            size="sm"
+                            onClick={addCustomGoal}
+                            disabled={!newGoal.trim()}
+                          >
+                            <Plus className="w-4 h-4" />
+                          </Button>
+                        </div>
+                        <p className="text-xs text-muted-foreground">Click on added goals to select/deselect them for AI generation</p>
+                      </div>
+                    )}
                   </div>
                 </div>
               </Card>
@@ -341,6 +723,7 @@ export default function Foundation() {
               </Card>
             </motion.div>
           </div>
+          )}
 
           {/* Content Pillars */}
           <motion.div
@@ -376,15 +759,77 @@ export default function Foundation() {
                     <EditableField
                       value={pillar.description}
                       onSave={(value) => updatePillar(pillar.id, 'description', value)}
-                      displayClassName="text-sm text-muted-foreground"
+                      displayClassName="text-sm text-muted-foreground mb-3"
                       multiline
                     />
+                    
+                    {/* Custom Topics Section */}
+                    <div className="mt-3">
+                      <div className="flex items-center justify-between mb-2">
+                        <span className="text-xs font-medium text-muted-foreground">Custom Topics</span>
+                        <Button
+                          variant="ghost"
+                          size="sm"
+                          onClick={() => setShowPillarInputs({ ...showPillarInputs, [pillar.id]: !showPillarInputs[pillar.id] })}
+                          className="text-xs h-5 px-1"
+                        >
+                          <Plus className="w-3 h-3" />
+                        </Button>
+                      </div>
+                      
+                      {/* Custom Topics Display */}
+                      {customPillarTopics[pillar.id] && customPillarTopics[pillar.id].length > 0 && (
+                        <div className="flex flex-wrap gap-1 mb-2">
+                          {customPillarTopics[pillar.id].map((topic, topicIndex) => (
+                            <Badge
+                              key={topicIndex}
+                              variant={topic.selected ? "default" : "outline"}
+                              className={`text-xs flex items-center gap-1 px-2 py-1 cursor-pointer transition-all ${
+                                topic.selected ? 'bg-purple-100 text-purple-800 border-purple-200' : 'opacity-60'
+                              }`}
+                              onClick={() => togglePillarTopicSelection(pillar.id, topicIndex)}
+                            >
+                              {topic.text}
+                              <X
+                                className="w-2 h-2 cursor-pointer hover:text-red-500"
+                                onClick={(e) => {
+                                  e.stopPropagation();
+                                  removeCustomPillarTopic(pillar.id, topicIndex);
+                                }}
+                              />
+                            </Badge>
+                          ))}
+                        </div>
+                      )}
+                      
+                      {/* Custom Topics Input */}
+                      {showPillarInputs[pillar.id] && (
+                        <div className="p-3 bg-gray-50 rounded-lg border space-y-2">
+                          <div className="flex gap-2">
+                            <Input
+                              placeholder="Add topic (e.g., Topic 1, Topic 2)"
+                              value={newPillarTopic[pillar.id] || ''}
+                              onChange={(e) => setNewPillarTopic({ ...newPillarTopic, [pillar.id]: e.target.value })}
+                              onKeyPress={(e) => e.key === 'Enter' && addCustomPillarTopic(pillar.id)}
+                              className="text-xs"
+                            />
+                            <Button
+                              size="sm"
+                              onClick={() => addCustomPillarTopic(pillar.id)}
+                              disabled={!newPillarTopic[pillar.id]?.trim()}
+                            >
+                              <Plus className="w-3 h-3" />
+                            </Button>
+                          </div>
+                          <p className="text-xs text-muted-foreground">Click on added topics to select/deselect them for AI generation</p>
+                        </div>
+                      )}
+                    </div>
                   </motion.div>
                 ))}
               </div>
             </Card>
           </motion.div>
-          )}
 
         </motion.div>
       </div>

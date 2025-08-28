@@ -40,6 +40,19 @@ class YouTubeVideoScraper:
         if self.playwright:
             await self.playwright.stop()
     
+    def extract_video_id(self, url):
+        """Extract video ID from YouTube URL"""
+        patterns = [
+            r'(?:youtube\.com\/watch\?v=|youtu\.be\/|youtube\.com\/embed\/)([^&\n?#]+)',
+            r'youtube\.com\/v\/([^&\n?#]+)',
+        ]
+        
+        for pattern in patterns:
+            match = re.search(pattern, url)
+            if match:
+                return match.group(1)
+        
+        return None
     
     def scrape_video_data_pytube(self, url):
         """Enhanced scrape using pytube and BeautifulSoup"""
@@ -47,12 +60,13 @@ class YouTubeVideoScraper:
             # Initialize YouTube object
             yt = YouTube(url)
 
-            # Basic details from pytube - don't use pytube's view count as it's often outdated
+            # Basic details from pytube
             video_data = {
                 "url": url,
+                "video_id": self.extract_video_id(url),
                 "title": yt.title,
                 "channel": yt.author,
-                "views": "N/A",  # Will be overridden by web scraping
+                "views": f"{yt.views:,} views" if yt.views else "N/A",
                 "description": yt.description if yt.description else "No description available",
                 "duration": f"{yt.length // 60}:{yt.length % 60:02d}" if yt.length else "N/A",
                 "thumbnail_url": yt.thumbnail_url,
@@ -76,51 +90,10 @@ class YouTubeVideoScraper:
                     # Additional metadata from page source
                     page_text = response.text
                     
-                    # Debug: Print page text snippet to understand structure
-                    print("DEBUG: Searching for view count in page...")
-                    
-                    # Try to extract more precise view count with multiple patterns
-                    view_patterns = [
-                        r'"viewCount":{"simpleText":"([^"]+)"',
-                        r'"viewCountText":{"simpleText":"([^"]+)"',
-                        r'"shortViewCountText":{"simpleText":"([^"]+)"',
-                        r'viewCount":"([^"]+)"',
-                        r'"views":"([^"]+)"',
-                        r'(\d{1,3}(?:,\d{3})*|\d+(?:\.\d+)?[KMB]?) views'
-                    ]
-                    
-                    view_found = False
-                    for i, pattern in enumerate(view_patterns):
-                        view_match = re.search(pattern, page_text, re.IGNORECASE)
-                        if view_match:
-                            view_text = view_match.group(1)
-                            print(f"DEBUG: Pattern {i+1} matched: {view_text}")
-                            # Ensure it contains "views" if not already formatted
-                            if "views" not in view_text.lower():
-                                video_data["views"] = f"{view_text} views"
-                            else:
-                                video_data["views"] = view_text
-                            view_found = True
-                            break
-                    
-                    # If no view count found in JSON, try HTML parsing
-                    if not view_found:
-                        print("DEBUG: Trying HTML parsing...")
-                        view_elements = soup.find_all(text=re.compile(r'\d+.*views', re.IGNORECASE))
-                        print(f"DEBUG: Found {len(view_elements)} potential view elements")
-                        if view_elements:
-                            # Get the first match that looks like a view count
-                            for elem in view_elements:
-                                elem_text = elem.strip()
-                                print(f"DEBUG: Checking element: {elem_text}")
-                                if re.match(r'^\d+(?:,\d{3})*\s+views$|^\d+(?:\.\d+)?[KMB]\s+views$', elem_text, re.IGNORECASE):
-                                    video_data["views"] = elem_text
-                                    view_found = True
-                                    print(f"DEBUG: Selected view count: {elem_text}")
-                                    break
-                    
-                    if not view_found:
-                        print("DEBUG: No view count found, keeping default")
+                    # Try to extract more precise view count
+                    view_match = re.search(r'"viewCount":{"simpleText":"([^"]+)"', page_text)
+                    if view_match:
+                        video_data["views"] = view_match.group(1)
                     
                     # Try to extract like count
                     like_match = re.search(r'"accessibilityText":"([^"]*like[^"]*)"', page_text, re.IGNORECASE)
@@ -145,6 +118,16 @@ class YouTubeVideoScraper:
             # Try pytube method first (faster and more reliable)
             pytube_result = self.scrape_video_data_pytube(url)
             if "error" not in pytube_result:
+                # Add transcript using Playwright if needed
+                try:
+                    await self.init_browser()
+                    await self.page.goto(url, wait_until='domcontentloaded', timeout=30000)
+                    transcript = await self.extract_simple_transcript()
+                    pytube_result["transcript"] = transcript
+                    await self.close_browser()
+                except:
+                    pytube_result["transcript"] = "Transcript not available"
+                
                 return pytube_result
             
             # Fallback to original Playwright method
@@ -156,16 +139,22 @@ class YouTubeVideoScraper:
     async def scrape_video_data_playwright(self, url):
         """Original Playwright scraping method as fallback"""
         try:
+            video_id = self.extract_video_id(url)
+            if not video_id:
+                return {"error": "Invalid YouTube URL"}
+            
             # Navigate to video page
             await self.page.goto(url, wait_until='domcontentloaded', timeout=30000)
             await self.page.wait_for_timeout(2000)
             
             video_data = {
                 "url": url,
+                "video_id": video_id,
                 "title": None,
                 "channel": None,
                 "views": None,
                 "publishedAt": None,
+                "transcript": None,
                 "duration": None,
                 "description": None
             }
@@ -277,16 +266,54 @@ class YouTubeVideoScraper:
             except:
                 video_data["description"] = "No description available"
             
+            # Simple transcript extraction
+            try:
+                transcript = await self.extract_simple_transcript()
+                video_data["transcript"] = transcript
+            except:
+                video_data["transcript"] = "Transcript not available"
+            
             return video_data
             
         except Exception as e:
             return {"error": f"Failed to scrape video: {str(e)}"}
+    
+    async def extract_simple_transcript(self):
+        """Simple transcript extraction"""
+        try:
+            # Look for transcript button with simple selector
+            transcript_button = self.page.locator('button:has-text("Show transcript")').first
+            
+            if await transcript_button.is_visible(timeout=3000):
+                await transcript_button.click()
+                await self.page.wait_for_timeout(2000)
+                
+                # Get transcript segments
+                segments = self.page.locator('.ytd-transcript-segment-renderer')
+                count = await segments.count()
+                
+                if count > 0:
+                    transcript_text = ""
+                    for i in range(min(count, 20)):  # Limit to first 20 segments
+                        try:
+                            text = await segments.nth(i).inner_text()
+                            if text and text.strip():
+                                transcript_text += text.strip() + " "
+                        except:
+                            continue
+                    
+                    return transcript_text.strip() if transcript_text.strip() else "Transcript not available"
+            
+            return "Transcript not available"
+            
+        except:
+            return "Transcript not available"
 
 async def main():
     parser = argparse.ArgumentParser(description='Scrape YouTube video data')
     parser.add_argument('url', help='YouTube video URL')
     parser.add_argument('--output', help='Output file path (optional)')
-    parser.add_argument('--proxy', help='Proxy URL (optional)')
+    
     args = parser.parse_args()
     
     scraper = YouTubeVideoScraper()
