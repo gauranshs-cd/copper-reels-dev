@@ -171,6 +171,9 @@ export default function IdeationEnhanced() {
   const generateIdeas = async (additionalContext?: string) => {
     if (!foundationData) return;
     
+    // Reset used hashtags for each new generation
+    usedHashtags.clear();
+    
     setIsGenerating(true);
     setLoading(true, 'Generating viral video ideas...');
     
@@ -240,7 +243,7 @@ ${idea.pillar.toLowerCase().replace(/\s+/g, '')}${idea.concept.toLowerCase().rep
               metadata: {
                 targetAudience: selectedDemographics,
                 estimatedViews: calculateEstimatedViews(idea.difficulty),
-                keywords: extractKeywords(idea.concept)
+                keywords: extractKeywords(idea.concept, idea.pillar, index)
               }
             };
           } catch (error) {
@@ -252,7 +255,7 @@ ${idea.pillar.toLowerCase().replace(/\s+/g, '')}${idea.concept.toLowerCase().rep
               metadata: {
                 targetAudience: selectedDemographics,
                 estimatedViews: calculateEstimatedViews(idea.difficulty),
-                keywords: extractKeywords(idea.concept)
+                keywords: extractKeywords(idea.concept, idea.pillar, index)
               }
             };
           }
@@ -288,13 +291,122 @@ ${idea.pillar.toLowerCase().replace(/\s+/g, '')}${idea.concept.toLowerCase().rep
     return estimated.toString();
   };
 
-  const extractKeywords = (concept: string): string[] => {
-    // Simple keyword extraction
-    const words = concept.toLowerCase().split(' ');
-    const stopWords = ['the', 'a', 'an', 'and', 'or', 'but', 'in', 'on', 'at', 'to', 'for'];
-    return words
-      .filter(word => !stopWords.includes(word) && word.length > 3)
+  // Track used hashtags across all ideas to ensure uniqueness
+  const usedHashtags = new Set<string>();
+  
+  const extractKeywords = (concept: string, pillar?: string, ideaIndex?: number): string[] => {
+    // YTGS-based hashtag generation using foundation context
+    const foundationContext = foundationData?.avatar?.demographics || '';
+    const niche = foundationContext.toLowerCase();
+    
+    // Core YTGS hashtag categories with expanded options for diversity
+    const ytgsHashtags = {
+      // Niche-specific tags based on foundation
+      niche: generateNicheHashtags(niche),
+      // Content pillar tags
+      pillar: pillar ? generatePillarHashtags(pillar) : [],
+      // Engagement-focused tags (expanded for variety)
+      engagement: ['howto', 'tutorial', 'tips', 'guide', 'learn', 'beginner', 'stepbystep', 'quicktips', 'masterclass', 'basics'],
+      // Authority tags (expanded)
+      authority: ['expert', 'pro', 'advanced', 'secrets', 'insider', 'professional', 'mastery', 'elite', 'specialist'],
+      // Viral potential tags (expanded)
+      viral: ['viral', 'trending', 'popular', 'mustsee', 'gamechanging', 'breakthrough', 'revolutionary', 'amazing', 'incredible'],
+      // Action-oriented tags
+      action: ['diy', 'create', 'build', 'make', 'achieve', 'transform', 'improve', 'upgrade', 'optimize'],
+      // Time-based tags
+      time: ['quick', 'fast', 'instant', 'daily', 'weekly', 'ultimate', 'complete', 'simple']
+    };
+    
+    // Extract concept-specific keywords
+    const conceptWords = concept.toLowerCase()
+      .replace(/[^\w\s]/g, '')
+      .split(' ')
+      .filter(word => word.length > 3 && !['that', 'this', 'with', 'from', 'they', 'have', 'will', 'your', 'more'].includes(word));
+    
+    // Strategy: Use different hashtag combinations for each idea
+    let selectedTags: string[] = [];
+    
+    if (ideaIndex === 0) {
+      // First idea: Focus on niche + engagement + concept
+      selectedTags = [
+        ...ytgsHashtags.niche.slice(0, 2),
+        ...ytgsHashtags.engagement.slice(0, 1),
+        ...ytgsHashtags.pillar.slice(0, 1),
+        ...conceptWords.slice(0, 2)
+      ];
+    } else if (ideaIndex === 1) {
+      // Second idea: Focus on authority + action + concept
+      selectedTags = [
+        ...ytgsHashtags.niche.slice(2, 3),
+        ...ytgsHashtags.authority.slice(0, 1),
+        ...ytgsHashtags.action.slice(0, 1),
+        ...ytgsHashtags.pillar.slice(0, 1),
+        ...conceptWords.slice(1, 3)
+      ];
+    } else {
+      // Third idea: Focus on viral + time + concept
+      selectedTags = [
+        ...ytgsHashtags.niche.slice(1, 2),
+        ...ytgsHashtags.viral.slice(0, 1),
+        ...ytgsHashtags.time.slice(0, 1),
+        ...ytgsHashtags.pillar.slice(0, 1),
+        ...conceptWords.slice(0, 2)
+      ];
+    }
+    
+    // Remove duplicates and filter out already used hashtags
+    const uniqueTags = [...new Set(selectedTags)]
+      .filter(tag => !usedHashtags.has(tag))
       .slice(0, 5);
+    
+    // If we don't have enough unique tags, add fallback options
+    if (uniqueTags.length < 5) {
+      const allAvailableTags = [
+        ...ytgsHashtags.niche,
+        ...ytgsHashtags.engagement,
+        ...ytgsHashtags.authority,
+        ...ytgsHashtags.viral,
+        ...ytgsHashtags.action,
+        ...ytgsHashtags.time,
+        ...conceptWords
+      ].filter(tag => !usedHashtags.has(tag));
+      
+      const additionalTags = allAvailableTags.slice(0, 5 - uniqueTags.length);
+      uniqueTags.push(...additionalTags);
+    }
+    
+    // Mark these hashtags as used
+    uniqueTags.forEach(tag => usedHashtags.add(tag));
+    
+    return uniqueTags.slice(0, 5);
+  };
+  
+  const generateNicheHashtags = (niche: string): string[] => {
+    const nicheMap: { [key: string]: string[] } = {
+      'fitness': ['fitness', 'workout', 'health', 'gym', 'training'],
+      'business': ['business', 'entrepreneur', 'startup', 'marketing', 'success'],
+      'tech': ['tech', 'technology', 'coding', 'programming', 'software'],
+      'cooking': ['cooking', 'recipe', 'food', 'kitchen', 'chef'],
+      'education': ['education', 'learning', 'study', 'academic', 'knowledge'],
+      'lifestyle': ['lifestyle', 'life', 'productivity', 'motivation', 'mindset'],
+      'finance': ['finance', 'money', 'investing', 'wealth', 'financial'],
+      'travel': ['travel', 'adventure', 'explore', 'destination', 'journey'],
+      'gaming': ['gaming', 'gamer', 'gameplay', 'esports', 'streaming'],
+      'beauty': ['beauty', 'makeup', 'skincare', 'style', 'fashion']
+    };
+    
+    // Find matching niche or return generic tags
+    for (const [key, tags] of Object.entries(nicheMap)) {
+      if (niche.includes(key)) {
+        return tags;
+      }
+    }
+    
+    return ['content', 'creator', 'youtube', 'video', 'online'];
+  };
+  
+  const generatePillarHashtags = (pillar: string): string[] => {
+    return [pillar.toLowerCase().replace(/\s+/g, ''), `${pillar.toLowerCase().replace(/\s+/g, '')}tips`];
   };
 
   const selectIdea = (idea: IdeaWithThumbnail) => {

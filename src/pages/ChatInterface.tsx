@@ -38,9 +38,6 @@ import { SkyscraperAnalysis } from '@/components/SkyscraperAnalysis';
 import { PromptManager, DEFAULT_YTGS_TEMPLATE } from '@/lib/prompts/ytgs-system';
 import { supabase } from '@/integrations/supabase/client';
 import { BrickScriptEditor, ScriptBrick } from '@/components/BrickScriptEditor';
-import { VideoIdeaGenerator } from '@/components/VideoIdeaGenerator';
-import { ThumbnailGenerator } from '@/components/ThumbnailGenerator';
-import { FoundationBuilder } from '@/components/FoundationBuilder';
 import { TypingIndicator } from '@/components/TypingIndicator';
 import { AnimatedMessage } from '@/components/AnimatedMessage';
 import { FloatingNextButton } from '@/components/FloatingNextButton';
@@ -193,16 +190,6 @@ What would you like to work on today?
     setInput('');
     setIsProcessing(true);
 
-    // Add typing indicator
-    const typingMessage: Message = {
-      id: 'typing-' + Date.now(),
-      role: 'assistant',
-      content: '',
-      timestamp: new Date(),
-      isTyping: true
-    };
-    setMessages(prev => [...prev, typingMessage]);
-
     try {
       // Check if we're in onboarding flow
       if (!hasCollectedInfo) {
@@ -226,8 +213,6 @@ What would you like to work on today?
       console.error('Error processing message:', error);
       addAssistantMessage('I encountered an error. Please try again or rephrase your request.');
     } finally {
-      // Remove typing indicator
-      setMessages(prev => prev.filter(m => !m.isTyping));
       setIsProcessing(false);
     }
   };
@@ -469,7 +454,7 @@ Or we can start by setting up your content foundation properly. What sounds good
       };
       
       localStorage.setItem('userFoundation', JSON.stringify(foundationData));
-      setFoundationData(foundationData);
+      // setFoundationData(foundationData);
       setHasCollectedInfo(true);
     }
   };
@@ -582,9 +567,6 @@ What's your main goal with this topic?`,
     component?: React.ReactNode,
     componentType?: Message['componentType']
   ) => {
-    // Remove any typing indicators first
-    setMessages(prev => prev.filter(m => !m.isTyping));
-    
     const message: Message = {
       id: Date.now().toString(),
       role: 'assistant',
@@ -593,19 +575,22 @@ What's your main goal with this topic?`,
       suggestions,
       actions,
       component,
-      componentType
+      componentType,
+      isTyping
     };
 
     if (isTyping) {
-      setMessages(prev => [...prev, message]);
+      // Remove any existing typing indicators first, then add new one
+      setMessages(prev => [...prev.filter(m => !m.isTyping), message]);
       // Simulate typing
       setTimeout(() => {
         setMessages(prev => prev.map(m => 
-          m.id === message.id ? { ...m, content } : m
+          m.id === message.id ? { ...m, content, isTyping: false } : m
         ));
       }, 1000);
     } else {
-      setMessages(prev => [...prev, message]);
+      // Remove typing indicators and add final message
+      setMessages(prev => [...prev.filter(m => !m.isTyping), message]);
     }
   };
 
@@ -622,16 +607,6 @@ What's your main goal with this topic?`,
 
     setMessages(prev => [...prev, userMessage]);
     setIsProcessing(true);
-
-    // Add typing indicator
-    const typingMessage: Message = {
-      id: 'typing-' + Date.now(),
-      role: 'assistant',
-      content: '',
-      timestamp: new Date(),
-      isTyping: true
-    };
-    setMessages(prev => [...prev, typingMessage]);
 
     try {
       // Process based on suggestion content
@@ -650,8 +625,6 @@ What's your main goal with this topic?`,
       console.error('Error processing suggestion:', error);
       addAssistantMessage('I encountered an error. Please try again.');
     } finally {
-      // Remove typing indicator
-      setMessages(prev => prev.filter(m => !m.isTyping));
       setIsProcessing(false);
     }
   };
@@ -829,7 +802,7 @@ What's your main goal with this topic?`,
 
       {/* Input Area */}
       <div className="border-t bg-background/95 backdrop-blur-sm">
-        <div className="container mx-auto max-w-4xl p-4">
+        <div className="container mx-auto px-4 py-4">
           <div className="flex gap-3">
             <div className="flex-1 relative">
               <Textarea
@@ -842,33 +815,23 @@ What's your main goal with this topic?`,
                     handleSend();
                   }
                 }}
-                placeholder="Ask me anything about YouTube growth, scripts, thumbnails..."
-                className="min-h-[60px] pr-12 resize-none font-['Inter',_system-ui,_-apple-system,_sans-serif] text-[15px]"
+                placeholder="Ask me anything about YouTube content creation..."
+                className="min-h-[60px] resize-none pr-12"
                 disabled={isProcessing}
               />
-              <div className="absolute bottom-2 right-2 flex gap-1">
-                <Button
-                  size="icon"
-                  variant="ghost"
-                  className="h-8 w-8"
-                  disabled
-                >
+              <div className="absolute right-3 bottom-3 flex gap-1">
+                <Button size="icon" variant="ghost" className="h-8 w-8">
                   <Paperclip className="w-4 h-4" />
                 </Button>
-                <Button
-                  size="icon"
-                  variant="ghost"
-                  className="h-8 w-8"
-                  disabled
-                >
+                <Button size="icon" variant="ghost" className="h-8 w-8">
                   <Mic className="w-4 h-4" />
                 </Button>
               </div>
             </div>
-            <Button
-              onClick={handleSend}
+            <Button 
+              onClick={handleSend} 
               disabled={!input.trim() || isProcessing}
-              className="self-end"
+              className="h-[60px] px-6"
             >
               {isProcessing ? (
                 <RotateCcw className="w-4 h-4 animate-spin" />
@@ -877,58 +840,8 @@ What's your main goal with this topic?`,
               )}
             </Button>
           </div>
-          <p className="text-xs text-muted-foreground mt-2">
-            Press Enter to send, Shift+Enter for new line. 
-            Type "I help [audience] achieve [result]" to set your foundation.
-          </p>
         </div>
       </div>
-
-      {/* Modals */}
-      <PromptEditor
-        isOpen={showPromptEditor}
-        onClose={() => setShowPromptEditor(false)}
-        currentPrompt={currentPrompt}
-        onSave={(prompt) => {
-          setCurrentPrompt(prompt);
-          toast.success('Prompt saved successfully');
-        }}
-      />
-
-      {showSkyscraper && (
-        <Dialog open={showSkyscraper} onOpenChange={setShowSkyscraper}>
-          <DialogContent className="max-w-6xl h-[90vh]">
-            <SkyscraperAnalysis
-              onInsightsGenerated={(insights) => {
-                console.log('Insights generated:', insights);
-                toast.success('Analysis complete!');
-              }}
-            />
-          </DialogContent>
-        </Dialog>
-      )}
     </div>
   );
 }
-
-// Add missing imports for Dialog
-import { Dialog, DialogContent } from '@/components/ui/dialog';
-
-// Placeholder components - these would be the actual components
-const VideoIdeaGenerator = ({ onIdeasGenerated }: any) => (
-  <div className="p-4 border rounded">
-    <p>Video Idea Generator Component</p>
-  </div>
-);
-
-const ThumbnailGenerator = ({ topic }: any) => (
-  <div className="p-4 border rounded">
-    <p>Thumbnail Generator for: {topic}</p>
-  </div>
-);
-
-const FoundationBuilder = ({ onComplete }: any) => (
-  <div className="p-4 border rounded">
-    <p>Foundation Builder Component</p>
-  </div>
-);

@@ -220,6 +220,11 @@ export class CopperReelsGemini {
     locale?: string;
     contentHints?: string;
     constraints?: string;
+    customData?: {
+      demographics?: string[];
+      psychographics?: string[];
+      painPoints?: string[];
+    };
   }) {
     // If no API key, provide fallback foundation data
     if (!genAI) {
@@ -399,6 +404,7 @@ export class CopperReelsGemini {
     avatarProfile: string;
     targetAudience: string;
     duration?: number;
+    foundationContext?: string;
   }): Promise<VideoScriptRow[]> {
     if (!this.model) {
       throw new Error('Gemini model not initialized');
@@ -413,6 +419,7 @@ Topic: ${params.topic}
 Avatar Profile: ${params.avatarProfile}
 Target Audience: ${params.targetAudience}
 Duration: ${params.duration || 10} minutes
+Foundation Context: ${params.foundationContext || 'N/A'}
 
 Generate a complete, detailed video script following the YTGS methodology above. Each brick must contain:
 
@@ -674,6 +681,7 @@ Provide clear, actionable advice and creative ideas. Be concise and practical.`;
     mustCoverPoints?: string[];
     targetMinutes?: number;
     styleGuide?: any;
+    foundationContext?: string;
   }) {
     const systemPrompt = prompts.SCRIPT_STORYBOARD_SYSTEM;
     const userPrompt = prompts.buildScriptStoryboardUserPrompt(params);

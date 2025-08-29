@@ -94,8 +94,22 @@ export default function Foundation() {
     setLoading(true, 'Generating your content foundation...');
     
     try {
+      // Collect custom data from current state
+      const customData = {
+        demographics: demographicBlocks
+          .filter(block => block.selected && block.id.startsWith('custom-'))
+          .map(block => block.value),
+        psychographics: psychographicBlocks
+          .filter(block => block.selected && block.id.startsWith('custom-'))
+          .map(block => block.value),
+        painPoints: painPointBlocks
+          .filter(block => block.selected && block.id.startsWith('custom-'))
+          .map(block => block.value)
+      };
+
       const foundation = await copperReelsGemini.generateFoundation({
-        umbrella: statementToUse
+        umbrella: statementToUse,
+        customData: customData
       });
       
       // Generate enhanced heading
@@ -168,49 +182,49 @@ export default function Foundation() {
       setPainPointBlocks(painBlocks);
       
       // Generate more content pillars with topics
-      const pillarsWithTopics: EnhancedPillar[] = [
-        ...foundation.pillars.map((pillar, index) => ({
+      const pillarsWithTopics: EnhancedPillar[] = await Promise.all([
+        ...foundation.pillars.map(async (pillar, index) => ({
           id: `pillar-${index}`,
           title: pillar.name,
           description: pillar.summary,
           color: `bg-${['blue', 'green', 'purple', 'orange', 'red'][index % 5]}-500`,
           selected: index === 0, // Select first by default
-          topics: generateTopicsForPillar(pillar.name, statementToUse)
+          topics: await generateTopicsForPillar(pillar.name, statementToUse)
         })),
-        // Add more pillars
-        {
+        // Add more pillars with async topic generation
+        Promise.resolve({
           id: `pillar-${foundation.pillars.length + 1}`,
           title: 'Case Studies & Success Stories',
           description: 'Real-world examples and transformations',
           color: 'bg-cyan-500',
-          topics: ['Client transformations', 'Before/after scenarios', 'Success metrics'],
+          topics: await generateTopicsForPillar('Case Studies & Success Stories', statementToUse),
           selected: false
-        },
-        {
+        }),
+        Promise.resolve({
           id: `pillar-${foundation.pillars.length + 2}`,
           title: 'Tools & Resources',
           description: 'Practical tools and templates',
           color: 'bg-amber-500',
-          topics: ['Software reviews', 'Templates', 'Checklists', 'Frameworks'],
+          topics: await generateTopicsForPillar('Tools & Resources', statementToUse),
           selected: false
-        },
-        {
+        }),
+        Promise.resolve({
           id: `pillar-${foundation.pillars.length + 3}`,
           title: 'Mistakes & Lessons',
           description: 'Common pitfalls and how to avoid them',
           color: 'bg-rose-500',
-          topics: ['Common mistakes', 'Lessons learned', 'What not to do'],
+          topics: await generateTopicsForPillar('Mistakes & Lessons', statementToUse),
           selected: false
-        },
-        {
+        }),
+        Promise.resolve({
           id: `pillar-${foundation.pillars.length + 4}`,
           title: 'Industry Insights',
           description: 'Trends and analysis in your niche',
           color: 'bg-teal-500',
-          topics: ['Market trends', 'Industry news', 'Future predictions'],
+          topics: await generateTopicsForPillar('Industry Insights', statementToUse),
           selected: false
-        }
-      ];
+        })
+      ]);
       
       setEnhancedPillars(pillarsWithTopics);
       
@@ -296,10 +310,10 @@ export default function Foundation() {
         
         // Set enhanced pillars for the UI
         const fallbackPillars: EnhancedPillar[] = fallbackData.pillars.map((pillar, index) => ({
-          ...pillar,
-          selected: index === 0,
-          topics: generateTopicsForPillar(pillar.title, statementToUse)
-        }));
+            ...pillar,
+            selected: index === 0,
+            topics: getFallbackTopics(pillar.title, statementToUse)
+          }));
         setEnhancedPillars(fallbackPillars);
         
         // Set basic demographic blocks
@@ -347,17 +361,130 @@ export default function Foundation() {
   };
 
   const generateTopicsForPillar = (pillarName: string, statement: string): string[] => {
-    // Generate relevant topics based on pillar and statement
-    const baseTopics: Record<string, string[]> = {
-      'Getting Started': ['First steps', 'Beginner mistakes', 'Essential tools', 'Quick wins'],
-      'Advanced Strategies': ['Pro techniques', 'Scaling methods', 'Optimization', 'Advanced tools'],
-      'Mindset': ['Overcoming fears', 'Building confidence', 'Success habits', 'Mental models'],
-      'Case Studies': ['Success stories', 'Failures analyzed', 'Before/after', 'Client results'],
-      'Tools': ['Software reviews', 'Templates', 'Automation', 'Workflows'],
-      'Mistakes': ['Common errors', 'What to avoid', 'Lessons learned', 'Troubleshooting']
+    // Multiple diverse topic pools with different language styles
+    const diverseTopicPools: Record<string, string[][]> = {
+      'Nutrition Strategies': [
+        ['Meal prep mastery', 'Macro magic', 'Supplement scandals', 'Cheat day chemistry'],
+        ['Kitchen shortcuts', 'Calorie confusion', 'Nutrient timing', 'Food psychology'],
+        ['Prep like a pro', 'Macro mysteries', 'Supplement science', 'Indulgence rules'],
+        ['Cooking hacks', 'Counting calories', 'Vitamin myths', 'Treat yourself']
+      ],
+      'Workout Plans': [
+        ['Home gym genius', 'Quick burn sessions', 'Injury-proof training', 'Plateau smashing'],
+        ['Living room workouts', 'Express routines', 'Body maintenance', 'Progress unlocked'],
+        ['No-gym solutions', 'Time-crunch fitness', 'Safe training', 'Breaking barriers'],
+        ['Apartment workouts', 'Micro sessions', 'Bulletproof body', 'Next level gains']
+      ],
+      'Mindset & Motivation': [
+        ['Mental blocks', 'Habit architecture', 'Confidence codes', 'Vision boarding'],
+        ['Mind games', 'Routine building', 'Self-belief systems', 'Dream mapping'],
+        ['Psychological barriers', 'Behavior design', 'Inner strength', 'Future planning'],
+        ['Thought patterns', 'Daily rituals', 'Personal power', 'Goal setting']
+      ],
+      'Case Studies & Success Stories': [
+        ['Real transformations', 'Behind the scenes', 'Journey deep-dive', 'Results revealed'],
+        ['Client spotlights', 'Success breakdowns', 'Progress stories', 'Win analysis'],
+        ['Transformation tales', 'Victory dissection', 'Achievement autopsy', 'Triumph tracking'],
+        ['Change chronicles', 'Success secrets', 'Winner profiles', 'Growth stories']
+      ],
+      'Tools & Resources': [
+        ['App battles', 'Gear guides', 'Budget builds', 'Efficiency engines'],
+        ['Software showdown', 'Equipment essentials', 'Cheap alternatives', 'Productivity boosters'],
+        ['Tech reviews', 'Tool comparisons', 'Frugal solutions', 'Speed enhancers'],
+        ['Digital helpers', 'Hardware heroes', 'Money savers', 'Time multipliers']
+      ],
+      'Mistakes & Lessons': [
+        ['Epic fails', 'Expensive errors', 'Learning curves', 'Warning signs'],
+        ['Rookie mistakes', 'Costly blunders', 'Hard lessons', 'Danger zones'],
+        ['Beginner traps', 'Money pits', 'Wisdom gained', 'Risk factors'],
+        ['Common pitfalls', 'Budget busters', 'Experience earned', 'Alert signals']
+      ],
+      'Industry Insights': [
+        ['Market pulse', 'Future forecasts', 'Industry shifts', 'Expert takes'],
+        ['Trend watch', 'Crystal ball', 'Sector changes', 'Pro opinions'],
+        ['Market radar', 'Predictions', 'Business evolution', 'Insider views'],
+        ['Industry intel', 'Forecasting', 'Market dynamics', 'Authority insights']
+      ]
     };
+
+    // Contextual topic pools for different pillar types
+    const contextualPools: Record<string, string[][]> = {
+      nutrition: [
+        ['Eating windows', 'Calorie mysteries', 'Superfood myths', 'Hunger psychology'],
+        ['Meal timing', 'Hidden calories', 'Nutrient density', 'Food cravings'],
+        ['Fasting benefits', 'Calorie cycling', 'Micronutrients', 'Emotional eating'],
+        ['Digestion hacks', 'Metabolic boost', 'Vitamin absorption', 'Mindful eating']
+      ],
+      fitness: [
+        ['Movement quality', 'Intensity waves', 'Recovery science', 'Equipment hacks'],
+        ['Exercise form', 'Training zones', 'Rest protocols', 'Gear alternatives'],
+        ['Biomechanics', 'Workout density', 'Sleep recovery', 'DIY equipment'],
+        ['Body mechanics', 'Effort levels', 'Regeneration', 'Budget gear']
+      ],
+      mindset: [
+        ['Thought loops', 'Behavior chains', 'Self-image work', 'Vision crafting'],
+        ['Mental models', 'Habit loops', 'Identity shifts', 'Future self'],
+        ['Cognitive bias', 'Routine stacking', 'Belief systems', 'Goal architecture'],
+        ['Mind patterns', 'System building', 'Confidence work', 'Dream design']
+      ],
+      business: [
+        ['Income streams', 'Expense audits', 'ROI hunting', 'Market timing'],
+        ['Revenue models', 'Cost analysis', 'Profit margins', 'Trend riding'],
+        ['Money flows', 'Budget cuts', 'Investment wins', 'Opportunity windows'],
+        ['Cash generation', 'Spending review', 'Return rates', 'Market cycles']
+      ],
+      tech: [
+        ['Platform wars', 'Automation wizardry', 'System optimization', 'Future tech'],
+        ['Software duels', 'Process automation', 'Workflow tuning', 'Tech trends'],
+        ['App comparisons', 'Robot helpers', 'Efficiency gains', 'Innovation watch'],
+        ['Digital tools', 'Smart systems', 'Performance boost', 'Tech evolution']
+      ]
+    };
+
+    // Random selection function
+    const getRandomTopics = (pools: string[][]): string[] => {
+      const randomPool = pools[Math.floor(Math.random() * pools.length)];
+      return [...randomPool];
+    };
+
+    // Check for exact pillar match first
+    if (diverseTopicPools[pillarName]) {
+      return getRandomTopics(diverseTopicPools[pillarName]);
+    }
+
+    // Generate contextual topics based on pillar type with randomness
+    const pillarLower = pillarName.toLowerCase();
     
-    return baseTopics[pillarName] || ['Topic 1', 'Topic 2', 'Topic 3', 'Topic 4'];
+    if (pillarLower.includes('nutrition') || pillarLower.includes('diet') || pillarLower.includes('food')) {
+      return getRandomTopics(contextualPools.nutrition);
+    }
+    
+    if (pillarLower.includes('workout') || pillarLower.includes('exercise') || pillarLower.includes('fitness')) {
+      return getRandomTopics(contextualPools.fitness);
+    }
+    
+    if (pillarLower.includes('mindset') || pillarLower.includes('motivation') || pillarLower.includes('mental')) {
+      return getRandomTopics(contextualPools.mindset);
+    }
+    
+    if (pillarLower.includes('business') || pillarLower.includes('money') || pillarLower.includes('finance')) {
+      return getRandomTopics(contextualPools.business);
+    }
+    
+    if (pillarLower.includes('tech') || pillarLower.includes('software') || pillarLower.includes('digital')) {
+      return getRandomTopics(contextualPools.tech);
+    }
+
+    // Highly diverse fallback patterns with randomization
+    const diversePatterns = [
+      [`${pillarName} decoded`, `${pillarName} unleashed`, `${pillarName} mastery`, `${pillarName} revolution`],
+      [`${pillarName} secrets`, `${pillarName} wizardry`, `${pillarName} genius`, `${pillarName} breakthrough`],
+      [`${pillarName} hacks`, `${pillarName} magic`, `${pillarName} systems`, `${pillarName} evolution`],
+      [`${pillarName} insights`, `${pillarName} power`, `${pillarName} methods`, `${pillarName} transformation`],
+      [`${pillarName} mysteries`, `${pillarName} science`, `${pillarName} art`, `${pillarName} innovation`]
+    ];
+    
+    return getRandomTopics(diversePatterns);
   };
 
   const handleFoundationModalSubmit = async (data: { niche: string; audience: string; goals: string }) => {
@@ -529,9 +656,18 @@ export default function Foundation() {
   };
 
   const togglePillar = (id: string) => {
-    setEnhancedPillars(pillars => 
-      pillars.map(p => p.id === id ? { ...p, selected: !p.selected } : p)
-    );
+    setEnhancedPillars(pillars => {
+      const currentSelected = pillars.filter(p => p.selected).length;
+      const pillarToToggle = pillars.find(p => p.id === id);
+      
+      // If trying to select and already at limit of 3, prevent selection
+      if (pillarToToggle && !pillarToToggle.selected && currentSelected >= 3) {
+        toast.error('You can select a maximum of 3 content pillars');
+        return pillars;
+      }
+      
+      return pillars.map(p => p.id === id ? { ...p, selected: !p.selected } : p);
+    });
   };
 
   const proceedToIdeas = () => {
@@ -755,7 +891,10 @@ export default function Foundation() {
             <Card className="p-6 shadow-elegant">
               <div className="flex items-center gap-2 mb-6">
                 <div className="flex items-center justify-between mb-4">
-                  <h2 className="text-xl font-bold">Demographics</h2>
+                  <div className="flex items-center gap-2">
+                    <Users className="w-5 h-5 text-primary" />
+                    <h2 className="text-xl font-bold">Demographics</h2>
+                  </div>
                   <div className="flex items-center gap-2">
                     <Button
                       variant="ghost"
@@ -819,7 +958,10 @@ export default function Foundation() {
             <Card className="p-6 shadow-elegant">
               <div className="flex items-center gap-2 mb-6">
                 <div className="flex items-center justify-between mb-4">
-                  <h2 className="text-xl font-bold">Psychographics</h2>
+                  <div className="flex items-center gap-2">
+                    <Brain className="w-5 h-5 text-primary" />
+                    <h2 className="text-xl font-bold">Psychographics</h2>
+                  </div>
                   <div className="flex items-center gap-2">
                     <Button
                       variant="ghost"
@@ -856,18 +998,53 @@ export default function Foundation() {
                     </div>
                   </motion.div>
                 ))}
+                {showPsychographicInput && (
+                  <div className="mt-4 p-4 bg-gray-50 rounded-lg border space-y-2">
+                    <div className="flex gap-2">
+                      <input
+                        type="text"
+                        placeholder="Add custom psychographic (e.g., Values innovation, Tech-savvy)"
+                        value={newPsychographic}
+                        onChange={(e) => setNewPsychographic(e.target.value)}
+                        onKeyPress={(e) => e.key === 'Enter' && addCustomPsychographic()}
+                        className="flex-1 px-3 py-2 text-sm border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-primary focus:border-transparent"
+                      />
+                      <Button
+                        size="sm"
+                        onClick={addCustomPsychographic}
+                        disabled={!newPsychographic.trim()}
+                      >
+                        <Plus className="w-4 h-4" />
+                      </Button>
+                    </div>
+                    <p className="text-xs text-muted-foreground">Click on added items to select/deselect them for AI generation</p>
+                  </div>
+                )}
               </div>
             </Card>
           </div>
 
           {/* Pain Points */}
           <Card className="p-6 shadow-elegant mb-12">
-            <div className="flex items-center gap-2 mb-6">
-              <AlertCircle className="w-5 h-5 text-primary" />
-              <h2 className="text-xl font-bold">Pain Points</h2>
-              <Badge variant="outline" className="ml-auto">
-                {painPointBlocks.filter(b => b.selected).length} selected
-              </Badge>
+            <div className="flex items-center justify-between mb-6">
+              <div className="flex items-center gap-2">
+                <AlertCircle className="w-5 h-5 text-primary" />
+                <h2 className="text-xl font-bold">Pain Points</h2>
+              </div>
+              <div className="flex items-center gap-2">
+                <Button
+                  variant="ghost"
+                  size="sm"
+                  onClick={() => setShowPainPointInput(!showPainPointInput)}
+                  className="text-xs"
+                >
+                  <Plus className="w-3 h-3 mr-1" />
+                  Add Custom
+                </Button>
+                <Badge variant="outline">
+                  {painPointBlocks.filter(b => b.selected).length} selected
+                </Badge>
+              </div>
             </div>
             <div className="grid md:grid-cols-2 gap-3">
               {painPointBlocks.map(block => (
@@ -896,6 +1073,29 @@ export default function Foundation() {
                 </motion.div>
               ))}
             </div>
+            
+            {/* Custom Pain Point Input */}
+            {showPainPointInput && (
+              <div className="mt-4 p-4 bg-gray-50 rounded-lg border space-y-2">
+                <div className="flex gap-2">
+                  <textarea
+                    placeholder="Add specific pain point (e.g., Struggling with time management)"
+                    value={newPainPoint}
+                    onChange={(e) => setNewPainPoint(e.target.value)}
+                    className="flex-1 px-3 py-2 text-sm border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-primary focus:border-transparent min-h-[60px] resize-none"
+                  />
+                  <Button
+                    size="sm"
+                    onClick={addCustomPainPoint}
+                    disabled={!newPainPoint.trim()}
+                    className="self-start"
+                  >
+                    <Plus className="w-4 h-4" />
+                  </Button>
+                </div>
+                <p className="text-xs text-muted-foreground">Click on added items to select/deselect them for AI generation</p>
+              </div>
+            )}
           </Card>
 
           {/* Enhanced Content Pillars */}

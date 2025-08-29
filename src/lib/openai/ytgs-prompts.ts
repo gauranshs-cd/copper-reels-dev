@@ -214,6 +214,8 @@ export const MASTER_SCRIPT_GENERATOR = `${YTGS_SYSTEM_ROLE}
 CRITICAL OUTPUT REQUIREMENT - READ THIS FIRST:
 You must generate ACTUAL SCRIPT CONTENT - the exact words the creator will say on camera in a NATURAL, CONVERSATIONAL tone.
 
+IMPORTANT CONTEXT AWARENESS: Pay close attention to the foundation context and umbrella statement to understand the correct domain/niche. Ambiguous words should be interpreted within the provided context (e.g., "shooting" in football context means kicking the ball, not video production; "training" in fitness context means physical exercise, not corporate training).
+
 HUMANIZED TONE REQUIREMENTS:
 - Write like you're talking to a friend over coffee
 - Use contractions (you're, don't, can't, I'll, we'll)
@@ -505,12 +507,22 @@ Power Words: ${JSON.stringify(params.patternBank.powerWords?.slice(0, 20))}
 Custom Patterns: ${JSON.stringify(params.patternBank.customPatterns)}`;
   }
   
-  // Add viewer context
+  // Add viewer context and foundation context for disambiguation
   if (params.viewerType) {
     enhancedPrompt += `\n\nVIEWER CONTEXT:
 Type: ${params.viewerType}
 Avatar: ${params.avatarSummary}
 Umbrella: ${params.umbrella}`;
+  }
+  
+  // Add foundation context for term disambiguation
+  if (params.foundationContext) {
+    enhancedPrompt += `\n\nFOUNDATION CONTEXT: ${params.foundationContext}
+    
+CONTEXT INTERPRETATION: Interpret all ambiguous terms based on the foundation context above. For example:
+- "shooting" in football context = kicking/scoring goals, not video production
+- "training" in fitness context = physical exercise, not corporate training  
+- "development" in software context = coding, not personal growth`;
   }
   
   return enhancedPrompt;

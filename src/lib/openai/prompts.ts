@@ -34,13 +34,34 @@ export const buildPositioningUserPrompt = (params: {
   locale?: string;
   contentHints?: string;
   constraints?: string;
-}) => `Umbrella: ${params.umbrella}
+  customData?: {
+    demographics?: string[];
+    psychographics?: string[];
+    painPoints?: string[];
+  };
+}) => {
+  let prompt = `Umbrella: ${params.umbrella}
 Channel name (optional): ${params.channelName || 'N/A'}
 Region/Language (optional): ${params.locale || 'N/A'}
 Existing content hints (optional): ${params.contentHints || 'N/A'}
-Constraints (optional): ${params.constraints || 'N/A'}
+Constraints (optional): ${params.constraints || 'N/A'}`;
 
-Produce the foundation JSON now.`;
+  // Add custom data if provided
+  if (params.customData) {
+    if (params.customData.demographics && params.customData.demographics.length > 0) {
+      prompt += `\nCustom Demographics: ${params.customData.demographics.join(', ')}`;
+    }
+    if (params.customData.psychographics && params.customData.psychographics.length > 0) {
+      prompt += `\nCustom Psychographics: ${params.customData.psychographics.join(', ')}`;
+    }
+    if (params.customData.painPoints && params.customData.painPoints.length > 0) {
+      prompt += `\nCustom Pain Points: ${params.customData.painPoints.join(', ')}`;
+    }
+  }
+
+  prompt += `\n\nProduce the foundation JSON now.`;
+  return prompt;
+};
 
 // ============================================================================
 // 2. SKYSCRAPER RESEARCH - Query Expansion (Optional)
@@ -190,6 +211,8 @@ Return 2–3 thumbnail briefs.`;
 // ============================================================================
 export const SCRIPT_STORYBOARD_SYSTEM = `You are the Script & Storyboard Bot. Generate a YT script using YTGS Bricks and a visual storyboard. Return ONLY JSON.
 
+IMPORTANT: Pay close attention to the foundation context and umbrella statement to understand the correct domain/niche. Ambiguous words should be interpreted within the provided context (e.g., "shooting" in football context means kicking the ball, not video production).
+
 SCHEMA
 { "type":"object","required":["runtimeEstimateSec","bricks","storyboard","metadata"],
   "properties":{
@@ -199,7 +222,8 @@ SCHEMA
     "metadata":{"type":"object","properties":{"cta":{"type":"string"},"chapters":{"type":"array","items":{"type":"string"}},"seoDescription":{"type":"string"},"tags":{"type":"array","items":{"type":"string"}}}}
 }}
 RULES
-- Order: INTRO → 2–4 MIDDLE → EXAMPLE → APPLICATION → (optional) OUTRO. Output JSON ONLY.`;
+- Order: INTRO → 2–4 MIDDLE → EXAMPLE → APPLICATION → (optional) OUTRO. Output JSON ONLY.
+- Always interpret terms within the provided foundation context and niche domain.`;
 
 export const buildScriptStoryboardUserPrompt = (params: {
   chosenTitle: string;
@@ -210,14 +234,22 @@ export const buildScriptStoryboardUserPrompt = (params: {
   mustCoverPoints?: string[];
   targetMinutes?: number;
   styleGuide?: any;
+  foundationContext?: string;
 }) => `Title: ${params.chosenTitle}
 ViewerType: ${params.viewerType}
 Avatar (summary): ${params.avatarSummary}
 Idea concept: ${params.ideaConcept}
+Foundation Context: ${params.foundationContext || 'N/A'}
 Thumbnail brief (selected): ${JSON.stringify(params.selectedThumbBrief)}
 Must-cover points (optional): ${params.mustCoverPoints?.join(', ') || 'N/A'}
 Length target (minutes, optional): ${params.targetMinutes || 'N/A'}
 Style Guide (optional): ${params.styleGuide ? JSON.stringify(params.styleGuide) : 'N/A'}
+
+CONTEXT INTERPRETATION: If the title contains ambiguous terms, interpret them based on the Foundation Context. For example:
+- "shooting" in football context = kicking/scoring goals, not video production
+- "training" in fitness context = physical exercise, not corporate training
+- "development" in software context = coding, not personal growth
+
 Generate the script bricks and storyboard JSON now.`;
 
 // ============================================================================

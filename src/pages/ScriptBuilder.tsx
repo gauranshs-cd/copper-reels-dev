@@ -38,18 +38,18 @@ export default function ScriptBuilder() {
     return [
       {
         id: 'brick-1',
-        type: 'promise',
+        type: 'INTRO',
         estimatedSec: 15,
         narration: `In this video, I'm going to show you ${title}. By the end, you'll understand exactly how to apply this to get results.`,
         onScreen: 'Host speaking to camera with text overlay',
-        callouts: ['Key Promise', 'What You'll Learn'],
+        callouts: ['Key Promise', 'What You\'ll Learn'],
         broll: ['Title animation', 'Results preview'],
         beats: ['Hook', 'Promise', 'Preview'],
         isExpanded: true
       },
       {
         id: 'brick-2',
-        type: 'intro',
+        type: 'MIDDLE',
         estimatedSec: 30,
         narration: `Let me start by sharing why this matters. Most people struggle with this because they don't understand the fundamentals.`,
         onScreen: 'Problem visualization',
@@ -60,7 +60,7 @@ export default function ScriptBuilder() {
       },
       {
         id: 'brick-3',
-        type: 'core',
+        type: 'MIDDLE',
         estimatedSec: 180,
         narration: `Here's the step-by-step process. First, you need to... Second, make sure you... Finally, implement...`,
         onScreen: 'Step-by-step demonstration',
@@ -71,7 +71,7 @@ export default function ScriptBuilder() {
       },
       {
         id: 'brick-4',
-        type: 'examples',
+        type: 'EXAMPLE',
         estimatedSec: 120,
         narration: `Let me show you some real examples of how this works in practice...`,
         onScreen: 'Case studies and examples',
@@ -82,7 +82,7 @@ export default function ScriptBuilder() {
       },
       {
         id: 'brick-5',
-        type: 'cta',
+        type: 'OUTRO',
         estimatedSec: 30,
         narration: `Now it's your turn. Take what you've learned and apply it. If you found this valuable, subscribe for more content like this.`,
         onScreen: 'Call to action with subscribe button',
@@ -197,7 +197,8 @@ export default function ScriptBuilder() {
           avatarSummary: `${avatarSummary}. ${pillarContext}. ${userContext}`,
           ideaConcept: selectedIdea?.description || umbrellaStatement || '',
           selectedThumbBrief: {},
-          targetMinutes: 10
+          targetMinutes: 10,
+          foundationContext: umbrellaStatement
         }),
         timeoutPromise
       ]) as Awaited<ReturnType<typeof copperReelsGemini.generateScriptAndStoryboard>>;
@@ -321,7 +322,7 @@ export default function ScriptBuilder() {
     }
   };
 
-  const generateTableFormat = async () => {
+  const generateTableFormat = async (): Promise<VideoScriptRow[]> => {
     try {
       const foundationData = useAppStore.getState().foundationData;
       const topic = selectedIdea?.title || 'How to Create Engaging Content';
@@ -337,12 +338,15 @@ export default function ScriptBuilder() {
         topic,
         avatarProfile,
         targetAudience,
-        duration: 10
+        duration: 10,
+        foundationContext: umbrellaStatement
       });
       
       setScriptRows(generatedScript);
+      return generatedScript;
     } catch (error) {
       console.error('Failed to generate table format:', error);
+      return [];
     }
   };
 
