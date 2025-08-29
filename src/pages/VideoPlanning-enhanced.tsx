@@ -380,6 +380,45 @@ export default function VideoPlanning() {
     }
   };
 
+  const regenerateTitles = async () => {
+    if (!selectedIdea) return;
+    
+    setGeneratingContent(true);
+    setLoading(true, 'Regenerating titles...');
+    
+    try {
+      // Generate new titles based on the selected idea
+      const ideaConcept = selectedIdea.concept || selectedIdea.title || 'Video Content';
+      console.log('regenerateTitles - using ideaConcept:', ideaConcept);
+      
+      const titlesResponse = await copperReelsGemini.generateTitles({
+        ideaConcept: ideaConcept,
+        pillarName: selectedIdea.pillar,
+        viewerType: 'LEARNER'
+      });
+      
+      // Create new titles with unique IDs to force re-render
+      const timestamp = Date.now();
+      const titles: TitleOption[] = titlesResponse.titles.map((t, i) => ({
+        id: `title-${timestamp}-${i}`,
+        text: t.text,
+        score: t.score,
+        selected: i === 0
+      }));
+      
+      setTitleOptions(titles);
+      setSelectedTitle(titles[0]);
+      
+      toast.success('New titles generated successfully!');
+    } catch (error) {
+      console.error('Failed to regenerate titles:', error);
+      toast.error('Failed to regenerate titles');
+    } finally {
+      setGeneratingContent(false);
+      setLoading(false);
+    }
+  };
+
   const toggleBrick = (brickId: string) => {
     setScriptBricks(prev => 
       prev.map(brick => 
@@ -721,7 +760,7 @@ export default function VideoPlanning() {
                   <h2 className="text-xl font-bold">Title Variations</h2>
                   <Button
                     variant="outline"
-                    onClick={generateTitlesAndThumbnails}
+                    onClick={regenerateTitles}
                     disabled={generatingContent}
                   >
                     {generatingContent ? (
