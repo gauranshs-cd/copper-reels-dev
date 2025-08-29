@@ -112,11 +112,34 @@ For each idea provide:
 
 export const ENHANCED_TITLE_GENERATOR = `${YTGS_SYSTEM_ROLE}
 
-Each title must be grammatically correct.
+Each title must be grammatically correct and make complete sense.
+
+GRAMMAR RULES:
+- No semicolons, colons, or dashes anywhere in titles
+- Complete sentences or clear phrases only
+- NEVER use "Why X: Y Actually Works" structure
+- NEVER use "(Explained)" at the end of titles
+- NEVER stuff ideas into templates without checking grammar
+- Each title must sound natural when spoken aloud
+- If a title sounds robotic or awkward, regenerate it completely
+
+FORBIDDEN TITLE STRUCTURES - NEVER GENERATE THESE:
+❌ "Why [Topic]: [Subtopic] Actually Works"
+❌ "Why [Topic]: [Number] [Things] Actually Works (Explained)"
+❌ Any title ending with "(Explained)" or "(Complete Guide)"
+❌ Any title with colons separating main topic from subtopic
+❌ Overly long titles that cram multiple concepts together
+❌ Template stuffing without grammar verification
+
+NATURAL LANGUAGE ENFORCEMENT:
+- Don't force ideas into templates if they don't fit naturally
+- Prioritize readability over template adherence
+- Each title must pass the "conversation test" - could you say this naturally to a friend?
+- Avoid corporate jargon or buzzword stacking
 
 If a title is not grammatically correct, you must regenerate it until correct.
 
-Do not output a title that fails grammar.
+Do not output a title that fails grammar or contains forbidden punctuation.
 
 CONSTRAINTS
 
@@ -133,6 +156,38 @@ Alternate setups (curiosity) and payoffs (result) across the 5 titles.
 Overlay thumbnail text: 2–4 words, high contrast, not identical to title.
 
 TITLE FORMATION SOURCES
+
+Proven Templates (use if natural fit):
+
+"How I [Achieved Result] in [Timeframe]"
+
+"[Number] [Things] That [Unexpected Outcome]"
+
+"The [Adjective] [Method] to [Desired Outcome]"
+
+"[Do This] Before [Specific Event/Date]"
+
+"[Number] Ways to [Achieve Result]"
+
+GOOD TITLE EXAMPLES (under 50 chars):
+✅ "5 Community Building Tricks That Actually Work"
+✅ "How I Built 10K Followers in 3 Months"
+✅ "The Secret Method to Boost Engagement Fast"
+✅ "Build Loyal Communities With These 5 Steps"
+
+BAD TITLE EXAMPLES - NEVER GENERATE THESE:
+❌ "How to Master Boost YouTube Engagement with Interactive Content & Community Building (Complete Guide)"
+❌ "Boost YouTube Engagement with Interactive Content & Community Building - What You Need to Know"
+❌ "The Truth About Boost YouTube Engagement with Interactive Content & Community Building"
+❌ "Why Boost YouTube Engagement with Interactive Content & Community Building Actually Works (Explained)"
+
+TITLE CREATION PROCESS:
+1. Start with the core idea or benefit
+2. Make it conversational and natural
+3. Check if it fits the 50-character limit
+4. Read it aloud - does it sound natural?
+5. If it sounds forced or awkward, rewrite from scratch
+6. Don't force templates - let natural language guide you
 
 Trigger-Only Titles
 
@@ -151,7 +206,9 @@ For each of the 5 titles, return:
 
 Title text (≤50 chars, grammatically correct).
 
-Source type used (Trigger-Only / Hybrid).
+Supporting thumbnail text (2–4 words, high contrast).
+
+Source type used (Proven Template / Trigger-Only / Hybrid).
 
 BENS Score: Big / Easy / New / Safe (0–5 each, total out of 20).
 
@@ -168,11 +225,39 @@ Best traffic source: Homepage / Search / Suggested.
 FINAL RULE
 Do not complete output until:
 
-All 5 titles are grammatically correct.
+All 5 titles are grammatically correct and make complete sense when read aloud.
+
+All titles contain NO semicolons, colons, or dashes.
 
 All titles meet the curiosity/result test.
 
-All titles follow alternating Setup → Payoff sequence.`;
+All titles follow alternating Setup → Payoff sequence.
+
+GRAMMAR VERIFICATION CHECKLIST:
+✓ Read each title aloud - does it sound natural and conversational?
+✓ NO "Why X: Y Actually Works" constructions
+✓ NO "(Explained)" or "(Complete Guide)" endings
+✓ NO colons separating topics
+✓ NO template stuffing or forced phrasing
+✓ Complete thoughts or clear phrases only
+✓ Zero forbidden punctuation (;, :, -)
+✓ Under 50 characters
+✓ Grade 6 reading level
+✓ Passes the "friend conversation" test
+
+IMMEDIATE REJECTION TRIGGERS:
+If ANY title contains these patterns, REJECT and regenerate:
+- "Why [Topic]: [Anything]"
+- "(Explained)" or "(Complete Guide)" at the end
+- Colons anywhere in the title
+- Semicolons anywhere in the title
+- Ampersands (&) cramming multiple topics together
+- Over 50 characters
+- Sounds robotic or unnatural when spoken
+- Forces an idea into a template awkwardly
+
+NATURAL LANGUAGE PRIORITY:
+Grammar and natural flow ALWAYS trump template adherence. If a template makes the title sound awkward, abandon the template and write naturally.`;
 
 export const ENHANCED_THUMBNAIL_GENERATOR = `${YTGS_SYSTEM_ROLE}
 

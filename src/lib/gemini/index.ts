@@ -494,8 +494,11 @@ Make it specific, actionable, and psychologically targeted to the avatar.`;
     styleGuide?: any;
   }) {
     try {
-      // Use a modified system prompt that explicitly requests actual data, not schema
-      const systemPrompt = `You are the Title Generator. Create high-CTR, honest titles for YouTube videos. 
+      // Import the enhanced title generator prompt
+      const ytgsPrompts = await import('../openai/ytgs-prompts');
+      
+      // Use the enhanced emotional title generator prompt
+      const systemPrompt = ytgsPrompts.ENHANCED_TITLE_GENERATOR + `
 
 IMPORTANT: Return actual title data in JSON format, NOT a schema definition.
 
@@ -504,21 +507,17 @@ Return a JSON object with this structure:
   "titles": [
     {
       "text": "Actual title text here",
-      "shape": "How-to",
+      "shape": "Shock",
       "score": 0.85,
-      "powerWordsUsed": ["Master", "Complete"],
+      "powerWordsUsed": ["Destroyed", "Secret"],
       "predictedIssues": []
     }
   ],
   "guidance": "Brief guidance about the titles"
 }
 
-RULES:
-- Generate 5-8 actual titles, not schema examples
-- Keep titles under 65 characters
-- Use specific, honest language
-- Avoid misleading clickbait
-- Return ONLY the JSON object with actual data`;
+CRITICAL: Every title MUST have emotional intensity 7+/10 and use power words from the emotional categories.
+Return ONLY the JSON object with actual emotionally charged titles.`;
 
       const userPrompt = `Generate titles for this video idea:
 

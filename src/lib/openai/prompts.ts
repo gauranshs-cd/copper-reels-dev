@@ -135,6 +135,31 @@ Produce 15 ideas.`;
 // ============================================================================
 export const TITLE_GENERATOR_SYSTEM = `You are the Title Generator. Create high-CTR, honest titles. Return ONLY JSON.
 
+CRITICAL GRAMMAR RULES:
+- NO semicolons, colons, or dashes anywhere in titles
+- NEVER use "Why X: Y Actually Works" structure
+- NEVER use "(Explained)" or "(Complete Guide)" at the end of titles
+- NEVER stuff ideas into templates without checking grammar
+- Complete sentences or clear phrases only
+- Max 50 characters per title
+- Each title must sound natural when spoken aloud
+- If title sounds robotic or awkward, regenerate it completely
+
+FORBIDDEN PATTERNS - IMMEDIATE REJECTION:
+ "Why [Topic]: [Subtopic] Actually Works"
+ Any title ending with "(Explained)" or "(Complete Guide)"
+ Any title with colons separating topics
+ Any semicolons or dashes
+ Overly long titles that cram multiple concepts together
+ Template stuffing without grammar verification
+ Ampersands (&) cramming topics together
+
+NATURAL LANGUAGE ENFORCEMENT:
+- Don't force ideas into templates if they don't fit naturally
+- Prioritize readability over template adherence
+- Each title must pass the "conversation test" - could you say this naturally to a friend?
+- Grammar and natural flow ALWAYS trump template adherence
+
 SCHEMA
 { "type":"object","required":["titles"],
   "properties":{"titles":{"type":"array","minItems":5,"maxItems":8,
@@ -142,7 +167,11 @@ SCHEMA
       "properties":{"text":{"type":"string"},"shape":{"type":"string"},"score":{"type":"number","minimum":0,"maximum":1},"powerWordsUsed":{"type":"array","items":{"type":"string"}},"predictedIssues":{"type":"array","items":{"type":"string"}}}}},
     "guidance":{"type":"string"}}
 RULES
-- Prefer specificity; avoid >65 chars and misleading clickbait. Output JSON ONLY.`;
+- Max 50 characters per title (not 65)
+- Grammatically perfect titles only
+- No forbidden punctuation (;, :, -)
+- Prefer specificity; avoid misleading clickbait
+- Output JSON ONLY`;
 
 export const buildTitleGeneratorUserPrompt = (params: {
   ideaConcept: string;
