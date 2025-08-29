@@ -30,7 +30,8 @@ export const FoundationSchema = z.object({
   viewerType: z.enum(['LEARNER', 'ENTHUSIAST', 'EXPERT']),
   pillars: z.array(z.object({
     name: z.string(),
-    summary: z.string()
+    summary: z.string(),
+    topics: z.array(z.string()).min(3).max(6)
   })).min(3).max(5),
   notes: z.object({
     rationale: z.string(),
@@ -168,10 +169,15 @@ export class CopperReelsAI {
     const userPrompt = prompts.buildTitleGeneratorUserPrompt(params);
 
     const result = await this.callOpenAI(systemPrompt, userPrompt);
-    return z.object({ 
-      titles: z.array(TitleDraftSchema),
+    const parsed = z.object({ 
+      titles: z.array(TitleDraftSchema).optional().default([]),
       guidance: z.string().optional().default('')
     }).parse(result);
+    
+    return {
+      titles: parsed.titles || [],
+      guidance: parsed.guidance || ''
+    };
   }
 
   // 4. Thumbnail Brief Generator
@@ -243,12 +249,19 @@ Style Guide (optional): ${params.styleGuide ? JSON.stringify(params.styleGuide) 
 Generate the script bricks and storyboard JSON now.`;
 
     const result = await this.callOpenAI(systemPrompt, userPrompt);
-    return z.object({
-      runtimeEstimateSec: z.number(),
-      bricks: z.array(BrickSchema),
-      storyboard: z.array(z.any()),
-      metadata: z.any()
+    const parsed = z.object({
+      runtimeEstimateSec: z.number().optional().default(300),
+      bricks: z.array(BrickSchema).optional().default([]),
+      storyboard: z.array(z.any()).optional().default([]),
+      metadata: z.any().optional().default({})
     }).parse(result);
+    
+    return {
+      runtimeEstimateSec: parsed.runtimeEstimateSec || 300,
+      bricks: parsed.bricks || [],
+      storyboard: parsed.storyboard || [],
+      metadata: parsed.metadata || {}
+    };
   }
 }
 

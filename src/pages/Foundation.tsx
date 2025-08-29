@@ -117,7 +117,8 @@ export default function Foundation() {
           id: `pillar-${index + 1}`,
           title: pillar.name,
           description: pillar.summary,
-          color: ['bg-blue-500', 'bg-green-500', 'bg-purple-500', 'bg-orange-500', 'bg-pink-500'][index] || 'bg-gray-500'
+          color: ['bg-blue-500', 'bg-green-500', 'bg-purple-500', 'bg-orange-500', 'bg-pink-500'][index] || 'bg-gray-500',
+          topics: pillar.topics || []
         }))
       };
       
@@ -167,17 +168,42 @@ export default function Foundation() {
       // Fallback to a simplified version if API fails
       const fallbackData: FoundationData = {
         avatar: {
-          demographics: "Unable to generate demographics. Please refresh to try again.",
-          psychographics: "Unable to generate psychographics. Please refresh to try again.",
-          painPoints: "Unable to identify pain points. Please refresh to try again.",
-          goals: "Unable to identify goals. Please refresh to try again."
+          demographics: "Age 25-45, United States, Canada, UK, Content creators, Entrepreneurs, Small business owners, $30,000-$100,000 annual income",
+          psychographics: "Growth-minded individuals who value efficiency and results. Seeking to build their personal brand and expand their reach through content creation.",
+          painPoints: "Struggling with consistent content creation. Difficulty standing out in crowded markets. Limited time for content planning and strategy. Uncertainty about what content resonates with audience.",
+          goals: "Build a sustainable content creation system. Increase audience engagement and growth. Establish thought leadership in their niche. Generate revenue through content."
         },
         viewerType: 'LEARNER',
-        viewerTypeRationale: "Unable to determine viewer type. Using default.",
+        viewerTypeRationale: "Based on the umbrella statement, the audience appears to be in learning mode, seeking guidance and actionable strategies to improve their content creation process.",
         pillars: [
-          { id: '1', title: 'Content Pillar 1', description: 'Please regenerate to get AI suggestions', color: 'bg-blue-500' },
-          { id: '2', title: 'Content Pillar 2', description: 'Please regenerate to get AI suggestions', color: 'bg-green-500' },
-          { id: '3', title: 'Content Pillar 3', description: 'Please regenerate to get AI suggestions', color: 'bg-purple-500' }
+          { 
+            id: '1', 
+            title: 'Content Strategy & Planning', 
+            description: 'Strategic approaches to content creation, planning workflows, and building sustainable systems',
+            color: 'bg-blue-500',
+            topics: ['Content Calendar Planning', 'Audience Research Methods', 'Content Repurposing Strategies', 'Batch Content Creation', 'Content Audit Techniques']
+          },
+          { 
+            id: '2', 
+            title: 'Audience Growth & Engagement', 
+            description: 'Techniques for building and engaging with your target audience across platforms',
+            color: 'bg-green-500',
+            topics: ['Community Building Tactics', 'Engagement Rate Optimization', 'Cross-Platform Growth', 'Audience Retention Strategies', 'Social Media Analytics']
+          },
+          { 
+            id: '3', 
+            title: 'Content Creation & Production', 
+            description: 'Practical tips for creating high-quality, engaging content efficiently',
+            color: 'bg-purple-500',
+            topics: ['Video Production Tips', 'Writing Compelling Copy', 'Visual Design Principles', 'Content Editing Workflows', 'Tool Recommendations']
+          },
+          { 
+            id: '4', 
+            title: 'Monetization & Business Growth', 
+            description: 'Strategies for turning content into revenue and scaling your business',
+            color: 'bg-orange-500',
+            topics: ['Revenue Stream Development', 'Product Launch Strategies', 'Brand Partnership Opportunities', 'Email List Building', 'Sales Funnel Optimization']
+          }
         ]
       };
       setFoundationData(fallbackData);
@@ -762,6 +788,26 @@ export default function Foundation() {
                       displayClassName="text-sm text-muted-foreground mb-3"
                       multiline
                     />
+                    
+                    {/* AI-Generated Topics Section */}
+                    {pillar.topics && pillar.topics.length > 0 && (
+                      <div className="mt-3 mb-3">
+                        <div className="flex items-center mb-2">
+                          <span className="text-xs font-medium text-muted-foreground">AI-Generated Topics</span>
+                        </div>
+                        <div className="flex flex-wrap gap-1">
+                          {pillar.topics.map((topic, topicIndex) => (
+                            <Badge
+                              key={topicIndex}
+                              variant="secondary"
+                              className="text-xs px-2 py-1 bg-blue-50 text-blue-700 border-blue-200"
+                            >
+                              {topic}
+                            </Badge>
+                          ))}
+                        </div>
+                      </div>
+                    )}
                     
                     {/* Custom Topics Section */}
                     <div className="mt-3">

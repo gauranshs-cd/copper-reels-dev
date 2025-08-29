@@ -13,6 +13,7 @@ export interface ContentPillar {
   title: string;
   description: string;
   color: string;
+  topics?: string[];
 }
 
 export interface FoundationData {

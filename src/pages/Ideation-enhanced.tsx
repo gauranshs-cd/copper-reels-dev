@@ -309,7 +309,11 @@ ${idea.pillar.toLowerCase().replace(/\s+/g, '')}${idea.concept.toLowerCase().rep
       pillar: idea.pillar,
       pillarColor: 'bg-blue-500',
       ctrScore: Math.round(idea.difficulty * 2),
-      description: idea.whyItWillClick
+      description: idea.whyItWillClick,
+      concept: idea.concept,
+      angle: idea.angle,
+      whyItWillClick: idea.whyItWillClick,
+      thumbnailBrief: idea.thumbnailHint
     };
     setSelectedIdea(ideaCard);
   };
@@ -325,7 +329,11 @@ ${idea.pillar.toLowerCase().replace(/\s+/g, '')}${idea.concept.toLowerCase().rep
         pillar: selected.pillar,
         pillarColor: 'bg-blue-500',
         ctrScore: Math.round(selected.difficulty * 2),
-        description: selected.whyItWillClick
+        description: selected.whyItWillClick,
+        concept: selected.concept,
+        angle: selected.angle,
+        whyItWillClick: selected.whyItWillClick,
+        thumbnailBrief: selected.thumbnailHint
       };
       setSelectedIdea(ideaCard);
       navigate('/plan');

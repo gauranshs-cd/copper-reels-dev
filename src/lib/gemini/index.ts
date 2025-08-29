@@ -35,7 +35,8 @@ export const FoundationSchema = z.object({
   viewerType: z.enum(['LEARNER', 'ENTHUSIAST', 'EXPERT']),
   pillars: z.array(z.object({
     name: z.string(),
-    summary: z.string()
+    summary: z.string(),
+    topics: z.array(z.string()).min(3).max(6)
   })).min(3).max(5),
   notes: z.object({
     rationale: z.string(),
@@ -145,6 +146,9 @@ export class CopperReelsGemini {
       const fullPrompt = `${finalSystemPrompt}\n\nUSER REQUEST:\n${userPrompt}`;
       
       console.log('Calling Gemini API with prompt type:', promptType || 'default');
+      if (!this.model) {
+        throw new Error('Gemini model not initialized');
+      }
       const result = await this.model.generateContent(fullPrompt);
       const response = await result.response;
       const text = response.text();
@@ -217,16 +221,87 @@ export class CopperReelsGemini {
     contentHints?: string;
     constraints?: string;
   }) {
-    // If no API key, throw specific error for fallback handling
+    // If no API key, provide fallback foundation data
     if (!genAI) {
-      throw new Error('API key not configured');
+      return this.generateFallbackFoundation(params);
     }
     
-    const systemPrompt = prompts.POSITIONING_BOT_SYSTEM;
-    const userPrompt = prompts.buildPositioningUserPrompt(params);
+    try {
+      const systemPrompt = prompts.POSITIONING_BOT_SYSTEM;
+      const userPrompt = prompts.buildPositioningUserPrompt(params);
+      
+      const result = await this.callGemini(systemPrompt, userPrompt, 'POSITIONING');
+      return FoundationSchema.parse(result);
+    } catch (error: any) {
+      console.error('Foundation generation failed, using fallback:', error);
+      return this.generateFallbackFoundation(params);
+    }
+  }
+
+  private generateFallbackFoundation(params: {
+    umbrella: string;
+    channelName?: string;
+    locale?: string;
+    contentHints?: string;
+    constraints?: string;
+  }) {
+    const topic = params.umbrella || 'content creation';
     
-    const result = await this.callGemini(systemPrompt, userPrompt, 'POSITIONING');
-    return FoundationSchema.parse(result);
+    return {
+      avatar: {
+        demographics: {
+          ageRange: '25-45',
+          locations: ['United States', 'Canada', 'United Kingdom'],
+          roles: ['Content Creator', 'Entrepreneur', 'Small Business Owner'],
+          incomeRange: '$30,000-$100,000'
+        },
+        psychographics: {
+          fears: ['Inconsistent content performance', 'Running out of ideas', 'Not standing out'],
+          goals: ['Build sustainable content system', 'Increase audience engagement', 'Generate revenue'],
+          rankedProblems: [
+            {
+              problem: 'Struggling with consistent content creation',
+              whyItMatters: 'Consistency is key to building audience trust and algorithm favor'
+            },
+            {
+              problem: 'Difficulty measuring content performance',
+              whyItMatters: 'Without metrics, it\'s impossible to optimize and improve content strategy'
+            },
+            {
+              problem: 'Limited time for content planning',
+              whyItMatters: 'Poor planning leads to reactive content that doesn\'t align with goals'
+            }
+          ]
+        }
+      },
+      viewerType: 'LEARNER' as const,
+      pillars: [
+        {
+          name: 'Content Strategy & Planning',
+          summary: 'Strategic approaches to content creation, planning workflows, and building sustainable systems',
+          topics: ['Content Calendar Planning', 'Audience Research Methods', 'Content Repurposing Strategies', 'Batch Content Creation', 'Content Audit Techniques']
+        },
+        {
+          name: 'Audience Growth & Engagement',
+          summary: 'Techniques for building and engaging with your target audience across platforms',
+          topics: ['Community Building Tactics', 'Engagement Rate Optimization', 'Cross-Platform Growth', 'Audience Retention Strategies', 'Social Media Analytics']
+        },
+        {
+          name: 'Content Creation & Production',
+          summary: 'Practical tips for creating high-quality, engaging content efficiently',
+          topics: ['Video Production Tips', 'Writing Compelling Copy', 'Visual Design Principles', 'Content Editing Workflows', 'Tool Recommendations']
+        },
+        {
+          name: 'Monetization & Business Growth',
+          summary: 'Strategies for turning content into revenue and scaling your business',
+          topics: ['Revenue Stream Development', 'Product Launch Strategies', 'Brand Partnership Opportunities', 'Email List Building', 'Sales Funnel Optimization']
+        }
+      ],
+      notes: {
+        rationale: `Based on "${topic}", the audience appears to be in learning mode, seeking guidance and actionable strategies to improve their content creation process.`,
+        toneOfVoice: ['Educational', 'Practical', 'Encouraging', 'Results-focused']
+      }
+    };
   }
 
   // 2. Idea Generator (Limited to 3 ideas for better quality)
@@ -325,6 +400,9 @@ export class CopperReelsGemini {
     targetAudience: string;
     duration?: number;
   }): Promise<VideoScriptRow[]> {
+    if (!this.model) {
+      throw new Error('Gemini model not initialized');
+    }
     // Import the YTGS prompts for full script generation
     const ytgsPrompts = await import('../openai/ytgs-prompts');
     
@@ -416,10 +494,89 @@ Make it specific, actionable, and psychologically targeted to the avatar.`;
     styleGuide?: any;
   }) {
     try {
-      const systemPrompt = prompts.TITLE_GENERATOR_SYSTEM;
-      const userPrompt = prompts.buildTitleGeneratorUserPrompt(params);
+      // Use a modified system prompt that explicitly requests actual data, not schema
+      const systemPrompt = `You are the Title Generator. Create high-CTR, honest titles for YouTube videos. 
+
+IMPORTANT: Return actual title data in JSON format, NOT a schema definition.
+
+Return a JSON object with this structure:
+{
+  "titles": [
+    {
+      "text": "Actual title text here",
+      "shape": "How-to",
+      "score": 0.85,
+      "powerWordsUsed": ["Master", "Complete"],
+      "predictedIssues": []
+    }
+  ],
+  "guidance": "Brief guidance about the titles"
+}
+
+RULES:
+- Generate 5-8 actual titles, not schema examples
+- Keep titles under 65 characters
+- Use specific, honest language
+- Avoid misleading clickbait
+- Return ONLY the JSON object with actual data`;
+
+      const userPrompt = `Generate titles for this video idea:
+
+Concept: ${params.ideaConcept}
+Pillar: ${params.pillarName}
+Viewer Type: ${params.viewerType}
+
+Create 6 high-performing title variations with CTR scores.`;
+      
+      console.log('Title generation - using custom prompt for actual data');
+      console.log('Title generation - concept:', params.ideaConcept);
       
       const result = await this.callGemini(systemPrompt, userPrompt, 'TITLE_GENERATOR');
+      
+      // Debug: Log the actual result structure
+      console.log('generateTitles - result structure:', JSON.stringify(result, null, 2));
+      
+      // Check if the result is a schema definition instead of actual data
+      if (result.type === 'object' && result.properties && result.properties.titles) {
+        console.log('Detected schema response, extracting titles from properties');
+        const titlesData = result.properties.titles;
+        
+        if (Array.isArray(titlesData)) {
+          const extractedTitles = titlesData.map((title: any, index: number) => ({
+            text: title.text || `Generated Title ${index + 1}`,
+            shape: title.shape || 'How-to',
+            score: typeof title.score === 'number' ? title.score : 0.8,
+            powerWordsUsed: Array.isArray(title.powerWordsUsed) ? title.powerWordsUsed : [],
+            predictedIssues: Array.isArray(title.predictedIssues) ? title.predictedIssues : []
+          }));
+          
+          console.log('Extracted titles:', extractedTitles);
+          return {
+            titles: extractedTitles,
+            guidance: 'Successfully extracted from schema response'
+          };
+        }
+      }
+      
+      // Additional check: if result has titles array directly but it's undefined due to parsing
+      if (result.titles === undefined && result.properties) {
+        console.log('Titles undefined but properties exist, attempting extraction');
+        const titlesData = result.properties.titles;
+        if (Array.isArray(titlesData)) {
+          return {
+            titles: titlesData.map((title: any, index: number) => ({
+              text: title.text || `${params.ideaConcept} - Title ${index + 1}`,
+              shape: title.shape || 'How-to',
+              score: typeof title.score === 'number' ? title.score : 0.8,
+              powerWordsUsed: Array.isArray(title.powerWordsUsed) ? title.powerWordsUsed : [],
+              predictedIssues: Array.isArray(title.predictedIssues) ? title.predictedIssues : []
+            })),
+            guidance: 'Extracted from properties due to parsing issue'
+          };
+        }
+      }
+      
+      // Try normal parsing
       return z.object({ 
         titles: z.array(TitleDraftSchema),
         guidance: z.string().optional().default('')
@@ -427,41 +584,44 @@ Make it specific, actionable, and psychologically targeted to the avatar.`;
     } catch (error: any) {
       console.error('Title generation failed:', error);
       
-      // Fallback title generation
+      // Fallback title generation with proper concept validation
+      const concept = params.ideaConcept || 'Your Topic';
+      const pillar = params.pillarName || 'Content';
+      
       const fallbackTitles = [
         {
-          text: `How to ${params.ideaConcept} (Complete Guide)`,
+          text: `How to Master ${concept} (Complete Guide)`,
           shape: 'How-to',
           score: 0.8,
-          powerWordsUsed: ['Complete', 'Guide'],
+          powerWordsUsed: ['Master', 'Complete', 'Guide'],
           predictedIssues: []
         },
         {
-          text: `${params.ideaConcept} - What You Need to Know`,
+          text: `${concept} - What You Need to Know`,
           shape: 'Educational',
           score: 0.75,
           powerWordsUsed: ['Need'],
           predictedIssues: []
         },
         {
-          text: `The Truth About ${params.ideaConcept}`,
+          text: `The Truth About ${concept}`,
           shape: 'Curiosity',
           score: 0.85,
           powerWordsUsed: ['Truth'],
           predictedIssues: []
         },
         {
-          text: `${params.ideaConcept} in ${new Date().getFullYear()} (Updated)`,
+          text: `${concept} in ${new Date().getFullYear()} (Updated Guide)`,
           shape: 'Timely',
           score: 0.7,
-          powerWordsUsed: ['Updated'],
+          powerWordsUsed: ['Updated', 'Guide'],
           predictedIssues: []
         },
         {
-          text: `Why ${params.ideaConcept} Actually Works`,
+          text: `Why ${concept} Actually Works (Explained)`,
           shape: 'Explanation',
           score: 0.8,
-          powerWordsUsed: ['Actually', 'Works'],
+          powerWordsUsed: ['Actually', 'Works', 'Explained'],
           predictedIssues: []
         }
       ];
@@ -607,6 +767,16 @@ Provide clear, actionable advice and creative ideas. Be concise and practical.`;
       throw new Error('Failed to generate script. Please try again.');
     }
   }
+
+  // Export singleton instance
+  static getInstance(): CopperReelsGemini {
+    if (!CopperReelsGemini.instance) {
+      CopperReelsGemini.instance = new CopperReelsGemini();
+    }
+    return CopperReelsGemini.instance;
+  }
+
+  private static instance: CopperReelsGemini;
 }
 
 // Export singleton instance

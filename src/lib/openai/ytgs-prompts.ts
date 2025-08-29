@@ -266,20 +266,24 @@ The script content MUST match the target video duration selected by the user:
 
 While duration guidelines are provided, prioritize maintaining a natural flow. It's fine if the script slightly exceeds the target length as long as the pacing and engagement remain intact.
 
-SCRIPT STRUCTURE
+MANDATORY SCRIPT STRUCTURE - FOLLOW EXACTLY
 1. INTRO BRICK (word count varies by target duration - see DURATION ALIGNMENT above)
 
-Hook (1-2 sentences with a surprising fact, statistic, or counterintuitive statement). Do not answer the hook in the intro only; try to answer that hook at the end of the middle brick or in the end brick.
+REQUIRED FORMAT: [0:00-X:XX] INTRO BRICK
 
-Personal Introduction (1-2 sentences establishing credibility with specific credentials/results).
+EXACT STRUCTURE (MUST FOLLOW THIS ORDER):
+Hook: "Hey everyone! Did you know that [surprising statistic/fact]? That leads to [negative consequences]."
 
-Problem Statement (2-3 sentences explaining what viewers are missing or doing wrong).
+Personal Introduction: "I'm [Name], a [specific credential] with [timeframe] experience helping [target audience]. I've seen firsthand how [transformation/results]."
 
-Value Promise (2-3 sentences outlining exactly what they'll learn and the transformation they'll achieve).
+Problem Acknowledgment: "You're probably feeling [emotion] right now because [specific problem], right?"
 
-Social Proof (1-2 sentences about past student/client success using these strategies).
+Value Promise: "Well, in this video, I'll show you [exact number] [specific promise], and how to [benefit] in the next [timeframe]."
 
-Tension Setup (1-2 sentences creating curiosity about the first point WITHOUT revealing it).
+Transition: "Let's dive in!"
+
+EXAMPLE TEMPLATE:
+"Hey everyone! Did you know that [statistic/fact]? That leads to [problems]. I'm [Name], a [credential] with [X] years of experience helping [audience]. I've seen firsthand how [transformation]. You're probably feeling [emotion] right now because [problem], right? Well, in this video, I'll show you [number] [promise], and how to [benefit] in the next [timeframe]. Let's dive in!"
 
 STOP after this brick. Run audit:
 
@@ -292,48 +296,54 @@ If not, regenerate before moving on.
 Make sure to keep the sentences interconnected and humanize the tone as it is the voiceover script. Use natural speech patterns like "So here's what happened...", "And you know what?", "But here's the crazy part...", "Look, I get it...", "The thing is..."
 
 2. MAIN POINT SECTIONS (Repeat for exact number promised in title AND target duration)
-Each main point follows this EXACT structure with VARIED CONTENT APPROACHES:
 
-Section Header (Clear, descriptive title for this main point).
+REQUIRED FORMAT: [X:XX-Y:YY] MAIN POINT [NUMBER]
 
-Tension Bridge (2-3 sentences connecting from previous setup and building anticipation for this point).
+MANDATORY STRUCTURE FOR EACH MAIN POINT (FOLLOW THIS EXACT FORMAT):
 
-CONTENT VARIATION REQUIREMENT (MANDATORY - Rotate between these 4 approaches):
+Opening Statement: "First up:" / "Now that we've covered [previous], let's look at:" / "Next up:" / "Finally, let's talk about:"
 
-APPROACH 1 - STORY EXAMPLE (Use for 1-2 bricks maximum):
-ENHANCED STORY EXAMPLE (Must include ALL 6 elements in this EXACT sequence):
+Point Introduction: "[Main concept]. Now, [common assumption], right? But here's the thing..."
 
-WHO: Use natural storytelling language like "So I had this student, Sarah - brilliant girl, actually studying computer science at NYU..."
+Content Body (Choose ONE approach per brick - rotate between these):
 
-PROBLEM: Tell it like you're sharing with a friend: "And here's the thing - Sarah was struggling big time with her coding interviews. Like, she'd freeze up completely whenever they asked her to solve problems on the spot."
+APPROACH 1 - STORY EXAMPLE:
+Tell a specific story: "Let me tell you about [Name], a [description]. [He/She] would [behavior] but [he/she] was actually [real situation]. [He/She] didn't [common assumption]. [He/She] [what actually happened]. [Process/journey]. [Timeframe], [results]. [Impact/transformation]."
 
-WHY (STAKES): Make it relatable: "Look, this wasn't just about getting a job. Sarah had student loans piling up, her parents had sacrificed so much for her education, and she was watching all her classmates land these amazing positions while she kept getting rejected."
+APPROACH 2 - ANALOGY/METAPHOR:
+Use relatable comparison: "Think about it like this; It's like [relatable analogy]. [Explanation of how it connects]. [Why this matters]."
 
-CONFLICT: Show the struggle naturally: "So Sarah tried everything, right? She bought every coding interview book, spent hours on LeetCode, even hired a career coach. But nothing worked. She'd still panic during interviews and her mind would just go blank."
+APPROACH 3 - DATA/RESEARCH:
+Present research conversationally: "So get this - [Source] did this [type] study where they [methodology]. And you know what they found? [Key finding]. [Implication for viewer]."
 
-BREAKTHROUGH MOMENT: Build excitement: "But then something clicked. Sarah realized she wasn't failing because she didn't know the answers - she was failing because she was trying to be perfect instead of thinking out loud."
+APPROACH 4 - CASE STUDY:
+Share real example: "So I had this client, [Name]. [His/Her] [subject], [Name], would [behavior] [context]. [Name] wasn't [assumption]; [he/she] was [actual situation]. [Solution/process]. [Results/outcome]."
 
-PAYOFF: Celebrate the win: "Once she started treating interviews like conversations instead of tests, everything changed. Within three weeks, she landed offers from Google AND Microsoft. She's now making six figures and actually loves her job."
+Application Instructions (MANDATORY FORMAT - EXACTLY 5 STEPS):
+"So how do YOU [action related to main point]? First, [specific step]. [Brief clarification]. Second, [specific step]. [Brief clarification]. Third, [specific step]. [Brief clarification]. Fourth, [specific step]. [Brief clarification]. Finally/Lastly, [specific step]. [Brief clarification]."
 
-APPROACH 2 - ANALOGY/METAPHOR (Use for 1-2 bricks):
-Use conversational analogies: "You know what this reminds me of? It's like trying to learn guitar by only reading about music theory. You can memorize every chord progression, but until you actually pick up the guitar and start playing, you're not gonna get anywhere."
+CRITICAL: Each main point MUST follow this EXACT structure from the example script:
 
-APPROACH 3 - DATA/RESEARCH (Use for 1-2 bricks):
-Present data conversationally: "So get this - Harvard Business School did this crazy study where they tracked 500 entrepreneurs for five years. And you know what they found? The ones who succeeded weren't necessarily the smartest or most experienced. They were just the ones who actually took action within 72 hours of learning something new."
+1. Opening Statement: "First up:" / "Now that we've covered [previous], let's look at:" / "Next up:" / "Finally, let's talk about:"
 
-APPROACH 4 - CASE STUDY (Use for 1-2 bricks):
-Tell case studies like stories: "Okay, so there's this company called Buffer - you might know them, they do social media scheduling. Anyway, they were hemorrhaging money because their customer churn rate was through the roof. People would sign up, use it for a month, then disappear. So here's what they did - instead of trying to add more features, they actually simplified everything and focused on just making the onboarding experience amazing. And get this - within six months, their churn rate dropped by 40% and their revenue doubled."
+2. Point Introduction: "[Main concept]. Now, [common assumption], right? But here's the thing..."
 
-Content Transition: "Now here's why this matters to you..." (Connect content to viewer's situation)
+3. Content Body: Choose ONE approach and follow the format exactly as shown in the example:
 
-Principle Extraction (2-3 sentences explaining the deeper principle or framework behind the success).
+STORY EXAMPLE FORMAT:
+"Let me tell you about [Name], a [description]. [He/She]'d [behavior], but [he/she] was actually [real situation]. [He/She] didn't [assumption]; [he/she] was [actual cause]. [Process/what happened]. Once [solution], [transformation]. [Final outcome]."
 
-Application Instructions (3-5 specific, actionable steps with concrete examples):
+ANALOGY FORMAT:
+"Think about it like this; It's like [relatable comparison]. [Connection explanation]. [Why it matters]."
 
-"Alright, so how do YOU actually do this? 
-Look, first thing you gotta do is [specific action]. Here's what I mean - [concrete example]. Now heads up, most people mess this up by [potential obstacle], so watch out for that.
-Second, you're gonna want to [specific action]. For example, [concrete example]. The tricky part here is [potential obstacle] - don't let that trip you up.
-Third, and this is where it gets interesting, [specific action]. So like, [concrete example]. Just be careful because [potential obstacle] can really throw you off track if you're not paying attention."
+CASE STUDY FORMAT:
+"So I had this client, [Name]. [His/Her] [subject], [Name], would [behavior] [context]. [Name] wasn't [assumption]; [he/she] was [actual situation]. [What we did/solution]. [Results]."
+
+4. Application Instructions (MANDATORY - EXACTLY 5 STEPS):
+"So how do YOU [action]? First, [step]. [Brief clarification]. Second, [step]. [Brief clarification]. Third, [step]. [Brief clarification]. Fourth, [step]. [Brief clarification]. Finally/Lastly, [step]. [Brief clarification]."
+
+EXAMPLE FROM REFERENCE SCRIPT:
+"So, how do YOU interpret tail wags? First, look at the whole body. A relaxed dog wags with a loose, bouncy tail, loose body, and soft eyes. Second, consider the context. Is he near something scary? Third, look for other cues, like panting or lip licking. Fourth, remember that a stiff, high tail might indicate aggression, not happiness. Finally, if you're unsure, consult a professional like myself."
 
 Smooth Transition to Next Point (MANDATORY - TOP PRIORITY RULE):
 
@@ -371,17 +381,22 @@ If any are missing or lack detail, regenerate that point before continuing.
 
 3. END BRICK - FORWARD MOMENTUM (word count varies by target duration - see DURATION ALIGNMENT above)
 
-MANDATORY STRUCTURE - NO RECAPS OR SUMMARIES ALLOWED:
+REQUIRED FORMAT: [X:XX-Y:YY] END BRICK
 
-Problem Escalation (2-3 sentences): "Now that you know [main topic], here's the bigger challenge... [introduce next-level problem]. Most people who implement [current topic] run into [specific new obstacle/challenge]."
+MANDATORY STRUCTURE - FOLLOW EXACTLY AS IN EXAMPLE:
 
-Stakes Amplification (1-2 sentences): "If you don't solve [next problem], [specific negative consequence]. This is where [percentage]% of people get stuck."
+Summary Statement: "So, [main topic] is key to [benefit/outcome]. We've covered [list the exact points covered] – [number] [type of content] you might be missing."
 
-Next Video Setup (2-3 sentences): "That's exactly why I created [specific next video title/topic]. I'll show you [specific promise/solution for next problem]. You'll discover [specific benefit/outcome]."
+Reinforcement: "First, you'll learn to [skill 1]. Second, [skill 2]. Third, [skill 3]."
 
-Direct Video CTA (1 sentence): "Watch that video next - it's right here on your screen."
+Challenge Introduction: "Now, here's the challenge: [specific next-level problem/question]?"
 
-Engagement Hook (1 sentence): "Comment below: what's your biggest challenge with [next-level problem]?"
+Next Video Setup: "Want to learn more about [advanced topic]? Watch my next video on [specific next video topic]. It's right here!"
+
+Engagement Hook: "Comment below: What's your biggest challenge when it comes to [related topic]?"
+
+EXAMPLE FROM REFERENCE SCRIPT:
+"So, understanding your dog's body language is key to a happy, harmonious relationship. We've covered tail wags, yawning, whale eye, lip licking, and stiff posture – five common signs you might be missing. First, you'll learn to read the whole body. Second, pay close attention to context and frequency. Third, address the underlying causes. Now, here's the challenge: Can you correctly interpret your dog's body language in different situations? Want to learn more about advanced dog communication and behavior modification techniques? Watch my next video on common dog aggression triggers. It's right here! Comment below: What's your biggest challenge when it comes to understanding your dog's body language?"
 
 CRITICAL RULE: Never mention "links in description," "free guides," "downloads," or any external resources. Always direct viewers to watch the NEXT VIDEO.
 

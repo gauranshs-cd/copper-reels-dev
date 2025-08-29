@@ -128,6 +128,11 @@ export default function VideoPlanning() {
   useEffect(() => {
     setCurrentStep('plan');
     
+    // Debug: Log selectedIdea data
+    console.log('VideoPlanning - selectedIdea:', selectedIdea);
+    console.log('VideoPlanning - selectedIdea.concept:', selectedIdea?.concept);
+    console.log('VideoPlanning - selectedIdea.title:', selectedIdea?.title);
+    
     // Initialize script bricks
     if (!scriptBricks.length) {
       initializeScriptBricks();
@@ -305,9 +310,12 @@ export default function VideoPlanning() {
     setLoading(true, 'Generating titles and thumbnails...');
     
     try {
-      // Generate titles
+      // Generate titles - use concept if available, otherwise fall back to title
+      const ideaConcept = selectedIdea.concept || selectedIdea.title || 'Video Content';
+      console.log('generateTitlesAndThumbnails - using ideaConcept:', ideaConcept);
+      
       const titlesResponse = await copperReelsGemini.generateTitles({
-        ideaConcept: selectedIdea.concept,
+        ideaConcept: ideaConcept,
         pillarName: selectedIdea.pillar,
         viewerType: 'LEARNER'
       });

@@ -20,7 +20,7 @@ SCHEMA
             "rankedProblems":{"type":"array","items":{"type":"object","required":["problem","whyItMatters"],"properties":{"problem":{"type":"string"},"whyItMatters":{"type":"string"}}}}}}
       }},
     "viewerType":{"type":"string","enum":["LEARNER","ENTHUSIAST","EXPERT"]},
-    "pillars":{"type":"array","minItems":3,"maxItems":5,"items":{"type":"object","required":["name","summary"],"properties":{"name":{"type":"string"},"summary":{"type":"string"}}}},
+    "pillars":{"type":"array","minItems":3,"maxItems":5,"items":{"type":"object","required":["name","summary","topics"],"properties":{"name":{"type":"string"},"summary":{"type":"string"},"topics":{"type":"array","minItems":3,"maxItems":6,"items":{"type":"string"}}}}},
     "notes":{"type":"object","properties":{"rationale":{"type":"string"},"toneOfVoice":{"type":"array","items":{"type":"string"}}}}
 }}
 RULES
